@@ -1,5 +1,5 @@
 TARGET = roguelike
-OBJS = main.o map.o tcod.o game.o display.o player.o
+OBJS = main.o map.o tcod.o game.o player.o creature.o
 CXXFLAGS += -std=c++14 -Wall -I/usr/include/libtcod -ltcod -ltcodxx
 
 ifdef DEBUG
@@ -18,22 +18,22 @@ all: $(TARGET)
 $(TARGET): $(OBJS)
 	g++ $(CXXFLAGS) -o $@ $^
 
-main.o: main.cpp game.hpp map.hpp player.hpp tcod.hpp drawable.hpp
+main.o: main.cpp game.hpp map.hpp player.hpp creature.hpp tcod.hpp
 	g++ $(CXXFLAGS) -c -o $@ $<
 
-map.o: map.cpp map.hpp tcod.hpp drawable.hpp
+map.o: map.cpp map.hpp tcod.hpp player.hpp
 	g++ $(CXXFLAGS) -c -o $@ $<
 
 tcod.o: tcod.cpp tcod.hpp
 	g++ $(CXXFLAGS) -c -o $@ $<
 
-game.o: game.cpp game.hpp map.hpp display.hpp player.hpp tcod.hpp drawable.hpp
+game.o: game.cpp game.hpp map.hpp player.hpp creature.hpp tcod.hpp
 	g++ $(CXXFLAGS) -c -o $@ $<
 
-display.o: display.cpp display.hpp tcod.hpp drawable.hpp
+player.o: player.cpp player.hpp creature.hpp
 	g++ $(CXXFLAGS) -c -o $@ $<
 
-player.o: player.cpp player.hpp
+creature.o: creature.cpp creature.hpp tcod.hpp
 	g++ $(CXXFLAGS) -c -o $@ $<
 
 .PHONY: clean

@@ -11,7 +11,6 @@ class Player;
 class Game {
   std::vector<Map> levels;
 public:
-  std::unique_ptr<Display> win;
   std::unique_ptr<Player> you;
   Map *map;
 

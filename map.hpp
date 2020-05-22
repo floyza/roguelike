@@ -2,15 +2,32 @@
 #define MAP_HPP_DEFINED
 
 #include <memory>
-#include "tcod.hpp"
-#include "drawable.hpp"
+#include <boost/multi_array.hpp>
+
+class TCODMap;
+enum class Dir;
+
+class Tile {
+};
 
 class Map {
-  TCODMap map;
+  std::unique_ptr<TCODMap> map;
+  boost::multi_array<Tile, 2> tiles;
   int depth;
+
+  // map gen stuff
+  void gen_rand_walk();
+  bool soft_edge_limit_dir(int x, int y, Dir &d, int limit);
+  int in_soft_limit(int x, int y, int limit);
+  bool can_sober(int x, int y, Dir dir, int hall_len, int limit, int density_allowed);
+  bool in_level(int x, int y);
 public:
   Map(int w, int h, int depth);
-  Drawable get_drawable();
+  int get_width();
+  int get_height();
+  int is_walkable(int x, int y);
+  void set_walkable(int x, int y, bool walkable);
+  void draw();
 };
 
 #endif //MAP_HPP_DEFINED
