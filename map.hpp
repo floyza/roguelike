@@ -7,7 +7,8 @@
 class TCODMap;
 enum class Dir;
 
-class Tile {
+struct Tile {
+  bool discovered=false;
 };
 
 class Map {
@@ -28,6 +29,7 @@ public:
   int is_walkable(int x, int y);
   void set_walkable(int x, int y, bool walkable);
   void draw();
+  Tile &tile(int x, int y);
 };
 
 #endif //MAP_HPP_DEFINED

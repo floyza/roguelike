@@ -51,54 +51,57 @@ Dir rand_dir() {
 }
 
 Map::Map(int w, int h, int depth)
-  : map(std::make_unique<TCODMap>(w,h)), depth(depth)
+  : map(std::make_unique<TCODMap>(w,h)), tiles(boost::extents[w][h]), depth(depth)
 {
-  // divide the map into four pieces and make sure there are enough walkable
-  // spaces in each corner, else redo
-  constexpr double percent_req=10;
-  const int mid_x=w/2;
-  const int mid_y=h/2;
-  const int piece_size = mid_x*mid_y;
-  const int piece_count = piece_size*(percent_req/100);
-  int count_nw=0,count_ne=0,count_sw=0,count_se=0;
+  constexpr int granularity=10;
+  constexpr double filled_percent=70;
 
-  int trys=0;
-  while (count_nw < piece_count || count_ne < piece_count || count_sw < piece_count || count_se < piece_count) {
-    ++trys;
+  int tries=0;
+
+  while (true) {
+    ++tries;
     map = std::make_unique<TCODMap>(w,h);
     gen_rand_walk();
 
-    count_nw=0;count_ne=0;count_sw=0;count_se=0;
-    for (int x=0; x<mid_x; ++x)
-      for (int y=0; y<mid_y; ++y)
-	count_nw += is_walkable(x,y);
-    for (int x=mid_x; x<w; ++x)
-      for (int y=0; y<mid_y; ++y)
-	count_ne += is_walkable(x,y);
-    for (int x=0; x<mid_x; ++x)
-      for (int y=mid_y; y<h; ++y)
-	count_sw += is_walkable(x,y);
-    for (int x=mid_x; x<w; ++x)
-      for (int y=mid_y; y<h; ++y)
-	count_se += is_walkable(x,y);
+    int total_grids=0;
+    int filled_grids=0;
+
+    for (int x=0; x<w; x+=granularity) {
+      for (int y=0; y<h; y+=granularity) {
+	++total_grids;
+	for (int x_fine=x; x_fine<x+granularity && x_fine<w; ++x_fine) {
+	  for (int y_fine=y; y_fine<y+granularity && y_fine<h; ++y_fine) {
+	    if (is_walkable(x_fine, y_fine)) {
+	      ++filled_grids;
+	      // break out of x_fine and y_fine loops
+	      x_fine=w;
+	      break;
+	    }
+	  }
+	}
+      }
+    }
+
+    if (total_grids*(filled_percent/100) < filled_grids)
+      break;
   }
-  std::cerr << "map gen done in " << trys << " trys\n";
+  std::cerr << "map gen done in " << tries << " try(s)\n";
 }
 
 void Map::gen_rand_walk() {
   // Map generation done with modified 'drunkard's walk' algorithm
   // Basic algorithm described here: http://www.roguebasin.com/index.php?title=Random_Walk_Cave_Generation
-  // Some modification ideas here: https://forums.roguetemple.com//index.php?topic=4128.0
+  // With some modifications described here: https://forums.roguetemple.com//index.php?topic=4128.0
 
   // tweakable variables:
-  constexpr double percentage = 25;
-  constexpr int sober_chance = 40;
+  constexpr double percentage = 30;
+  constexpr int sober_chance = 30;
   constexpr int sober_density_allowed = 35;
   constexpr int soft_edge_limit = 10;
   constexpr int hall_min = 5;
   constexpr int hall_max = 10;
-  constexpr int cave_min = 20;
-  constexpr int cave_max = 30;
+  constexpr int cave_min = 15;
+  constexpr int cave_max = 25;
   constexpr int start_variation = 5;
 
   
@@ -110,10 +113,10 @@ void Map::gen_rand_walk() {
   int done_tiles = rand_int(cave_min, cave_max);
   
   Coord loc(*this);
-  int start_x = width/2 + rand_int(-start_variation, start_variation);
-  int start_y = height/2 + rand_int(-start_variation, start_variation);
-  loc.x = start_x;
-  loc.y = start_y;
+  loc.x = width/2 + rand_int(-start_variation, start_variation);
+  loc.y = height/2 + rand_int(-start_variation, start_variation);
+  g->you->x = loc.x;
+  g->you->y = loc.y;
   
   bool sober = false; // true if we are digging a corridor
   int steps = 0; // steps until change sober state
@@ -256,13 +259,31 @@ bool Map::can_sober(int x, int y, Dir dir, int hall_len, int limit, int density_
 
 void Map::draw()
 {
+  TCODColor wall_seen(0x66,0x66,0x00);
+  TCODColor wall_unseen(0x40,0x40,0x00);
+  TCODColor floor_seen(0xff,0xff,0xff);
+  TCODColor floor_unseen(0x9e,0x9e,0x9e);
+  map->computeFov(g->you->x, g->you->y, 9); // todo: only compute fov when needed
   const int width = get_width(), height = get_height();
   for (int x=0; x<width; ++x) {
     for (int y=0; y<height; ++y) {
-      if (is_walkable(x,y)) {
-	TCODConsole::root->setChar(x,y,' ');
-      } else {
-	TCODConsole::root->setChar(x,y,'#');
+      bool in_fov = false;
+      bool has_seen = tiles[x][y].discovered;
+      if (map->isInFov(x,y)) {
+	in_fov = true;
+	if (!has_seen) {
+	  tiles[x][y].discovered = true;
+	  has_seen = true;
+	}
+      }
+      if (has_seen) {
+	if (is_walkable(x,y)) {
+	  TCODConsole::root->setCharForeground(x, y, in_fov ? floor_seen : floor_unseen);
+	  TCODConsole::root->setChar(x,y,'.');
+	} else {
+	  TCODConsole::root->setCharForeground(x, y, in_fov ? wall_seen : wall_unseen);
+	  TCODConsole::root->setChar(x,y,'#');
+	}
       }
     }
   }
@@ -282,4 +303,8 @@ int Map::is_walkable(int x, int y) {
 
 void Map::set_walkable(int x, int y, bool walkable) {
   map->setProperties(x,y,walkable,walkable);
+}
+
+Tile &Map::tile(int x, int y) {
+  return tiles[x][y];
 }
