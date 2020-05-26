@@ -97,7 +97,7 @@ void Map::gen_rand_walk() {
   constexpr double percentage = 30;
   constexpr int sober_chance = 30;
   constexpr int sober_density_allowed = 35;
-  constexpr int soft_edge_limit = 10;
+  constexpr double soft_edge_limit_percent = 20;
   constexpr int hall_min = 5;
   constexpr int hall_max = 10;
   constexpr int cave_min = 15;
@@ -107,6 +107,7 @@ void Map::gen_rand_walk() {
   
   const int width = get_width();
   const int height = get_height();
+  const int soft_edge_limit = std::min(width,height)*(soft_edge_limit_percent/100);
   int req_tiles = (width*height)*(percentage/100);
 
   
