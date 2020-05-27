@@ -53,8 +53,10 @@ Dir rand_dir() {
 Map::Map(int w, int h, int depth)
   : map(std::make_unique<TCODMap>(w,h)), tiles(boost::extents[w][h]), depth(depth)
 {
-  constexpr int granularity=10;
-  constexpr double filled_percent=70;
+  constexpr double grain_count=5;
+  constexpr double filled_percent=75;
+
+  const int granularity = std::min(std::ceil(w/grain_count), std::ceil(h/grain_count));
 
   int tries=0;
 
@@ -167,14 +169,14 @@ void Map::gen_rand_walk() {
     }
 
     loc.move_dir(dir);
-    // if (loc.x == 0)
-    //   loc.x = 1;
-    // else if (loc.x == width-1)
-    //   loc.x = get_width()-2;
-    // if (loc.y == 0)
-    //   loc.y = 1;
-    // else if (loc.y == height-1)
-    //   loc.y = height-2;
+    if (loc.x == 0)
+      loc.x = 1;
+    else if (loc.x == width-1)
+      loc.x = get_width()-2;
+    if (loc.y == 0)
+      loc.y = 1;
+    else if (loc.y == height-1)
+      loc.y = height-2;
   }
 }
 

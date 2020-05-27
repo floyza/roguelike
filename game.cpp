@@ -62,10 +62,12 @@ bool Game::do_turn() {
       break;
     case TCODK_CHAR:
       if (key.c == 'r') {
-	for (int x=1; x<map->get_width()-1; ++x) {
-	  for (int y=1; y<map->get_height()-1; ++y) {
+	for (int x=0; x<map->get_width(); ++x) {
+	  for (int y=0; y<map->get_height(); ++y) {
 	    for (int x_adj = x-1; x_adj <= x+1; ++x_adj) {
 	      for (int y_adj = y-1; y_adj <= y+1; ++y_adj) {
+		if (x_adj < 0 || map->get_width() <= x_adj || y_adj < 0 || map->get_height() <= y_adj)
+		  continue;
 		if (map->is_walkable(x_adj, y_adj)) {
 		  map->tile(x,y).discovered=true;
 		  break;
