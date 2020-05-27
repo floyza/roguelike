@@ -61,7 +61,8 @@ bool Game::do_turn() {
       }
       break;
     case TCODK_CHAR:
-      if (key.c == 'r') {
+      switch (key.c) {
+      case 'r':
 	for (int x=0; x<map->get_width(); ++x) {
 	  for (int y=0; y<map->get_height(); ++y) {
 	    for (int x_adj = x-1; x_adj <= x+1; ++x_adj) {
@@ -76,12 +77,17 @@ bool Game::do_turn() {
 	    }
 	  }
 	}
-      } else if (key.c == 'u') {
+	break;
+      case 'u':
 	for (int x=1; x<map->get_width()-1; ++x) {
 	  for (int y=1; y<map->get_height()-1; ++y) {
 	    map->tile(x,y).discovered=false;
 	  }
 	}
+	break;
+      case 's':
+	TCODSystem::saveScreenshot("screenshot.png");
+	break;
       }
     default: break;
     }

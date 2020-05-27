@@ -5,7 +5,7 @@
 #include <iostream>
 
 int main() {
-  int x=120,y=50;
+  int x=100,y=50;
   g = std::make_unique<Game>();
   g->you = std::make_unique<Player>('@');
 
