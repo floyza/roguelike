@@ -14,7 +14,7 @@ int main() {
   Map map(x,y,0);
   g->map = &map;
 
-  TCODConsole::setCustomFont("font.png", TCOD_FONT_LAYOUT_ASCII_INROW | TCOD_FONT_TYPE_GREYSCALE);
+  TCODConsole::setCustomFont("cp866_8x12.png", TCOD_FONT_LAYOUT_ASCII_INROW);
   TCODConsole::initRoot(x,y,"Roguelike");
   while (g->do_turn()) ;
 }
