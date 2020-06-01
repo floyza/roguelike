@@ -1,6 +1,8 @@
 #include "player.hpp"
 #include "game.hpp"
 #include "map.hpp"
+#include "gui.hpp"
+#include "monster.hpp"
 
 Player::Player(char icon, const TCODColor &color, int max_hp, int attack, int x, int y)
   : Creature(icon, color, max_hp, attack, x, y)
@@ -88,4 +90,20 @@ void Player::do_move() {
     }
   default: break;
   }
+}
+
+void Player::do_attack(Creature &target) {
+  target.take_damage(attack, *this);
+}
+
+void Player::take_damage(int amount, Player &source) {
+  g->msg_log->send_msg({"You damage yourself!"});
+  g->msg_log->send_nl();
+  hp -= amount;
+}
+
+void Player::take_damage(int amount, Monster &source) {
+  g->msg_log->send_msg({"The " + source.name() + " attacks you!"});
+  g->msg_log->send_nl();
+  hp -= amount;
 }

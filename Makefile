@@ -30,10 +30,10 @@ tcod.o: tcod_util.cpp tcod_util.hpp
 game.o: game.cpp game.hpp map.hpp player.hpp creature.hpp gui.hpp monster.hpp
 	g++ $(CXXFLAGS) -c -o $@ $<
 
-player.o: player.cpp player.hpp creature.hpp game.hpp map.hpp
+player.o: player.cpp player.hpp creature.hpp game.hpp map.hpp gui.hpp monster.hpp
 	g++ $(CXXFLAGS) -c -o $@ $<
 
-monster.o: monster.cpp monster.hpp creature.hpp map.hpp game.hpp player.hpp
+monster.o: monster.cpp monster.hpp creature.hpp map.hpp game.hpp player.hpp gui.hpp
 	g++ $(CXXFLAGS) -c -o $@ $<
 
 creature.o: creature.cpp creature.hpp

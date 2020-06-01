@@ -6,14 +6,6 @@ Creature::Creature(char icon, const TCODColor &color, int max_hp, int attack, in
 {
 }
 
-void Creature::do_attack(Creature &target) {
-  target.take_damage(attack, *this);
-}
-
-void Creature::take_damage(int amount, Creature &source) {
-  hp -= amount;
-}
-
 void Creature::draw() const {
   TCODConsole::root->setCharForeground(x,y,color);
   TCODConsole::root->setChar(x,y,icon);
