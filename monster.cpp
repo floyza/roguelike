@@ -3,8 +3,8 @@
 #include "game.hpp"
 #include "player.hpp"
 
-Monster::Monster(char icon, const TCODColor &color, Map &parent, int max_hp, int attack, int x, int y)
-  : Creature(icon, color, max_hp, attack, x, y), parent(parent)
+Monster::Monster(char icon, const TCODColor &color, Map &parent, const std::string &name, int max_hp, int attack, int x, int y)
+  : Creature(icon, color, max_hp, attack, x, y), name_(name), parent(parent)
 {
 }
 

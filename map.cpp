@@ -153,7 +153,7 @@ void Map::gen_rand_walk() {
 	steps = hall_len;
       } else {
 	if (rand_int(1,100) <= monster_chance)
-	  monsters.push_back(std::make_unique<Monster>('g', TCODColor::blue, *this, 10, 2, loc.x, loc.y));
+	  monsters.push_back(std::make_unique<Monster>('g', TCODColor::blue, *this, "goblin", 10, 2, loc.x, loc.y));
 	sober = false;
 	steps = rand_int(cave_min, cave_max);
       }
@@ -305,7 +305,7 @@ void Map::draw()
 }
 
 void Map::compute_fov(int x, int y, int range) {
-  map->computeFov(x, y, range);
+  map->computeFov(x, y, range, true, FOV_PERMISSIVE_3);
 }
 
 bool Map::in_fov(int x, int y) {
