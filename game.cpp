@@ -11,7 +11,7 @@ const char *Game::font_file = "cp866_8x12.png";
 
 Game::Game()
   : log_header(std::make_unique<Gui>(map_width, 0, log_width, 3)),
-    you(std::make_unique<Player>('@', TCODColor::white)),
+    you(std::make_unique<Player>('@', TCODColor::white, 30, 5)),
     msg_log(std::make_unique<Gui>(map_width, 2, log_width, map_height-2))
 {
   log_header->send_msg({"LOG", TCODColor::white, true});

@@ -5,7 +5,7 @@
 
 class Player : public Creature {
 public:
-  using Creature::Creature;
+  Player(char icon, const TCODColor &color, int max_hp, int attack, int x=0, int y=0);
   void do_move() override;
   static constexpr int view_range=9;
 };

@@ -153,7 +153,7 @@ void Map::gen_rand_walk() {
 	steps = hall_len;
       } else {
 	if (rand_int(1,100) <= monster_chance)
-	  monsters.push_back(std::make_unique<Monster>('g', TCODColor::blue, *this, loc.x, loc.y));
+	  monsters.push_back(std::make_unique<Monster>('g', TCODColor::blue, *this, 10, 2, loc.x, loc.y));
 	sober = false;
 	steps = rand_int(cave_min, cave_max);
       }

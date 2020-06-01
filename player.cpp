@@ -2,6 +2,11 @@
 #include "game.hpp"
 #include "map.hpp"
 
+Player::Player(char icon, const TCODColor &color, int max_hp, int attack, int x, int y)
+  : Creature(icon, color, max_hp, attack, x, y)
+{
+}
+
 void Player::do_move() {
   TCOD_key_t key;
   TCODSystem::waitForEvent(TCOD_EVENT_KEY_PRESS,&key,nullptr,true);

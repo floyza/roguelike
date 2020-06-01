@@ -3,10 +3,11 @@
 #include "game.hpp"
 #include "player.hpp"
 
-Monster::Monster(char icon, const TCODColor &color, Map &parent, int x, int y)
-  : Creature(icon, color, x, y), parent(parent)
+Monster::Monster(char icon, const TCODColor &color, Map &parent, int max_hp, int attack, int x, int y)
+  : Creature(icon, color, max_hp, attack, x, y), parent(parent)
 {
 }
+
 
 void Monster::do_move() {
   if (parent.in_fov(x,y)) {
