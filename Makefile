@@ -1,8 +1,8 @@
 TARGET = roguelike
-OBJS = main.o map.o tcod.o game.o player.o creature.o
-CXXFLAGS += -std=c++14 -Wall -I/usr/include/libtcod -ltcod -ltcodxx
+OBJS = main.o map.o tcod_util.o game.o player.o creature.o gui.o monster.o
+CXXFLAGS += -std=c++17 -Wall -I/usr/include/libtcod -ltcod -ltcodxx
 
-ifdef DEBUG
+ifndef RELEASE
 CXXFLAGS += -ggdb -O0
 else
 CXXFLAGS += -O2
@@ -18,22 +18,28 @@ all: $(TARGET)
 $(TARGET): $(OBJS)
 	g++ $(CXXFLAGS) -o $@ $^
 
-main.o: main.cpp game.hpp map.hpp player.hpp creature.hpp tcod.hpp
+main.o: main.cpp game.hpp map.hpp player.hpp creature.hpp tcod_util.hpp gui.hpp
 	g++ $(CXXFLAGS) -c -o $@ $<
 
-map.o: map.cpp map.hpp tcod.hpp player.hpp
+map.o: map.cpp map.hpp tcod_util.hpp creature.hpp player.hpp monster.hpp game.hpp
 	g++ $(CXXFLAGS) -c -o $@ $<
 
-tcod.o: tcod.cpp tcod.hpp
+tcod.o: tcod_util.cpp tcod_util.hpp
 	g++ $(CXXFLAGS) -c -o $@ $<
 
-game.o: game.cpp game.hpp map.hpp player.hpp creature.hpp tcod.hpp
+game.o: game.cpp game.hpp map.hpp player.hpp creature.hpp gui.hpp monster.hpp
 	g++ $(CXXFLAGS) -c -o $@ $<
 
-player.o: player.cpp player.hpp creature.hpp
+player.o: player.cpp player.hpp creature.hpp game.hpp map.hpp
 	g++ $(CXXFLAGS) -c -o $@ $<
 
-creature.o: creature.cpp creature.hpp tcod.hpp
+monster.o: monster.cpp monster.hpp creature.hpp map.hpp game.hpp player.hpp
+	g++ $(CXXFLAGS) -c -o $@ $<
+
+creature.o: creature.cpp creature.hpp
+	g++ $(CXXFLAGS) -c -o $@ $<
+
+gui.o: gui.cpp gui.hpp tcod_util.hpp
 	g++ $(CXXFLAGS) -c -o $@ $<
 
 .PHONY: clean

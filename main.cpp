@@ -1,20 +1,22 @@
 #include "game.hpp"
 #include "map.hpp"
+#include "tcod_util.hpp"
 #include "player.hpp"
-#include "tcod.hpp"
+#include "gui.hpp"
 #include <iostream>
 
 int main() {
-  int x=100,y=50;
-  g = std::make_unique<Game>();
-  g->you = std::make_unique<Player>('@');
-
   tcod_rand = std::make_unique<TCODRandom>();
-
-  Map map(x,y,0);
-  g->map = &map;
-
-  TCODConsole::setCustomFont("cp866_8x12.png", TCOD_FONT_LAYOUT_ASCII_INROW);
-  TCODConsole::initRoot(x,y,"Roguelike");
+  
+  g = std::make_unique<Game>();
+  g->generate_map();
+  g->msg_log->send_msg({"You descend down the stairs."});
+  g->msg_log->send_nl();
+  g->msg_log->send_msg({"You hit the goblin for 13 damage."});
+  g->msg_log->send_nl();
+  g->msg_log->send_msg({"The goblin hits you for 4 damage."});
+  g->msg_log->send_nl();
+  g->msg_log->send_msg({"The goblin misses you."});
+  
   while (g->do_turn()) ;
 }

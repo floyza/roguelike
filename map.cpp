@@ -1,7 +1,8 @@
 #include "map.hpp"
-#include "tcod.hpp"
+#include "tcod_util.hpp"
 #include "game.hpp"
 #include "player.hpp"
+#include "monster.hpp"
 #include <cassert>
 #include <iostream>
 #include <vector>
@@ -63,6 +64,7 @@ Map::Map(int w, int h, int depth)
   while (true) {
     ++tries;
     map = std::make_unique<TCODMap>(w,h);
+    monsters=std::vector<std::unique_ptr<Monster>>{};
     gen_rand_walk();
 
     int total_grids=0;
@@ -90,6 +92,8 @@ Map::Map(int w, int h, int depth)
   std::cerr << "map gen done in " << tries << " try(s)\n";
 }
 
+Map::~Map() = default;
+
 void Map::gen_rand_walk() {
   // Map generation done with modified 'drunkard's walk' algorithm
   // Basic algorithm described here: http://www.roguebasin.com/index.php?title=Random_Walk_Cave_Generation
@@ -100,6 +104,7 @@ void Map::gen_rand_walk() {
   constexpr int sober_chance = 30;
   constexpr int sober_density_allowed = 35;
   constexpr double soft_edge_limit_percent = 20;
+  constexpr double monster_chance = 8;
   constexpr int hall_min = 5;
   constexpr int hall_max = 10;
   constexpr int cave_min = 15;
@@ -122,7 +127,7 @@ void Map::gen_rand_walk() {
   g->you->y = loc.y;
   
   bool sober = false; // true if we are digging a corridor
-  int steps = 0; // steps until change sober state
+  int steps = rand_int(cave_min, cave_max); // steps until change sober state
   Dir dir = rand_dir();
 
   bool last_room = false;
@@ -147,6 +152,8 @@ void Map::gen_rand_walk() {
 	sober = true;
 	steps = hall_len;
       } else {
+	if (rand_int(1,100) <= monster_chance)
+	  monsters.push_back(std::make_unique<Monster>('g', TCODColor::blue, *this, loc.x, loc.y));
 	sober = false;
 	steps = rand_int(cave_min, cave_max);
       }
@@ -266,14 +273,14 @@ void Map::draw()
   TCODColor wall_unseen(0x40,0x40,0x00);
   TCODColor floor_seen(0xff,0xff,0xff);
   TCODColor floor_unseen(0x9e,0x9e,0x9e);
-  map->computeFov(g->you->x, g->you->y, 9); // todo: only compute fov when needed
+  compute_fov(g->you->x, g->you->y, g->you->view_range);
   const int width = get_width(), height = get_height();
   for (int x=0; x<width; ++x) {
     for (int y=0; y<height; ++y) {
-      bool in_fov = false;
+      bool can_see = false;
       bool has_seen = tiles[x][y].discovered;
-      if (map->isInFov(x,y)) {
-	in_fov = true;
+      if (in_fov(x,y)) {
+	can_see = true;
 	if (!has_seen) {
 	  tiles[x][y].discovered = true;
 	  has_seen = true;
@@ -281,15 +288,28 @@ void Map::draw()
       }
       if (has_seen) {
 	if (is_walkable(x,y)) {
-	  TCODConsole::root->setCharForeground(x, y, in_fov ? floor_seen : floor_unseen);
+	  TCODConsole::root->setCharForeground(x, y, can_see ? floor_seen : floor_unseen);
 	  TCODConsole::root->setChar(x,y,'.');
 	} else {
-	  TCODConsole::root->setCharForeground(x, y, in_fov ? wall_seen : wall_unseen);
+	  TCODConsole::root->setCharForeground(x, y, can_see ? wall_seen : wall_unseen);
 	  TCODConsole::root->setChar(x,y,'#');
 	}
       }
     }
   }
+  for (const std::unique_ptr<Monster> &mon : monsters) {
+    if (in_fov(mon->x, mon->y)) {
+      mon->draw();
+    }
+  }
+}
+
+void Map::compute_fov(int x, int y, int range) {
+  map->computeFov(x, y, range);
+}
+
+bool Map::in_fov(int x, int y) {
+  return map->isInFov(x,y);
 }
 
 int Map::get_width() {
@@ -310,4 +330,8 @@ void Map::set_walkable(int x, int y, bool walkable) {
 
 Tile &Map::tile(int x, int y) {
   return tiles[x][y];
+}
+
+TCODMap *Map::get_map() {
+  return map.get();
 }

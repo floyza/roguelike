@@ -5,6 +5,7 @@
 #include <boost/multi_array.hpp>
 
 class TCODMap;
+class Monster;
 enum class Dir;
 
 struct Tile {
@@ -22,14 +23,19 @@ class Map {
   int in_soft_limit(int x, int y, int limit);
   bool can_sober(int x, int y, Dir dir, int hall_len, int limit, int density_allowed);
   bool in_level(int x, int y);
+  void compute_fov(int x, int y, int range);
 public:
   Map(int w, int h, int depth);
+  ~Map();
+  TCODMap *get_map();
+  std::vector<std::unique_ptr<Monster>> monsters;
   int get_width();
   int get_height();
   int is_walkable(int x, int y);
   void set_walkable(int x, int y, bool walkable);
   void draw();
   Tile &tile(int x, int y);
+  bool in_fov(int x, int y);
 };
 
 #endif //MAP_HPP_DEFINED

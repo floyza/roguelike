@@ -1,96 +1,41 @@
 #include "game.hpp"
 #include "map.hpp"
 #include "player.hpp"
-#include "tcod.hpp"
+#include "gui.hpp"
+#include "monster.hpp"
+#include <libtcod/libtcod.hpp>
 
 std::unique_ptr<Game> g;
 
+const char *Game::font_file = "cp866_8x12.png";
+
+Game::Game()
+  : log_header(std::make_unique<Gui>(map_width, 0, log_width, 3)),
+    you(std::make_unique<Player>('@', TCODColor::white)),
+    msg_log(std::make_unique<Gui>(map_width, 2, log_width, map_height-2))
+{
+  log_header->send_msg({"LOG", TCODColor::white, true});
+  TCODConsole::setCustomFont(font_file, TCOD_FONT_LAYOUT_ASCII_INROW);
+  TCODConsole::initRoot(map_width + log_width, map_height, "Roguelike");
+}
+
+Game::~Game() = default;
+
+void Game::generate_map() {
+  g->map = new Map(map_width, map_height, 0);
+}
+
 bool Game::do_turn() {
   if (!TCODConsole::isWindowClosed()) {
-    TCOD_key_t key;
     TCODConsole::root->clear();
     map->draw();
     you->draw();
+    msg_log->draw();
+    log_header->draw();
     TCODConsole::root->flush();
-    TCODSystem::waitForEvent(TCOD_EVENT_KEY_PRESS,&key,nullptr,true);
-    switch (key.vk) {
-    case TCODK_KP1:
-      if (map->is_walkable(you->x-1, you->y+1)) {
-	--you->x;
-	++you->y;
-      }
-      break;
-    case TCODK_KP2:
-      if (map->is_walkable(you->x, you->y+1)) {
-	++you->y;
-      }
-      break;
-    case TCODK_KP3:
-      if (map->is_walkable(you->x+1, you->y+1)) {
-	++you->x;
-	++you->y;
-      }
-      break;
-    case TCODK_KP4:
-      if (map->is_walkable(you->x-1, you->y)) {
-	--you->x;
-      }
-      break;
-    case TCODK_KP5:
-      break;
-    case TCODK_KP6:
-      if (map->is_walkable(you->x+1, you->y)) {
-	++you->x;
-      }
-      break;
-    case TCODK_KP7:
-      if (map->is_walkable(you->x-1, you->y-1)) {
-	--you->x;
-	--you->y;
-      }
-      break;
-    case TCODK_KP8:
-      if (map->is_walkable(you->x, you->y-1)) {
-	--you->y;
-      }
-      break;
-    case TCODK_KP9:
-      if (map->is_walkable(you->x+1, you->y-1)) {
-	++you->x;
-	--you->y;
-      }
-      break;
-    case TCODK_CHAR:
-      switch (key.c) {
-      case 'r':
-	for (int x=0; x<map->get_width(); ++x) {
-	  for (int y=0; y<map->get_height(); ++y) {
-	    for (int x_adj = x-1; x_adj <= x+1; ++x_adj) {
-	      for (int y_adj = y-1; y_adj <= y+1; ++y_adj) {
-		if (x_adj < 0 || map->get_width() <= x_adj || y_adj < 0 || map->get_height() <= y_adj)
-		  continue;
-		if (map->is_walkable(x_adj, y_adj)) {
-		  map->tile(x,y).discovered=true;
-		  break;
-		}
-	      }
-	    }
-	  }
-	}
-	break;
-      case 'u':
-	for (int x=1; x<map->get_width()-1; ++x) {
-	  for (int y=1; y<map->get_height()-1; ++y) {
-	    map->tile(x,y).discovered=false;
-	  }
-	}
-	break;
-      case 's':
-	TCODSystem::saveScreenshot("screenshot.png");
-	break;
-      }
-    default: break;
-    }
+    you->do_move();
+    for (const std::unique_ptr<Monster> &mon : map->monsters)
+      mon->do_move();
     return true;
   }
   return false;
