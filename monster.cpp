@@ -14,7 +14,16 @@ void Monster::do_move() {
     // the player can see us, so we can see them
     TCODPath path(parent.get_map());
     path.compute(x, y, g->you->x, g->you->y);
-    path.get(0,&x,&y);
+
+    int new_x, new_y;
+    path.get(0, &new_x, &new_y);
+
+    if (g->you->x == new_x && g->you->y == new_y) {
+      do_attack(*g->you);
+    } else {
+      x = new_x;
+      y = new_y;
+    }
   } 
 }
 
