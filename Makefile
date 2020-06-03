@@ -33,7 +33,7 @@ game.o: game.cpp game.hpp map.hpp player.hpp creature.hpp gui.hpp monster.hpp
 player.o: player.cpp player.hpp creature.hpp game.hpp map.hpp gui.hpp monster.hpp
 	g++ $(CXXFLAGS) -c -o $@ $<
 
-monster.o: monster.cpp monster.hpp creature.hpp map.hpp game.hpp player.hpp gui.hpp
+monster.o: monster.cpp monster.hpp creature.hpp map.hpp game.hpp player.hpp gui.hpp mon_id.hpp
 	g++ $(CXXFLAGS) -c -o $@ $<
 
 creature.o: creature.cpp creature.hpp
