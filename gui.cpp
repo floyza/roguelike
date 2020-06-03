@@ -32,6 +32,7 @@ void Gui::draw_border() {
 }
 
 void Gui::draw_msgs() {
+  con->rect(1,1, con->getWidth()-2, con->getHeight()-2, true);
   for (std::size_t i=0; i<lines.size(); ++i) {
     const Message &line_msg = lines[i];
     con->setDefaultForeground(line_msg.color);
@@ -78,7 +79,6 @@ Gui &Gui::send_msg(const Message &msg) {
   }
   if (line.size() > 0)
     add_line({line, msg.color, msg.center});
-  //  con->rect(1,1, con->getWidth()-2, con->getHeight()-2, true);
   
   return *this;
 }
