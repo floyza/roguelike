@@ -11,6 +11,8 @@ class Monster : public Creature {
   std::string name_;
   void take_damage(int amount, Player &source);
   void take_damage(int amount, Monster &source);
+  bool dest_x=-1, dest_y=-1;
+  std::pair<int, int> step_to_dest();
 public:
   Monster(char icon, const TCODColor &color, Map &parent, const std::string &name, int max_hp, int attack, int x=0, int y=0);
   void do_move() override;
