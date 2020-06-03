@@ -10,7 +10,7 @@ Player::Player(char icon, const TCODColor &color, int max_hp, int attack, int x,
 }
 
 void Player::do_move() {
-  while (true) {
+  while (!TCODConsole::isWindowClosed()) {
     TCOD_key_t key;
     TCODSystem::waitForEvent(TCOD_EVENT_KEY_PRESS,&key,nullptr,true);
     int new_x=x;
@@ -39,6 +39,7 @@ void Player::do_move() {
       }
       break;
     case TCODK_KP5:
+      return;
       break;
     case TCODK_KP6:
       if (g->map->is_walkable(x+1, y)) {
