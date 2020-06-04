@@ -1,8 +1,11 @@
 #ifndef GAME_HPP_DEFINED
 #define GAME_HPP_DEFINED
 
+#include "sol.hpp"
 #include <memory>
+#include <map>
 #include <vector>
+#include "lua.hpp"
 
 class Map;
 class Display;
@@ -17,10 +20,13 @@ class Game {
   static const char *font_file;
 
   std::unique_ptr<Gui> log_header;
+  std::map<std::string, Lua_item> items;
+
 public:
   Game();
   ~Game();
   std::unique_ptr<Player> you;
+  std::unique_ptr<sol::state> lua_state;
   std::unique_ptr<Gui> msg_log;
   Map *map;
 
@@ -29,6 +35,8 @@ public:
    */
   bool do_turn();
   void generate_map();
+
+  void init_lua();
 };
 
 extern std::unique_ptr<Game> g;

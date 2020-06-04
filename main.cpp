@@ -10,6 +10,7 @@ int main() {
   
   g = std::make_unique<Game>();
   g->generate_map();
+  g->init_lua();
   
   while (g->do_turn()) ;
 }

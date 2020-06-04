@@ -4,6 +4,8 @@
 #include "creature.hpp"
 
 class Monster;
+class Item;
+enum class Trigger;
 
 class Player : public Creature {
   void take_damage(int amount, Player &source);
@@ -15,6 +17,9 @@ public:
   void do_move() override;
   void do_attack(Creature &target) override;
   void die() override;
+
+  void call_triggers_generic();
+  void call_triggers_mod();
 
   bool is_dead() const { return dead; }
 
