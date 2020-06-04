@@ -117,13 +117,20 @@ void Player::do_attack(Creature &target) {
 }
 
 void Player::take_damage(int amount, Player &source) {
-  g->msg_log->send_msg({"You damage yourself!"});
+  g->msg_log->send_msg({"You hit yourself for " + std::to_string(amount) + " damage!"});
   g->msg_log->send_nl();
   hp -= amount;
 }
 
 void Player::take_damage(int amount, Monster &source) {
-  g->msg_log->send_msg({"The " + source.name() + " attacks you!"});
+  g->msg_log->send_msg({"The " + source.name() + " attacks you for " + std::to_string(amount) + " damage!"});
   g->msg_log->send_nl();
   hp -= amount;
+  if (hp<=0)
+    die();
 }
+
+void Player::die() {
+  g->msg_log->send_msg({"You are dead...", TCODColor::red});
+  dead = true;
+};

@@ -4,6 +4,7 @@
 #include "player.hpp"
 #include "gui.hpp"
 #include "mon_id.hpp"
+#include <algorithm>
 
 Monster::Monster(const mon_id &id, Map &parent, int x, int y)
   : Creature(id.icon, id.color, id.max_hp, id.attack, x, y), name_(id.name), parent(parent)
@@ -71,13 +72,21 @@ void Monster::do_attack(Creature &target) {
 }
 
 void Monster::take_damage(int amount, Player &source) {
-  g->msg_log->send_msg({"You attack the " + name() + "!"});
+  g->msg_log->send_msg({"You attack the " + name() + " for " + std::to_string(amount) + " damage!"});
   g->msg_log->send_nl();
   hp -= amount;
 }
 
 void Monster::take_damage(int amount, Monster &source) {
-  g->msg_log->send_msg({"The " + source.name() + " attacks the " + name() + "!"});
+  g->msg_log->send_msg({"The " + source.name() + " attacks the " + name() + " for " + std::to_string(amount) + " damage!"});
   g->msg_log->send_nl();
   hp -= amount;
+  if (hp<=0)
+    die();
+}
+
+void Monster::die() {
+  static auto pred = [this](const auto &val){ return val.get() == this; };
+  auto iter = std::remove_if(parent.monsters.begin(), parent.monsters.end(), pred);
+  parent.monsters.erase(iter, parent.monsters.end());
 }

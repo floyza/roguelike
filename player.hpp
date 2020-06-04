@@ -8,11 +8,15 @@ class Monster;
 class Player : public Creature {
   void take_damage(int amount, Player &source);
   void take_damage(int amount, Monster &source);
+  bool dead=false;
 public:
   Player(char icon, const TCODColor &color, int max_hp, int attack, int x=0, int y=0);
-  void do_move() override;
 
-  void do_attack(Creature &target);
+  void do_move() override;
+  void do_attack(Creature &target) override;
+  void die() override;
+
+  bool is_dead() const { return dead; }
 
   static constexpr int view_range=9;
 };

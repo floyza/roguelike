@@ -20,6 +20,7 @@ public:
   virtual void do_attack(Creature &target)=0;
   virtual void take_damage(int amount, Player &source)=0;
   virtual void take_damage(int amount, Monster &source)=0;
+  virtual void die()=0;
   virtual ~Creature()=0;
   int x,y;
 };
