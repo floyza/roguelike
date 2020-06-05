@@ -64,7 +64,7 @@ Map::Map(int w, int h, int depth)
   while (true) {
     ++tries;
     map = std::make_unique<TCODMap>(w,h);
-    monsters=std::vector<std::unique_ptr<Monster>>{};
+    monsters=std::vector<Monster>{};
     gen_rand_walk();
 
     int total_grids=0;
@@ -154,6 +154,7 @@ void Map::gen_rand_walk() {
       } else {
 	if (rand_int(1,100) <= monster_chance) {
 	  // generate monster
+	  monsters.emplace_back(g->get_mon("goblin"), *this, loc.x, loc.y);
 	}
 	sober = false;
 	steps = rand_int(cave_min, cave_max);
@@ -298,9 +299,9 @@ void Map::draw()
       }
     }
   }
-  for (const std::unique_ptr<Monster> &mon : monsters) {
-    if (in_fov(mon->x, mon->y)) {
-      mon->draw();
+  for (const Monster &mon : monsters) {
+    if (in_fov(mon.x, mon.y)) {
+      mon.draw();
     }
   }
 }

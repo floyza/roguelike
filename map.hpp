@@ -28,7 +28,7 @@ public:
   Map(int w, int h, int depth);
   ~Map();
   TCODMap *get_map();
-  std::vector<std::unique_ptr<Monster>> monsters;
+  std::vector<Monster> monsters;
   int get_width();
   int get_height();
   int is_walkable(int x, int y);

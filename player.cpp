@@ -101,9 +101,9 @@ void Player::do_move() {
     }
     if (new_x!=x || new_y!=y) {
       bool attacked=false;
-      for (std::unique_ptr<Monster> &mon : g->map->monsters) {
-	if (mon->x == new_x && mon->y == new_y) {
-	  do_attack(*mon);
+      for (Monster &mon : g->map->monsters) {
+	if (mon.x == new_x && mon.y == new_y) {
+	  do_attack(mon);
 	  attacked=true;
 	  break;
 	}

@@ -34,8 +34,8 @@ bool Game::do_turn() {
     log_header->draw();
     TCODConsole::root->flush();
     you->do_move();
-    for (const std::unique_ptr<Monster> &mon : map->monsters)
-      mon->do_move();
+    for (Monster &mon : map->monsters)
+      mon.do_move();
     return true;
   }
   return false;

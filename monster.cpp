@@ -8,7 +8,7 @@
 #include <algorithm>
 
 Monster::Monster(const mon_id &id, Map &parent, int x, int y)
-  : Creature(id.icon, id.color, id.max_hp, id.attack, x, y), name_(id.name), parent(parent)
+  : Creature(id.icon, id.color, id.max_hp, id.attack, x, y), name_(id.name), parent(&parent)
 {
 }
 
@@ -18,10 +18,10 @@ std::pair<int, int> Monster::step_to_dest() {
   // first try to walk around monsters
   // if this doesn't work, walk as if the
   // other monsters dont exist
-  TCODMap map(parent.get_map()->getWidth(), parent.get_map()->getHeight());
-  map.copy(parent.get_map());
-  for (const auto &monster : parent.monsters) {
-    int mon_x = monster->x, mon_y = monster->y;
+  TCODMap map(parent->get_map()->getWidth(), parent->get_map()->getHeight());
+  map.copy(parent->get_map());
+  for (const Monster &monster : parent->monsters) {
+    int mon_x = monster.x, mon_y = monster.y;
     map.setProperties(mon_x, mon_y, map.isWalkable(mon_x, mon_y), false);
   }
   TCODPath path(&map);
@@ -32,14 +32,14 @@ std::pair<int, int> Monster::step_to_dest() {
     path.get(0, &step.first, &step.second);
   } else {
     // still try to walk towards the player
-    TCODPath path_closer(parent.get_map());
+    TCODPath path_closer(parent->get_map());
     path_closer.compute(x, y, g->you->x, g->you->y);
     int pstep_x, pstep_y;
     if (!path_closer.isEmpty()) {
       path_closer.get(0, &pstep_x, &pstep_y);
       bool can_step = true;
-      for (const auto &monster : parent.monsters) {
-	if (monster->x == pstep_x && monster->y == pstep_y) {
+      for (const Monster &monster : parent->monsters) {
+	if (monster.x == pstep_x && monster.y == pstep_y) {
 	  can_step = false;
 	  break;
 	}
@@ -54,7 +54,7 @@ std::pair<int, int> Monster::step_to_dest() {
 }
 
 void Monster::do_move() {
-  if (parent.in_fov(x,y)) {
+  if (parent->in_fov(x,y)) {
     // the player can see us, so we can see them
     dest_x = g->you->x;
     dest_y = g->you->y;
@@ -90,7 +90,6 @@ void Monster::take_damage(int amount, Monster &source) {
 
 void Monster::die() {
   g->you->call_triggers(Trigger::ON_HIT);
-  static auto pred = [this](const auto &val){ return val.get() == this; };
-  auto iter = std::remove_if(parent.monsters.begin(), parent.monsters.end(), pred);
-  parent.monsters.erase(iter, parent.monsters.end());
+  auto iter = std::remove_if(parent->monsters.begin(), parent->monsters.end(), [this](const Monster &mon){return this==&mon;});
+  parent->monsters.erase(iter, parent->monsters.end());
 }

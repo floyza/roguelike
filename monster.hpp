@@ -23,7 +23,7 @@ public:
   void do_attack(Creature &target) override;
   void die() override;
 
-  Map &parent;
+  Map *parent;
 };
 
 #endif //MONSTER_HPP_DEFINED
