@@ -78,6 +78,8 @@ void Monster::take_damage(int amount, Player &source) {
   g->msg_log->send_msg({"You attack the " + name() + " for " + std::to_string(amount) + " damage!"});
   g->msg_log->send_nl();
   hp -= amount;
+  if (hp<=0)
+    die();
 }
 
 void Monster::take_damage(int amount, Monster &source) {
@@ -90,6 +92,8 @@ void Monster::take_damage(int amount, Monster &source) {
 
 void Monster::die() {
   g->you->call_triggers(Trigger::ON_HIT);
+  g->msg_log->send_msg({"The " + name() + " dies!"});
+  g->msg_log->send_nl();
   auto iter = std::remove_if(parent->monsters.begin(), parent->monsters.end(), [this](const Monster &mon){return this==&mon;});
   parent->monsters.erase(iter, parent->monsters.end());
 }

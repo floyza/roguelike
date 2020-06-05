@@ -28,7 +28,7 @@ void Game::init_lua() {
 				    "func", &Lua_item::func,
 				    "name", &Lua_item::name);
   lua_state->new_usertype<TCODColor>("color",
-				     sol::constructors<TCODColor(),TCODColor(int,int,int)>()
+				     sol::constructors<TCODColor(),TCODColor(int,int,int)>(),
 				     "r", &TCODColor::r,
 				     "g", &TCODColor::g,
 				     "b", &TCODColor::b);

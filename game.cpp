@@ -26,7 +26,7 @@ void Game::generate_map() {
 }
 
 bool Game::do_turn() {
-  if (!TCODConsole::isWindowClosed() || you->is_dead()) {
+  if (!TCODConsole::isWindowClosed() && !you->is_dead()) {
     TCODConsole::root->clear();
     map->draw();
     you->draw();
