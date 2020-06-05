@@ -2,7 +2,7 @@
 #include "lua.hpp"
 #include "game.hpp"
 
-Item::Item(std::string id)
+Item::Item(const std::string &id)
 {
   const Lua_item &item_base = g->get_item(id);
   trigger = item_base.type;
@@ -14,3 +14,5 @@ Item::Item(std::string id)
     generic_effect = [&g, &item_base] { (*g->lua_state)[item_base.name](); };
   }
 }
+
+Item::~Item() = default;

@@ -16,6 +16,7 @@ class Monster : public Creature {
   std::pair<int, int> step_to_dest();
 public:
   Monster(const mon_id &id, Map &parent, int x=0, int y=0);
+  ~Monster();
   const std::string &name() { return name_; }
 
   void do_move() override;

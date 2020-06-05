@@ -3,11 +3,15 @@
 #include "map.hpp"
 #include "gui.hpp"
 #include "monster.hpp"
+#include "item.hpp"
+#include <cassert>
 
 Player::Player(char icon, const TCODColor &color, int max_hp, int attack, int x, int y)
   : Creature(icon, color, max_hp, attack, x, y)
 {
 }
+
+Player::~Player() = default;
 
 void Player::do_move() {
   while (!TCODConsole::isWindowClosed()) {
@@ -134,3 +138,24 @@ void Player::die() {
   g->msg_log->send_msg({"You are dead...", TCODColor::red});
   dead = true;
 };
+
+void Player::aquire(const std::string &id) {
+  items.push_back(Item{id});
+}
+
+void Player::call_triggers_generic(const Trigger &trigger) {
+  assert(trigger == Trigger::ON_HIT || trigger == Trigger::ON_KILL);
+  for (Item &item : items) {
+    if (item.trigger == trigger)
+      std::get<Item::generic_func>(item.generic_effect)();
+  }
+}
+
+int Player::call_triggers_mod(const Trigger &trigger, int arg) {
+  assert(trigger == Trigger::DAM_MOD || trigger == Trigger::DAM_REDUCE);
+  for (Item &item : items) {
+    if (item.trigger == trigger)
+      arg = std::get<Item::modify_func>(item.modify)(arg);
+  }
+  return arg;
+}

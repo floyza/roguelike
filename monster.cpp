@@ -11,6 +11,8 @@ Monster::Monster(const mon_id &id, Map &parent, int x, int y)
 {
 }
 
+Monster::~Monster() = default;
+
 std::pair<int, int> Monster::step_to_dest() {
   // first try to walk around monsters
   // if this doesn't work, walk as if the
