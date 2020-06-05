@@ -23,8 +23,8 @@ public:
   void die() override;
 
   void aquire(const std::string &id);
-  void call_triggers_generic(const Trigger &trigger);
-  int call_triggers_mod(const Trigger &trigger, int arg);
+  void call_triggers(const Trigger &trigger);
+  int call_triggers(const Trigger &trigger, int arg);
 
   bool is_dead() const { return dead; }
 

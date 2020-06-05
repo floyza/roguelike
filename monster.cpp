@@ -89,7 +89,7 @@ void Monster::take_damage(int amount, Monster &source) {
 }
 
 void Monster::die() {
-  g->you->call_triggers_generic(Trigger::ON_HIT);
+  g->you->call_triggers(Trigger::ON_HIT);
   static auto pred = [this](const auto &val){ return val.get() == this; };
   auto iter = std::remove_if(parent.monsters.begin(), parent.monsters.end(), pred);
   parent.monsters.erase(iter, parent.monsters.end());

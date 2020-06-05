@@ -111,7 +111,7 @@ void Player::do_move() {
       if (!attacked) {
 	x = new_x;
 	y = new_y;
-	call_triggers_generic(Trigger::ON_MOVE);
+	call_triggers(Trigger::ON_MOVE);
       }
       moving = false;
     }
@@ -119,20 +119,20 @@ void Player::do_move() {
 }
 
 void Player::do_attack(Creature &target) {
-  int damage = call_triggers_mod(Trigger::DAM_MOD, attack);
+  int damage = call_triggers(Trigger::DAM_MOD, attack);
   target.take_damage(damage, *this);
-  call_triggers_generic(Trigger::ON_HIT);
+  call_triggers(Trigger::ON_HIT);
 }
 
 void Player::take_damage(int amount, Player &source) {
-  amount = call_triggers_mod(Trigger::DAM_REDUCE, amount);
+  amount = call_triggers(Trigger::DAM_REDUCE, amount);
   g->msg_log->send_msg({"You hit yourself for " + std::to_string(amount) + " damage!"});
   g->msg_log->send_nl();
   hp -= amount;
 }
 
 void Player::take_damage(int amount, Monster &source) {
-  amount = call_triggers_mod(Trigger::DAM_REDUCE, amount);
+  amount = call_triggers(Trigger::DAM_REDUCE, amount);
   g->msg_log->send_msg({"The " + source.name() + " attacks you for " + std::to_string(amount) + " damage!"});
   g->msg_log->send_nl();
   hp -= amount;
@@ -149,7 +149,7 @@ void Player::aquire(const std::string &id) {
   items.push_back(Item{id});
 }
 
-void Player::call_triggers_generic(const Trigger &trigger) {
+void Player::call_triggers(const Trigger &trigger) {
   assert(!has_arg(trigger));
   for (Item &item : items) {
     if (item.trigger == trigger)
@@ -157,7 +157,7 @@ void Player::call_triggers_generic(const Trigger &trigger) {
   }
 }
 
-int Player::call_triggers_mod(const Trigger &trigger, int arg) {
+int Player::call_triggers(const Trigger &trigger, int arg) {
   assert(has_arg(trigger));
   for (Item &item : items) {
     if (item.trigger == trigger)
