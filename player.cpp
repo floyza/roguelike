@@ -117,16 +117,20 @@ void Player::do_move() {
 }
 
 void Player::do_attack(Creature &target) {
-  target.take_damage(attack, *this);
+  int damage = call_triggers_mod(Trigger::DAM_MOD, attack);
+  target.take_damage(damage, *this);
+  call_triggers_generic(Trigger::ON_HIT);
 }
 
 void Player::take_damage(int amount, Player &source) {
+  amount = call_triggers_mod(Trigger::DAM_REDUCE, amount);
   g->msg_log->send_msg({"You hit yourself for " + std::to_string(amount) + " damage!"});
   g->msg_log->send_nl();
   hp -= amount;
 }
 
 void Player::take_damage(int amount, Monster &source) {
+  amount = call_triggers_mod(Trigger::DAM_REDUCE, amount);
   g->msg_log->send_msg({"The " + source.name() + " attacks you for " + std::to_string(amount) + " damage!"});
   g->msg_log->send_nl();
   hp -= amount;

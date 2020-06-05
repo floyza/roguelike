@@ -3,9 +3,9 @@ OBJS = main.o map.o tcod_util.o game.o player.o creature.o gui.o monster.o lua.o
 CXXFLAGS += -std=c++17 -Wall -I/usr/include/libtcod -ltcod -ltcodxx -llua
 
 ifndef RELEASE
-NDEBUG=1
 CXXFLAGS += -ggdb -O0
 else
+NDEBUG=1
 CXXFLAGS += -O2
 endif
 
@@ -34,7 +34,7 @@ game.o: game.cpp game.hpp lua.hpp map.hpp player.hpp creature.hpp gui.hpp monste
 player.o: player.cpp player.hpp creature.hpp game.hpp lua.hpp map.hpp gui.hpp monster.hpp item.hpp
 	g++ $(CXXFLAGS) -c -o $@ $<
 
-monster.o: monster.cpp monster.hpp creature.hpp map.hpp game.hpp lua.hpp player.hpp gui.hpp mon_id.hpp
+monster.o: monster.cpp monster.hpp creature.hpp map.hpp game.hpp lua.hpp player.hpp gui.hpp mon_id.hpp item.hpp
 	g++ $(CXXFLAGS) -c -o $@ $<
 
 creature.o: creature.cpp creature.hpp
