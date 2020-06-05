@@ -1,5 +1,5 @@
 item_table={
-  ["basic_armor"] = Item.new(Trigger.DAM_REDUCE, "armor_apply", "Armor")
+  ["basic_armor"] = Item.new(Trigger.DAM_REDUCE, "armor_apply", "Armor", 0)
 }
 
 function armor_apply(armor_val)

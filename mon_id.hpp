@@ -6,13 +6,14 @@
 
 struct mon_id {
   mon_id() = default;
-  mon_id(char icon, const TCODColor &color, const std::string &name, int max_hp, int attack)
-    : icon(icon), color(color), name(name), max_hp(max_hp), attack(attack) { }
+  mon_id(char icon, const TCODColor &color, const std::string &name, int max_hp, int attack, int rarity)
+    : icon(icon), color(color), name(name), max_hp(max_hp), attack(attack), rarity(rarity) { }
   char icon;
   TCODColor color;
   std::string name;
   int max_hp;
   int attack;
+  int rarity;
 };
 
 #endif //DEFINED_MON_ID_HPP

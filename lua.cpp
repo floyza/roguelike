@@ -5,8 +5,8 @@
 
 Lua_item::Lua_item() = default;
 
-Lua_item::Lua_item(Trigger type, const std::string &func, const std::string &name)
-  : type(type), func(func), name(name)
+Lua_item::Lua_item(Trigger type, const std::string &func, const std::string &name, int rarity)
+  : type(type), func(func), name(name), rarity(rarity)
 {
 }
 
@@ -23,22 +23,24 @@ void Game::init_lua() {
 				{"ON_MOVE", Trigger::ON_MOVE}
 			       });
   lua_state->new_usertype<Lua_item>("Item",
-				    sol::constructors<Lua_item(),Lua_item(Trigger, const std::string &, const std::string &)>(),
+				    sol::constructors<Lua_item(),Lua_item(Trigger, const std::string &, const std::string &, int)>(),
 				    "type", &Lua_item::type,
 				    "func", &Lua_item::func,
-				    "name", &Lua_item::name);
+				    "name", &Lua_item::name,
+				    "rarity", &Lua_item::rarity);
   lua_state->new_usertype<TCODColor>("color",
 				     sol::constructors<TCODColor(),TCODColor(int,int,int)>(),
 				     "r", &TCODColor::r,
 				     "g", &TCODColor::g,
 				     "b", &TCODColor::b);
   lua_state->new_usertype<mon_id>("Monster",
-				  sol::constructors<mon_id(), mon_id(char, const TCODColor &, const std::string &, int, int)>(),
+				  sol::constructors<mon_id(), mon_id(char, const TCODColor &, const std::string &, int, int, int)>(),
 				  "icon", &mon_id::icon,
 				  "color", &mon_id::color,
 				  "name", &mon_id::name,
 				  "max_hp", &mon_id::max_hp,
-				  "attack", &mon_id::attack);
+				  "attack", &mon_id::attack,
+				  "rarity", &mon_id::rarity);
 
   lua_state->script_file("items.lua");
   lua_state->script_file("monsters.lua");
