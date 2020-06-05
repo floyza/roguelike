@@ -150,7 +150,7 @@ void Player::aquire(const std::string &id) {
 }
 
 void Player::call_triggers_generic(const Trigger &trigger) {
-  assert(trigger == Trigger::ON_HIT || trigger == Trigger::ON_KILL || trigger == Trigger::ON_MOVE);
+  assert(!has_arg(trigger));
   for (Item &item : items) {
     if (item.trigger == trigger)
       std::get<Item::generic_func>(item.effect)();
@@ -158,7 +158,7 @@ void Player::call_triggers_generic(const Trigger &trigger) {
 }
 
 int Player::call_triggers_mod(const Trigger &trigger, int arg) {
-  assert(trigger == Trigger::DAM_MOD || trigger == Trigger::DAM_REDUCE);
+  assert(has_arg(trigger));
   for (Item &item : items) {
     if (item.trigger == trigger)
       arg = std::get<Item::modify_func>(item.effect)(arg);

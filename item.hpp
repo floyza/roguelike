@@ -7,6 +7,8 @@
 
 enum class Trigger { DAM_MOD, DAM_REDUCE, ON_HIT, ON_KILL, ON_MOVE };
 
+bool has_arg(Trigger trigger);
+
 class Item {
 public:
   typedef std::function<int(int)> modify_func;
