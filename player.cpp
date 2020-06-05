@@ -14,7 +14,8 @@ Player::Player(char icon, const TCODColor &color, int max_hp, int attack, int x,
 Player::~Player() = default;
 
 void Player::do_move() {
-  while (!TCODConsole::isWindowClosed()) {
+  bool moving = true;
+  while (!TCODConsole::isWindowClosed() && moving) {
     TCOD_key_t key;
     TCODSystem::waitForEvent(TCOD_EVENT_KEY_PRESS,&key,nullptr,true);
     int new_x=x;
@@ -43,7 +44,7 @@ void Player::do_move() {
       }
       break;
     case TCODK_KP5:
-      return;
+      moving = false;
       break;
     case TCODK_KP6:
       if (g->map->is_walkable(x+1, y)) {
@@ -110,8 +111,9 @@ void Player::do_move() {
       if (!attacked) {
 	x = new_x;
 	y = new_y;
+	call_triggers_generic(Trigger::ON_MOVE);
       }
-      break;
+      moving = false;
     }
   }
 }
@@ -148,7 +150,7 @@ void Player::aquire(const std::string &id) {
 }
 
 void Player::call_triggers_generic(const Trigger &trigger) {
-  assert(trigger == Trigger::ON_HIT || trigger == Trigger::ON_KILL);
+  assert(trigger == Trigger::ON_HIT || trigger == Trigger::ON_KILL || trigger == Trigger::ON_MOVE);
   for (Item &item : items) {
     if (item.trigger == trigger)
       std::get<Item::generic_func>(item.generic_effect)();

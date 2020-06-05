@@ -10,7 +10,7 @@ Item::Item(const std::string &id)
   switch (trigger) {
   case Trigger::DAM_MOD: case Trigger::DAM_REDUCE:
     modify = [&g, &item_base](int source) ->int { return (*g->lua_state)[item_base.name](source); };
-  case Trigger::ON_HIT: case Trigger::ON_KILL:
+  case Trigger::ON_HIT: case Trigger::ON_KILL: case Trigger::ON_MOVE:
     generic_effect = [&g, &item_base] { (*g->lua_state)[item_base.name](); };
   }
 }

@@ -5,7 +5,7 @@
 #include <string>
 #include <variant>
 
-enum class Trigger { DAM_MOD, DAM_REDUCE, ON_HIT, ON_KILL };
+enum class Trigger { DAM_MOD, DAM_REDUCE, ON_HIT, ON_KILL, ON_MOVE };
 
 class Item {
 public:
@@ -14,7 +14,7 @@ public:
   Item(const std::string &id);
   std::variant<modify_func, generic_func>
     modify, // DAM_MOD, DAM_REDUCE
-    generic_effect; // ON_HIT, ON_KILL
+    generic_effect; // ON_HIT, ON_KILL, ON_MOVE
   Trigger trigger;
   std::string name;
   ~Item();
