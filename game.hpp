@@ -37,6 +37,8 @@ public:
   void generate_map();
 
   void init_lua();
+
+  const Lua_item &get_item(const std::string &id) const;
 };
 
 extern std::unique_ptr<Game> g;

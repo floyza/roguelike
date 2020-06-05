@@ -40,3 +40,10 @@ bool Game::do_turn() {
   }
   return false;
 }
+
+const Lua_item &Game::get_item(const std::string &id) const {
+  auto iter = items.find(id);
+  if (iter == items.end())
+    throw std::runtime_error{"Game::get_item: invalid item id"};
+  return iter->second;
+}

@@ -4,8 +4,8 @@
 
 Lua_item::Lua_item() = default;
 
-Lua_item::Lua_item(Trigger type, std::string name)
-  : type(type), name(name)
+Lua_item::Lua_item(Trigger type, std::string func, std::string name)
+  : type(type), func(func), name(name)
 {
 }
 
@@ -21,8 +21,9 @@ void Game::init_lua() {
 				{"ON_KILL", Trigger::ON_KILL}
 			       });
   lua_state->new_usertype<Lua_item>("Item",
-				    sol::constructors<Lua_item(),Lua_item(Trigger, std::string)>(),
+				    sol::constructors<Lua_item(),Lua_item(Trigger, std::string, std::string)>(),
 				    "type", &Lua_item::type,
+				    "func", &Lua_item::func,
 				    "name", &Lua_item::name);
 
   lua_state->script_file("items.lua");

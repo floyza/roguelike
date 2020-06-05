@@ -1,5 +1,5 @@
 TARGET = roguelike
-OBJS = main.o map.o tcod_util.o game.o player.o creature.o gui.o monster.o lua.o
+OBJS = main.o map.o tcod_util.o game.o player.o creature.o gui.o monster.o lua.o item.o
 CXXFLAGS += -std=c++17 -Wall -I/usr/include/libtcod -ltcod -ltcodxx -llua
 
 ifndef RELEASE
@@ -43,6 +43,9 @@ lua.o: lua.cpp lua.hpp game.hpp item.hpp
 	g++ $(CXXFLAGS) -c -o $@ $<
 
 gui.o: gui.cpp gui.hpp tcod_util.hpp
+	g++ $(CXXFLAGS) -c -o $@ $<
+
+item.o: item.cpp item.hpp lua.hpp game.hpp
 	g++ $(CXXFLAGS) -c -o $@ $<
 
 .PHONY: clean

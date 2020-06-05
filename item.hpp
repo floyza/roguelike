@@ -2,6 +2,7 @@
 #define DEFINED_ITEM_HPP
 
 #include <functional>
+#include <string>
 
 enum class Trigger { DAM_MOD, DAM_REDUCE, ON_HIT, ON_KILL };
 
@@ -13,6 +14,7 @@ public:
     std::function<void(void)> generic_effect; // ON_HIT, ON_KILL
   };
   Trigger trigger;
+  std::string name;
 };
 
 #endif //DEFINED_ITEM_HPP
