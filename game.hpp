@@ -6,6 +6,7 @@
 #include <map>
 #include <vector>
 #include "lua.hpp"
+#include "mon_id.hpp"
 
 class Map;
 class Display;
@@ -21,7 +22,7 @@ class Game {
 
   std::unique_ptr<Gui> log_header;
   std::map<std::string, Lua_item> items;
-
+  std::map<std::string, mon_id> monsters;
 public:
   Game();
   ~Game();
@@ -39,6 +40,7 @@ public:
   void init_lua();
 
   const Lua_item &get_item(const std::string &id) const;
+  const mon_id &get_mon(const std::string &id) const;
 };
 
 extern std::unique_ptr<Game> g;

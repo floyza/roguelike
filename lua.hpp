@@ -9,7 +9,7 @@ enum class Trigger;
 
 struct Lua_item {
   Lua_item();
-  Lua_item(Trigger type, std::string func, std::string name);
+  Lua_item(Trigger type, const std::string &func, const std::string &name);
   Trigger type;
   std::string func;
   std::string name;
