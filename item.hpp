@@ -12,9 +12,7 @@ public:
   typedef std::function<int(int)> modify_func;
   typedef std::function<void(void)> generic_func;
   Item(const std::string &id);
-  std::variant<modify_func, generic_func>
-    modify, // DAM_MOD, DAM_REDUCE
-    generic_effect; // ON_HIT, ON_KILL, ON_MOVE
+  std::variant<modify_func, generic_func> effect;
   Trigger trigger;
   std::string name;
   ~Item();
