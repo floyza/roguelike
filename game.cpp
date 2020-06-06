@@ -42,15 +42,15 @@ bool Game::do_turn() {
 }
 
 const Lua_item &Game::get_item(const std::string &id) const {
-  auto iter = items.find(id);
-  if (iter == items.end())
+  auto iter = item_generators.find(id);
+  if (iter == item_generators.end())
     throw std::runtime_error{"Game::get_item: invalid item id"};
   return iter->second;
 }
 
 const mon_id &Game::get_mon(const std::string &id) const {
-  auto iter = monsters.find(id);
-  if (iter == monsters.end())
+  auto iter = monster_generators.find(id);
+  if (iter == monster_generators.end())
     throw std::runtime_error{"Game::get_mon: invalid item id"};
   return iter->second;
 }

@@ -3,6 +3,7 @@
 #include "game.hpp"
 #include "player.hpp"
 #include "monster.hpp"
+#include "item.hpp"
 #include <cassert>
 #include <iostream>
 #include <vector>
@@ -299,11 +300,24 @@ void Map::draw()
       }
     }
   }
+  for (const Item &item : items) {
+    if (in_fov(item.x, item.y)) {
+      item.draw();
+    }
+  }
   for (const Monster &mon : monsters) {
     if (in_fov(mon.x, mon.y)) {
       mon.draw();
     }
   }
+}
+
+void Map::generate_monster(int x, int y) {
+  monsters.emplace_back("goblin", *this, x, y);
+}
+
+void Map::generate_item(int x, int y) {
+  items.emplace_back("basic_armor", x, y);
 }
 
 void Map::compute_fov(int x, int y, int range) {

@@ -6,6 +6,7 @@
 
 class TCODMap;
 class Monster;
+class Item;
 enum class Dir;
 
 struct Tile {
@@ -23,12 +24,16 @@ class Map {
   int in_soft_limit(int x, int y, int limit);
   bool can_sober(int x, int y, Dir dir, int hall_len, int limit, int density_allowed);
   bool in_level(int x, int y);
+  void generate_monster(int x, int y);
+  void generate_item(int x, int y);
+
   void compute_fov(int x, int y, int range);
 public:
   Map(int w, int h, int depth);
   ~Map();
   TCODMap *get_map();
   std::vector<Monster> monsters;
+  std::vector<Item> items;
   int get_width();
   int get_height();
   int is_walkable(int x, int y);

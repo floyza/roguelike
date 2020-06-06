@@ -21,8 +21,8 @@ class Game {
   static const char *font_file;
 
   std::unique_ptr<Gui> log_header;
-  std::map<std::string, Lua_item> items;
-  std::map<std::string, mon_id> monsters;
+  std::map<std::string, Lua_item> item_generators;
+  std::map<std::string, mon_id> monster_generators;
 public:
   Game();
   ~Game();

@@ -3,6 +3,12 @@
 #include "game.hpp"
 
 Item::Item(const std::string &id)
+  : Item(id, 0, 0)
+{
+}
+
+Item::Item(const std::string &id, int x, int y)
+  : x(x), y(y)
 {
   const Lua_item &item_base = g->get_item(id);
   trigger = item_base.type;
@@ -15,6 +21,11 @@ Item::Item(const std::string &id)
 }
 
 Item::~Item() = default;
+
+void Item::draw() const {
+  TCODConsole::root->setCharForeground(x,y,TCODColor(0xff,0xff,0xff));
+  TCODConsole::root->setChar(x,y,'*');
+}
 
 bool has_arg(Trigger trigger) {
   if (trigger == Trigger::ON_HIT || trigger == Trigger::ON_KILL || trigger == Trigger::ON_MOVE) {

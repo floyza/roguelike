@@ -47,10 +47,10 @@ void Game::init_lua() {
 
   sol::table item_table = (*lua_state)["item_table"];
   for (const auto &[key, obj] : item_table) {
-    items[key.as<std::string>()] = obj.as<Lua_item>();
+    item_generators[key.as<std::string>()] = obj.as<Lua_item>();
   }
   sol::table mon_table = (*lua_state)["monster_table"];
   for (const auto &[key, obj] : mon_table) {
-    monsters[key.as<std::string>()] = obj.as<mon_id>();
+    monster_generators[key.as<std::string>()] = obj.as<mon_id>();
   }
 }

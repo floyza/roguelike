@@ -7,6 +7,11 @@
 #include "item.hpp"
 #include <algorithm>
 
+Monster::Monster(const std::string &id, Map &parent, int x, int y)
+  : Monster(g->get_mon(id), parent, x, y)
+{
+}
+
 Monster::Monster(const mon_id &id, Map &parent, int x, int y)
   : Creature(id.icon, id.color, id.max_hp, id.attack, x, y), name_(id.name), parent(&parent)
 {

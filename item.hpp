@@ -14,9 +14,12 @@ public:
   typedef std::function<int(int)> modify_func;
   typedef std::function<void(void)> generic_func;
   Item(const std::string &id);
+  Item(const std::string &id, int x, int y);
   std::variant<modify_func, generic_func> effect;
   Trigger trigger;
   std::string name;
+  void draw() const;
+  int x,y;
   ~Item();
 };
 

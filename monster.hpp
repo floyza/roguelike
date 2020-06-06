@@ -14,8 +14,9 @@ class Monster : public Creature {
   void take_damage(int amount, Monster &source);
   bool dest_x=-1, dest_y=-1;
   std::pair<int, int> step_to_dest();
-public:
   Monster(const mon_id &id, Map &parent, int x=0, int y=0);
+public:
+  Monster(const std::string &id, Map &parent, int x=0, int y=0);
   ~Monster();
   const std::string &name() { return name_; }
 

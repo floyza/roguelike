@@ -5,8 +5,7 @@ CXXFLAGS += -std=c++17 -Wall -I/usr/include/libtcod -ltcod -ltcodxx -llua
 ifndef RELEASE
 CXXFLAGS += -ggdb -O0
 else
-NDEBUG=1
-CXXFLAGS += -O2
+CXXFLAGS += -O2 -DNDEBUG
 endif
 
 ifdef PROF
@@ -22,7 +21,7 @@ $(TARGET): $(OBJS)
 main.o: main.cpp game.hpp mon_id.hpp lua.hpp map.hpp player.hpp creature.hpp tcod_util.hpp gui.hpp
 	g++ $(CXXFLAGS) -c -o $@ $<
 
-map.o: map.cpp map.hpp tcod_util.hpp creature.hpp player.hpp monster.hpp game.hpp mon_id.hpp lua.hpp
+map.o: map.cpp map.hpp tcod_util.hpp creature.hpp player.hpp monster.hpp game.hpp mon_id.hpp lua.hpp item.hpp
 	g++ $(CXXFLAGS) -c -o $@ $<
 
 tcod.o: tcod_util.cpp tcod_util.hpp

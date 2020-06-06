@@ -146,7 +146,7 @@ void Player::die() {
 };
 
 void Player::aquire(const std::string &id) {
-  items.push_back(Item{id});
+  items.emplace_back(id);
 }
 
 void Player::call_triggers(const Trigger &trigger) {
