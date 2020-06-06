@@ -119,9 +119,13 @@ void Player::do_move() {
 }
 
 void Player::do_attack(Creature &target) {
+  do_attack_sans_triggers(target);
+  call_triggers(Trigger::ON_HIT);
+}
+
+void Player::do_attack_sans_triggers(Creature &target) {
   int damage = call_triggers(Trigger::DAM_MOD, attack);
   target.take_damage(damage, *this);
-  call_triggers(Trigger::ON_HIT);
 }
 
 void Player::take_damage(int amount, Player &source) {
@@ -138,6 +142,15 @@ void Player::take_damage(int amount, Monster &source) {
   hp -= amount;
   if (hp<=0)
     die();
+}
+
+void Player::take_damage(int amount, const std::string &msg) {
+  amount = call_triggers(Trigger::DAM_REDUCE, amount);
+  g->msg_log->send_msg({msg});
+  g->msg_log->send_nl();
+  hp -= amount;
+  if (hp<=0)
+    die();  
 }
 
 void Player::die() {

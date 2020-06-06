@@ -20,7 +20,10 @@ public:
 
   void do_move() override;
   void do_attack(Creature &target) override;
+  void do_attack_sans_triggers(Creature &target); // still calls DAM_MOD triggers
   void die() override;
+
+  void take_damage(int amount, const std::string &msg);
 
   void aquire(const std::string &id);
   void call_triggers(const Trigger &trigger);

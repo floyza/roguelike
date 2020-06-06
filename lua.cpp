@@ -1,5 +1,6 @@
 #include "lua.hpp"
 #include "game.hpp"
+#include "player.hpp"
 #include "item.hpp"
 #include "mon_id.hpp"
 
@@ -41,6 +42,15 @@ void Game::init_lua() {
 				  "max_hp", &mon_id::max_hp,
 				  "attack", &mon_id::attack,
 				  "rarity", &mon_id::rarity);
+  lua_state->new_usertype<Player>("Player",
+				  sol::constructors<Player(char, const TCODColor &, int, int, int, int)>(),
+				  "do_attack", &Player::do_attack,
+				  "do_attack_sans_triggers", &Player::do_attack_sans_triggers,
+				  // make sure we get the correct overloaded take_damage function
+				  "take_damage", static_cast<void(Player::*)(int, const std::string &)>(&Player::take_damage),
+				  "die", &Player::die);
+
+  lua_state->set("you", std::ref(*g->you));
 
   lua_state->script_file("items.lua");
   lua_state->script_file("monsters.lua");
