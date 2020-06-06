@@ -7,6 +7,7 @@
 extern std::unique_ptr<TCODRandom> tcod_rand;
 int rand_int(int min, int max);
 int rand_int_log(int min, int max);
+bool percent_chance(double chance);
 int wall_merge(int wall1, int wall2);
 
 #endif //DEFINED_TCOD_HPP

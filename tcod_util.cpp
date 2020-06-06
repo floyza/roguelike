@@ -1,6 +1,9 @@
 #include "tcod_util.hpp"
 #include <array>
 #include <algorithm>
+#include <cmath>
+#include <iostream>
+#include <numeric>
 
 std::unique_ptr<TCODRandom> tcod_rand{};
 
@@ -15,6 +18,17 @@ int rand_int_log(int min, int max) {
   while (result < 0)
     result = tcod_rand->getInt(min-max, max-min);
   return min + result;
+}
+
+bool percent_chance(double chance) {
+  chance/=100;
+  int integral = std::floor(chance);
+  double decimal = chance-integral;
+  constexpr int prec = 100000000;
+  int gcd = std::gcd(std::lround(decimal*prec), prec);
+  int numerator = std::lround(decimal * prec) / gcd;
+  int denominator = prec / gcd;
+  return rand_int(1, denominator) <= numerator;
 }
 
 struct Wall_tile {

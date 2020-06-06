@@ -105,7 +105,8 @@ void Map::gen_rand_walk() {
   constexpr int sober_chance = 30;
   constexpr int sober_density_allowed = 35;
   constexpr double soft_edge_limit_percent = 20;
-  constexpr double monster_chance = 8;
+  constexpr double monster_chance = 2;
+  constexpr double item_chance = .5;
   constexpr int hall_min = 5;
   constexpr int hall_max = 10;
   constexpr int cave_min = 15;
@@ -147,15 +148,17 @@ void Map::gen_rand_walk() {
 
     if (steps-- == 0) {
       int hall_len = rand_int(hall_min, hall_max);
-      if (rand_int(1,100) <= sober_chance &&
+      if (percent_chance(sober_chance) &&
 	  can_sober(loc.x, loc.y, dir, hall_len, soft_edge_limit, sober_density_allowed) &&
 	  !sober) {
 	sober = true;
 	steps = hall_len;
       } else {
-	if (rand_int(1,100) <= monster_chance) {
-	  // generate monster
-	  monsters.emplace_back(g->get_mon("goblin"), *this, loc.x, loc.y);
+	if (percent_chance(monster_chance)) {
+	  generate_monster(loc.x, loc.y);
+	}
+	if (percent_chance(item_chance)) {
+	  generate_item(loc.x, loc.y);
 	}
 	sober = false;
 	steps = rand_int(cave_min, cave_max);
