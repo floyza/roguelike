@@ -16,6 +16,8 @@ protected:
 public:
   Creature(char icon, const TCODColor &color, int max_hp, int attack, int x=0, int y=0);
   void draw() const;
+  int get_hp() const;
+  int get_attack() const;
   virtual void do_move()=0;
   virtual void do_attack(Creature &target)=0;
   virtual void take_damage(int amount, Player &source)=0;

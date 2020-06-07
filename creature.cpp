@@ -11,4 +11,12 @@ void Creature::draw() const {
   TCODConsole::root->setChar(x,y,icon);
 }
 
+int Creature::get_hp() const {
+  return hp;
+}
+
+int Creature::get_attack() const {
+  return attack;
+}
+
 Creature::~Creature() { }

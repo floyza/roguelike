@@ -26,8 +26,10 @@ public:
   void take_damage(int amount, const std::string &msg);
 
   void aquire(const std::string &id);
-  void call_triggers(const Trigger &trigger);
-  int call_triggers(const Trigger &trigger, int arg);
+  void call_triggers(const Trigger &trigger); // generic_func
+  void call_triggers(const Trigger &trigger, Creature &target); // target_generic_func
+  int call_triggers(const Trigger &trigger, int arg); // modify_func
+  int call_triggers(const Trigger &trigger, int arg, Creature &target); // target_modify_func
 
   bool is_dead() const { return dead; }
 

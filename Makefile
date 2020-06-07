@@ -45,7 +45,7 @@ lua.o: lua.cpp lua.hpp game.hpp mon_id.hpp item.hpp player.hpp
 gui.o: gui.cpp gui.hpp tcod_util.hpp
 	g++ $(CXXFLAGS) -c -o $@ $<
 
-item.o: item.cpp item.hpp lua.hpp game.hpp mon_id.hpp
+item.o: item.cpp item.hpp lua.hpp game.hpp mon_id.hpp creature.hpp
 	g++ $(CXXFLAGS) -c -o $@ $<
 
 .PHONY: clean

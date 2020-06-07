@@ -120,23 +120,23 @@ void Player::do_move() {
 
 void Player::do_attack(Creature &target) {
   do_attack_sans_triggers(target);
-  call_triggers(Trigger::ON_HIT);
+  call_triggers(Trigger::ON_HIT, target);
 }
 
 void Player::do_attack_sans_triggers(Creature &target) {
-  int damage = call_triggers(Trigger::DAM_MOD, attack);
+  int damage = call_triggers(Trigger::DAM_MOD, attack, target);
   target.take_damage(damage, *this);
 }
 
 void Player::take_damage(int amount, Player &source) {
-  amount = call_triggers(Trigger::DAM_REDUCE, amount);
+  amount = call_triggers(Trigger::DAM_REDUCE, amount, source);
   g->msg_log->send_msg({"You hit yourself for " + std::to_string(amount) + " damage!"});
   g->msg_log->send_nl();
   hp -= amount;
 }
 
 void Player::take_damage(int amount, Monster &source) {
-  amount = call_triggers(Trigger::DAM_REDUCE, amount);
+  amount = call_triggers(Trigger::DAM_REDUCE, amount, source);
   g->msg_log->send_msg({"The " + source.name() + " attacks you for " + std::to_string(amount) + " damage!"});
   g->msg_log->send_nl();
   hp -= amount;
@@ -145,7 +145,7 @@ void Player::take_damage(int amount, Monster &source) {
 }
 
 void Player::take_damage(int amount, const std::string &msg) {
-  amount = call_triggers(Trigger::DAM_REDUCE, amount);
+  amount = call_triggers(Trigger::DAM_REDUCE, amount, *this /*quick fix, the source is not always ourself, FIX SOON*/);
   g->msg_log->send_msg({msg});
   g->msg_log->send_nl();
   hp -= amount;
@@ -175,6 +175,23 @@ int Player::call_triggers(const Trigger &trigger, int arg) {
   for (Item &item : items) {
     if (item.trigger == trigger)
       arg = std::get<Item::modify_func>(item.effect)(arg);
+  }
+  return arg;
+}
+
+void Player::call_triggers(const Trigger &trigger, Creature &target) {
+  assert(is_trigger_type<Item::target_generic_func>(trigger));
+  for (Item &item : items) {
+    if (item.trigger == trigger)
+      std::get<Item::target_generic_func>(item.effect)(target);
+  }
+}
+
+int Player::call_triggers(const Trigger &trigger, int arg, Creature &target) {
+  assert(is_trigger_type<Item::target_modify_func>(trigger));
+  for (Item &item : items) {
+    if (item.trigger == trigger)
+      arg = std::get<Item::target_modify_func>(item.effect)(arg, target);
   }
   return arg;
 }

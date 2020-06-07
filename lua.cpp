@@ -42,8 +42,16 @@ void Game::init_lua() {
 				  "max_hp", &mon_id::max_hp,
 				  "attack", &mon_id::attack,
 				  "rarity", &mon_id::rarity);
+  lua_state->new_usertype<Creature>("Creature",
+				    sol::no_constructor,
+				    "hp", sol::property(&Creature::get_hp),
+				    "attack", sol::property(&Creature::get_attack),
+				    "do_attack", &Creature::do_attack,
+				    "die", &Creature::die);
   lua_state->new_usertype<Player>("Player",
 				  sol::constructors<Player(char, const TCODColor &, int, int, int, int)>(),
+				  "hp", sol::property(&Creature::get_hp),
+				  "attack", sol::property(&Creature::get_attack),
 				  "do_attack", &Player::do_attack,
 				  "do_attack_sans_triggers", &Player::do_attack_sans_triggers,
 				  // make sure we get the correct overloaded take_damage function
