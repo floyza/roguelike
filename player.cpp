@@ -163,7 +163,7 @@ void Player::aquire(const std::string &id) {
 }
 
 void Player::call_triggers(const Trigger &trigger) {
-  assert(!has_arg(trigger));
+  assert(is_trigger_type<Item::generic_func>(trigger));
   for (Item &item : items) {
     if (item.trigger == trigger)
       std::get<Item::generic_func>(item.effect)();
@@ -171,7 +171,7 @@ void Player::call_triggers(const Trigger &trigger) {
 }
 
 int Player::call_triggers(const Trigger &trigger, int arg) {
-  assert(has_arg(trigger));
+  assert(is_trigger_type<Item::modify_func>(trigger));
   for (Item &item : items) {
     if (item.trigger == trigger)
       arg = std::get<Item::modify_func>(item.effect)(arg);

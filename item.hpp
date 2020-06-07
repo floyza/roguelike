@@ -7,8 +7,6 @@
 
 enum class Trigger { DAM_MOD, DAM_REDUCE, ON_HIT, ON_KILL, ON_MOVE };
 
-bool has_arg(Trigger trigger);
-
 class Item {
 public:
   typedef std::function<int(int)> modify_func;
@@ -22,5 +20,16 @@ public:
   int x,y;
   ~Item();
 };
+
+template<typename T>
+constexpr bool is_trigger_type(Trigger trigger) {
+  switch (trigger) {
+  case Trigger::ON_HIT: case Trigger::ON_KILL: case Trigger::ON_MOVE:
+    return std::is_same<T,Item::generic_func>::value;
+  case Trigger::DAM_MOD: case Trigger::DAM_REDUCE:
+    return std::is_same<T,Item::modify_func>::value;
+  }
+  throw std::runtime_error{"is_type<T>(Trigger): invalid trigger"};
+}
 
 #endif //DEFINED_ITEM_HPP
