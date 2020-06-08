@@ -23,35 +23,37 @@ std::pair<int, int> Monster::step_to_dest() {
   // first try to walk around monsters
   // if this doesn't work, walk as if the
   // other monsters dont exist
-  TCODMap map(parent->get_map()->getWidth(), parent->get_map()->getHeight());
-  map.copy(parent->get_map());
-  for (const Monster &monster : parent->monsters) {
-    int mon_x = monster.x, mon_y = monster.y;
-    map.setProperties(mon_x, mon_y, map.isWalkable(mon_x, mon_y), false);
-  }
-  TCODPath path(&map);
-  path.compute(x, y, game->you->x, game->you->y);
-
   std::pair<int,int> step(x,y);
-  if (!path.isEmpty()) {
-    path.get(0, &step.first, &step.second);
-  } else {
-    // still try to walk towards the player
-    TCODPath path_closer(parent->get_map());
-    path_closer.compute(x, y, game->you->x, game->you->y);
-    int pstep_x, pstep_y;
-    if (!path_closer.isEmpty()) {
-      path_closer.get(0, &pstep_x, &pstep_y);
-      bool can_step = true;
-      for (const Monster &monster : parent->monsters) {
-	if (monster.x == pstep_x && monster.y == pstep_y) {
-	  can_step = false;
-	  break;
+  if (dest_x != -1 && dest_y != -1) {
+    TCODMap map(parent->get_map()->getWidth(), parent->get_map()->getHeight());
+    map.copy(parent->get_map());
+    for (const Monster &monster : parent->monsters) {
+      int mon_x = monster.x, mon_y = monster.y;
+      map.setProperties(mon_x, mon_y, map.isWalkable(mon_x, mon_y), false);
+    }
+    TCODPath path(&map);
+    path.compute(x, y, dest_x, dest_y);
+
+    if (!path.isEmpty()) {
+      path.get(0, &step.first, &step.second);
+    } else {
+      // still try to walk towards the player
+      TCODPath path_closer(parent->get_map());
+      path_closer.compute(x, y, dest_x, dest_y);
+      int pstep_x, pstep_y;
+      if (!path_closer.isEmpty()) {
+	path_closer.get(0, &pstep_x, &pstep_y);
+	bool can_step = true;
+	for (const Monster &monster : parent->monsters) {
+	  if (monster.x == pstep_x && monster.y == pstep_y) {
+	    can_step = false;
+	    break;
+	  }
 	}
-      }
-      if (can_step) {
-	step.first = pstep_x;
-	step.second = pstep_y;
+	if (can_step) {
+	  step.first = pstep_x;
+	  step.second = pstep_y;
+	}
       }
     }
   }
