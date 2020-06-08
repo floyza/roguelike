@@ -15,7 +15,7 @@ last_attack=-math.huge
 function stealth_attack(damage, target)
   -- DAM_MOD
   local stealth_gap=3
-  if ( you.turn_count >= last_attack+stealth_gap ) then
+  if ( game.you.turn_count >= last_attack+stealth_gap ) then
     last_attack = you.turn_count
     damage = damage * 1.5
   end
@@ -24,12 +24,12 @@ end
 
 function overflow_heal(target)
   -- ON_KILL
-  you.hp = you.hp - target.hp
+  game.you.hp = you.hp - target.hp
 end
 
 function thorns(target)
   -- ON_HIT
-  you:do_attack_sans_triggers(target)
+  game.you:do_attack_sans_triggers(target)
 end
 
 function test_effect()

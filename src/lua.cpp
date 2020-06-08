@@ -3,6 +3,8 @@
 #include "player.hpp"
 #include "item.hpp"
 #include "gui.hpp"
+#include "map.hpp"
+#include "monster.hpp"
 #include "mon_id.hpp"
 
 Lua_item::Lua_item() = default;
@@ -37,7 +39,7 @@ void Game::init_lua() {
 				     "r", &TCODColor::r,
 				     "g", &TCODColor::g,
 				     "b", &TCODColor::b);
-  lua_state->new_usertype<mon_id>("Monster",
+  lua_state->new_usertype<mon_id>("mon_id",
 				  sol::constructors<mon_id(), mon_id(char, const TCODColor &, const std::string &, int, int, int)>(),
 				  "icon", &mon_id::icon,
 				  "color", &mon_id::color,
@@ -50,7 +52,9 @@ void Game::init_lua() {
 				    "hp", sol::property(&Creature::get_hp),
 				    "attack", sol::property(&Creature::get_attack),
 				    "do_attack", &Creature::do_attack,
-				    "die", &Creature::die);
+				    "die", &Creature::die,
+				    "x", &Creature::x,
+				    "y", &Creature::y);
   lua_state->new_usertype<Player>("Player",
 				  sol::constructors<Player(char, const TCODColor &, int, int, int, int)>(),
 				  "hp", sol::property(&Creature::get_hp),
@@ -60,13 +64,36 @@ void Game::init_lua() {
 				  // make sure we get the correct overloaded take_damage function
 				  "take_damage", static_cast<void(Player::*)(int)>(&Player::take_damage),
 				  "turn_count", sol::property(&Player::turn_count),
-				  "die", &Player::die);
+				  "die", &Player::die,
+				  "x", &Player::x,
+				  "y", &Player::y);
+  lua_state->new_usertype<Monster>("Monster",
+				   sol::constructors<Monster(const std::string &, Map &, int, int)>(),
+				   "hp", sol::property(&Creature::get_hp),
+				   "attack", sol::property(&Creature::get_attack),
+				   "name", sol::property(&Monster::name),
+				   "do_attack", &Monster::do_attack,
+				   "die", &Monster::die,
+				   "x", &Monster::x,
+				   "y", &Monster::y);
+  lua_state->new_usertype<Map>("Map",
+			       sol::constructors<Map(int, int, int)>(),
+			       "monsters", &Map::monsters,
+			       "items", &Map::items,
+			       "width", sol::property(&Map::get_width),
+			       "height", sol::property(&Map::get_height),
+			       "is_walkable", &Map::is_walkable,
+			       "set_walkable", &Map::set_walkable,
+			       "in_fov", &Map::in_fov);
+  lua_state->new_usertype<Game>("Game",
+				sol::no_constructor,
+				"you", sol::property([](Game &self){return std::ref(self.you);}),
+				"send_msg", &Game::send_msg,
+				"map", &Game::map);
   lua_state->new_usertype<Message>("Message",
 				   sol::constructors<Message(), Message(const std::string &), Message(const std::string &, const TCODColor &), Message(const std::string &, const TCODColor &, bool)>());
 
-  lua_state->set("send_msg", [](const Message &msg){ game->send_msg(msg); });
-
-  lua_state->set("you", std::ref(*game->you));
+  lua_state->set("game", std::ref(*game));
 
   lua_state->script_file("data/lua/items.lua");
   lua_state->script_file("data/lua/monsters.lua");

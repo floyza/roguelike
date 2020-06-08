@@ -27,6 +27,8 @@ class Game {
   std::map<std::string, mon_id> monster_generators;
 public:
   Game();
+  Game(const Game &) = delete;
+  Game& operator=(const Game &) = delete;
   ~Game();
   std::unique_ptr<Player> you;
   std::unique_ptr<sol::state> lua_state;
