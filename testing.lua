@@ -1,4 +1,4 @@
-item_table_addition={
+local item_table_addition={
   ["on_move"] = Item.new(Trigger.ON_MOVE, "on_move", "on_move", 0),
   ["on_kill"] = Item.new(Trigger.ON_KILL, "on_kill", "on_kill", 0),
   ["on_hit"] = Item.new(Trigger.ON_HIT, "on_hit", "on_hit", 0),

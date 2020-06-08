@@ -117,6 +117,7 @@ void Player::do_move() {
     }
   }
   call_triggers(Trigger::ON_TURN);
+  ++total_turns;
 }
 
 void Player::do_attack(Creature &target) {
@@ -167,6 +168,10 @@ void Player::die() {
 
 void Player::aquire(const std::string &id) {
   items.emplace_back(id);
+}
+
+int Player::turn_count() const {
+  return total_turns;
 }
 
 void Player::call_triggers(const Trigger &trigger) {

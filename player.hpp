@@ -14,6 +14,7 @@ class Player : public Creature {
   void take_damage(int amount, Monster &source);
   bool dead=false;
   std::vector<Item> items;
+  int total_turns=0;
 public:
   Player(char icon, const TCODColor &color, int max_hp, int attack, int x=0, int y=0);
   ~Player();
@@ -30,6 +31,8 @@ public:
   void call_triggers(const Trigger &trigger, Creature &target); // target_generic_func
   int call_triggers(const Trigger &trigger, int arg); // modify_func
   int call_triggers(const Trigger &trigger, int arg, Creature &target); // target_modify_func
+
+  int turn_count() const;
 
   bool is_dead() const { return dead; }
 

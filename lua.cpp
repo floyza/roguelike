@@ -13,7 +13,7 @@ Lua_item::Lua_item(Trigger type, const std::string &func, const std::string &nam
 
 void Game::init_lua() {
   lua_state = std::make_unique<sol::state>();
-  lua_state->open_libraries(sol::lib::base);
+  lua_state->open_libraries(sol::lib::base, sol::lib::math);
 
   lua_state->new_enum<Trigger>("Trigger",
 			       {
@@ -58,6 +58,7 @@ void Game::init_lua() {
 				  "do_attack_sans_triggers", &Player::do_attack_sans_triggers,
 				  // make sure we get the correct overloaded take_damage function
 				  "take_damage", static_cast<void(Player::*)(int, const std::string &)>(&Player::take_damage),
+				  "turn_count", sol::property(&Player::turn_count),
 				  "die", &Player::die);
 
   lua_state->set("you", std::ref(*g->you));
