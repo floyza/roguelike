@@ -96,7 +96,7 @@ void Monster::take_damage(int amount, Monster &source) {
 }
 
 void Monster::die() {
-  g->you->call_triggers(Trigger::ON_HIT, *this);
+  g->you->call_triggers(Trigger::ON_KILL, *this);
   g->msg_log->send_msg({"The " + name() + " dies!"});
   g->msg_log->send_nl();
   auto iter = std::remove_if(parent->monsters.begin(), parent->monsters.end(), [this](const Monster &mon){return this==&mon;});

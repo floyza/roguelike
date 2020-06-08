@@ -21,7 +21,9 @@ void Game::init_lua() {
 				{"DAM_REDUCE", Trigger::DAM_REDUCE},
 				{"ON_HIT", Trigger::ON_HIT},
 				{"ON_KILL", Trigger::ON_KILL},
-				{"ON_MOVE", Trigger::ON_MOVE}
+				{"ON_MOVE", Trigger::ON_MOVE},
+				{"ON_TURN", Trigger::ON_TURN},
+				{"ON_DAM", Trigger::ON_DAM}
 			       });
   lua_state->new_usertype<Lua_item>("Item",
 				    sol::constructors<Lua_item(),Lua_item(Trigger, const std::string &, const std::string &, int)>(),

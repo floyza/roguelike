@@ -116,6 +116,7 @@ void Player::do_move() {
       moving = false;
     }
   }
+  call_triggers(Trigger::ON_TURN);
 }
 
 void Player::do_attack(Creature &target) {
@@ -133,6 +134,9 @@ void Player::take_damage(int amount, Player &source) {
   g->msg_log->send_msg({"You hit yourself for " + std::to_string(amount) + " damage!"});
   g->msg_log->send_nl();
   hp -= amount;
+  if (hp<=0)
+    die();
+  call_triggers(Trigger::ON_DAM, source);
 }
 
 void Player::take_damage(int amount, Monster &source) {
@@ -142,15 +146,18 @@ void Player::take_damage(int amount, Monster &source) {
   hp -= amount;
   if (hp<=0)
     die();
+  call_triggers(Trigger::ON_DAM, source);
 }
 
 void Player::take_damage(int amount, const std::string &msg) {
-  amount = call_triggers(Trigger::DAM_REDUCE, amount, *this /*quick fix, the source is not always ourself, FIX SOON*/);
+  Monster dummy = Monster{"dummy", *g->map};
+  amount = call_triggers(Trigger::DAM_REDUCE, amount, dummy);/*quick fix, TODO: probably have an actual source*/
   g->msg_log->send_msg({msg});
   g->msg_log->send_nl();
   hp -= amount;
   if (hp<=0)
     die();  
+  call_triggers(Trigger::ON_DAM, dummy);
 }
 
 void Player::die() {

@@ -7,14 +7,14 @@
 
 class Creature;
 
-enum class Trigger { DAM_MOD, DAM_REDUCE, ON_HIT, ON_KILL, ON_MOVE };
+enum class Trigger { DAM_MOD, DAM_REDUCE, ON_HIT, ON_KILL, ON_MOVE, ON_TURN, ON_DAM };
 
 class Item {
 public:
-  typedef std::function<int(int)> modify_func;
   typedef std::function<void(void)> generic_func;
-  typedef std::function<int(int,Creature &)> target_modify_func;
   typedef std::function<void(Creature &)> target_generic_func;
+  typedef std::function<int(int)> modify_func;
+  typedef std::function<int(int,Creature &)> target_modify_func;
   Item(const std::string &id);
   Item(const std::string &id, int x, int y);
   std::variant<modify_func, generic_func, target_modify_func, target_generic_func> effect;
@@ -28,9 +28,9 @@ public:
 template<typename T>
 constexpr bool is_trigger_type(Trigger trigger) {
   switch (trigger) {
-  case Trigger::ON_MOVE:
+  case Trigger::ON_MOVE: case Trigger::ON_TURN:
     return std::is_same<T,Item::generic_func>::value;
-  case Trigger::ON_HIT: case Trigger::ON_KILL:
+  case Trigger::ON_HIT: case Trigger::ON_KILL: case Trigger::ON_DAM:
     return std::is_same<T,Item::target_generic_func>::value;
   case Trigger::DAM_MOD: case Trigger::DAM_REDUCE:
     return std::is_same<T,Item::target_modify_func>::value;
