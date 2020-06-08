@@ -12,5 +12,7 @@ int main() {
   game->init_lua();
   game->generate_map();
 
+  game->you->aquire("test");
+
   while (game->do_turn()) ;
 }

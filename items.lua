@@ -1,6 +1,7 @@
 item_table={
   ["basic_armor"] = Item.new(Trigger.DAM_REDUCE, "armor_apply", "Armor", 0),
-  ["stealth_kit"] = Item.new(Trigger.DAM_MOD, "stealth_attack", "Stealth Kit", 0)
+  ["stealth_kit"] = Item.new(Trigger.DAM_MOD, "stealth_attack", "Stealth Kit", 0),
+  ["test"] = Item.new(Trigger.ON_MOVE, "test_effect", "Test Item", 10000)
 }
 
 function armor_apply(armor_val, target)
@@ -29,4 +30,7 @@ end
 function thorns(target)
   -- ON_HIT
   you:do_attack_sans_triggers(target)
+end
+
+function test_effect()
 end
