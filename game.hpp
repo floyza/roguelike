@@ -22,9 +22,9 @@ class Game {
   static const char *font_file;
 
   std::unique_ptr<Gui> log_header;
+  std::unique_ptr<Gui> msg_log;
   std::map<std::string, Lua_item> item_generators;
   std::map<std::string, mon_id> monster_generators;
-  std::unique_ptr<Gui> msg_log;
 public:
   Game();
   ~Game();
@@ -46,6 +46,6 @@ public:
   const mon_id &get_mon(const std::string &id) const;
 };
 
-extern std::unique_ptr<Game> g;
+extern std::unique_ptr<Game> game;
 
 #endif //GAME_HPP_DEFINED

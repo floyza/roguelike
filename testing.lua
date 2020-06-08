@@ -12,13 +12,13 @@ for k,v in pairs(item_table_addition) item_table[k] = v end
 
 --[[
 add this to main.cpp:
-  g->you->aquire("on_move");
-  g->you->aquire("on_turn");
-  g->you->aquire("on_dam");
-  g->you->aquire("on_kill");
-  g->you->aquire("on_hit");
-  g->you->aquire("dam_mod");
-  g->you->aquire("dam_reduce");
+  game->you->aquire("on_move");
+  game->you->aquire("on_turn");
+  game->you->aquire("on_dam");
+  game->you->aquire("on_kill");
+  game->you->aquire("on_hit");
+  game->you->aquire("dam_mod");
+  game->you->aquire("dam_reduce");
 ]]
 
 function on_move()

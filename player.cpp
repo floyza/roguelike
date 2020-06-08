@@ -22,24 +22,24 @@ void Player::do_move() {
     int new_y=y;
     switch (key.vk) {
     case TCODK_KP1:
-      if (g->map->is_walkable(x-1, y+1)) {
+      if (game->map->is_walkable(x-1, y+1)) {
 	--new_x;
 	++new_y;
       }
       break;
     case TCODK_KP2:
-      if (g->map->is_walkable(x, y+1)) {
+      if (game->map->is_walkable(x, y+1)) {
 	++new_y;
       }
       break;
     case TCODK_KP3:
-      if (g->map->is_walkable(x+1, y+1)) {
+      if (game->map->is_walkable(x+1, y+1)) {
 	++new_x;
 	++new_y;
       }
       break;
     case TCODK_KP4:
-      if (g->map->is_walkable(x-1, y)) {
+      if (game->map->is_walkable(x-1, y)) {
 	--new_x;
       }
       break;
@@ -47,23 +47,23 @@ void Player::do_move() {
       moving = false;
       break;
     case TCODK_KP6:
-      if (g->map->is_walkable(x+1, y)) {
+      if (game->map->is_walkable(x+1, y)) {
 	++new_x;
       }
       break;
     case TCODK_KP7:
-      if (g->map->is_walkable(x-1, y-1)) {
+      if (game->map->is_walkable(x-1, y-1)) {
 	--new_x;
 	--new_y;
       }
       break;
     case TCODK_KP8:
-      if (g->map->is_walkable(x, y-1)) {
+      if (game->map->is_walkable(x, y-1)) {
 	--new_y;
       }
       break;
     case TCODK_KP9:
-      if (g->map->is_walkable(x+1, y-1)) {
+      if (game->map->is_walkable(x+1, y-1)) {
 	++new_x;
 	--new_y;
       }
@@ -71,14 +71,14 @@ void Player::do_move() {
     case TCODK_CHAR:
       switch (key.c) {
       case 'r':
-	for (int x=0; x < g->map->get_width(); ++x) {
-	  for (int y=0; y< g->map->get_height(); ++y) {
+	for (int x=0; x < game->map->get_width(); ++x) {
+	  for (int y=0; y< game->map->get_height(); ++y) {
 	    for (int x_adj = x-1; x_adj <= x+1; ++x_adj) {
 	      for (int y_adj = y-1; y_adj <= y+1; ++y_adj) {
-		if (x_adj < 0 || g->map->get_width() <= x_adj || y_adj < 0 || g->map->get_height() <= y_adj)
+		if (x_adj < 0 || game->map->get_width() <= x_adj || y_adj < 0 || game->map->get_height() <= y_adj)
 		  continue;
-		if (g->map->is_walkable(x_adj, y_adj)) {
-		  g->map->tile(x,y).discovered=true;
+		if (game->map->is_walkable(x_adj, y_adj)) {
+		  game->map->tile(x,y).discovered=true;
 		  break;
 		}
 	      }
@@ -87,9 +87,9 @@ void Player::do_move() {
 	}
 	break;
       case 'u':
-	for (int x=1; x<g->map->get_width()-1; ++x) {
-	  for (int y=1; y<g->map->get_height()-1; ++y) {
-	    g->map->tile(x,y).discovered=false;
+	for (int x=1; x<game->map->get_width()-1; ++x) {
+	  for (int y=1; y<game->map->get_height()-1; ++y) {
+	    game->map->tile(x,y).discovered=false;
 	  }
 	}
 	break;
@@ -101,7 +101,7 @@ void Player::do_move() {
     }
     if (new_x!=x || new_y!=y) {
       bool attacked=false;
-      for (Monster &mon : g->map->monsters) {
+      for (Monster &mon : game->map->monsters) {
 	if (mon.x == new_x && mon.y == new_y) {
 	  do_attack(mon);
 	  attacked=true;
@@ -132,7 +132,7 @@ void Player::do_attack_sans_triggers(Creature &target) {
 
 void Player::take_damage(int amount, Player &source) {
   amount = call_triggers(Trigger::DAM_REDUCE, amount, source);
-  g->send_msg({"You hit yourself for " + std::to_string(amount) + " damage!"});
+  game->send_msg({"You hit yourself for " + std::to_string(amount) + " damage!"});
   hp -= amount;
   if (hp<=0)
     die();
@@ -141,7 +141,7 @@ void Player::take_damage(int amount, Player &source) {
 
 void Player::take_damage(int amount, Monster &source) {
   amount = call_triggers(Trigger::DAM_REDUCE, amount, source);
-  g->send_msg({"The " + source.name() + " attacks you for " + std::to_string(amount) + " damage!"});
+  game->send_msg({"The " + source.name() + " attacks you for " + std::to_string(amount) + " damage!"});
   hp -= amount;
   if (hp<=0)
     die();
@@ -149,7 +149,7 @@ void Player::take_damage(int amount, Monster &source) {
 }
 
 void Player::take_damage(int amount) {
-  Monster dummy = Monster{"dummy", *g->map};
+  Monster dummy = Monster{"dummy", *game->map};
   amount = call_triggers(Trigger::DAM_REDUCE, amount, dummy);/*quick fix, TODO: probably have an actual source*/
   hp -= amount;
   if (hp<=0)
@@ -158,7 +158,7 @@ void Player::take_damage(int amount) {
 }
 
 void Player::die() {
-  g->send_msg({"You are dead...", TCODColor::red});
+  game->send_msg({"You are dead...", TCODColor::red});
   dead = true;
 };
 

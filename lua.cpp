@@ -61,7 +61,7 @@ void Game::init_lua() {
 				  "turn_count", sol::property(&Player::turn_count),
 				  "die", &Player::die);
 
-  lua_state->set("you", std::ref(*g->you));
+  lua_state->set("you", std::ref(*game->you));
 
   lua_state->script_file("items.lua");
   lua_state->script_file("monsters.lua");

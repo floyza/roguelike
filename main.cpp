@@ -8,9 +8,9 @@
 int main() {
   tcod_rand = std::make_unique<TCODRandom>();
   
-  g = std::make_unique<Game>();
-  g->init_lua();
-  g->generate_map();
+  game = std::make_unique<Game>();
+  game->init_lua();
+  game->generate_map();
 
-  while (g->do_turn()) ;
+  while (game->do_turn()) ;
 }

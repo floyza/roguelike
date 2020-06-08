@@ -125,8 +125,8 @@ void Map::gen_rand_walk() {
   Coord loc(*this);
   loc.x = width/2 + rand_int(-start_variation, start_variation);
   loc.y = height/2 + rand_int(-start_variation, start_variation);
-  g->you->x = loc.x;
-  g->you->y = loc.y;
+  game->you->x = loc.x;
+  game->you->y = loc.y;
   
   bool sober = false; // true if we are digging a corridor
   int steps = rand_int(cave_min, cave_max); // steps until change sober state
@@ -279,7 +279,7 @@ void Map::draw()
   TCODColor wall_unseen(0x40,0x40,0x00);
   TCODColor floor_seen(0xff,0xff,0xff);
   TCODColor floor_unseen(0x9e,0x9e,0x9e);
-  compute_fov(g->you->x, g->you->y, g->you->view_range);
+  compute_fov(game->you->x, game->you->y, game->you->view_range);
   const int width = get_width(), height = get_height();
   for (int x=0; x<width; ++x) {
     for (int y=0; y<height; ++y) {
