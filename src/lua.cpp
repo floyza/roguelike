@@ -68,8 +68,8 @@ void Game::init_lua() {
 
   lua_state->set("you", std::ref(*game->you));
 
-  lua_state->script_file("items.lua");
-  lua_state->script_file("monsters.lua");
+  lua_state->script_file("data/lua/items.lua");
+  lua_state->script_file("data/lua/monsters.lua");
 
   sol::table item_table = (*lua_state)["item_table"];
   for (const auto &[key, obj] : item_table) {

@@ -7,7 +7,7 @@
 
 std::unique_ptr<Game> game;
 
-const char *Game::font_file = "cp866_8x12.png";
+const char *Game::font_file = "data/fonts/cp866_8x12.png";
 
 Game::Game()
   : log_header(std::make_unique<Gui>(map_width, 0, log_width, 3)),
