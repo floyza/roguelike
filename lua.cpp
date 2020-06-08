@@ -2,6 +2,7 @@
 #include "game.hpp"
 #include "player.hpp"
 #include "item.hpp"
+#include "gui.hpp"
 #include "mon_id.hpp"
 
 Lua_item::Lua_item() = default;
@@ -60,6 +61,10 @@ void Game::init_lua() {
 				  "take_damage", static_cast<void(Player::*)(int)>(&Player::take_damage),
 				  "turn_count", sol::property(&Player::turn_count),
 				  "die", &Player::die);
+  lua_state->new_usertype<Message>("Message",
+				   sol::constructors<Message(), Message(const std::string &), Message(const std::string &, const TCODColor &), Message(const std::string &, const TCODColor &, bool)>());
+
+  lua_state->set("send_msg", [](const Message &msg){ game->send_msg(msg); });
 
   lua_state->set("you", std::ref(*game->you));
 

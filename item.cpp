@@ -16,13 +16,13 @@ Item::Item(const std::string &id, int x, int y)
   name = item_base.name;
 
   if (is_trigger_type<modify_func>(trigger))
-    effect = modify_func([&game, &item_base](int i) ->int { return (*game->lua_state)[item_base.func](i); });
+    effect = modify_func([&item_base](int i) ->int { return (*game->lua_state)[item_base.func](i); });
   else if (is_trigger_type<generic_func>(trigger))
-    effect = generic_func([&game, &item_base] { (*game->lua_state)[item_base.func](); });
+    effect = generic_func([&item_base] { (*game->lua_state)[item_base.func](); });
   else if (is_trigger_type<target_modify_func>(trigger))
-    effect = target_modify_func([&game, &item_base](int i, Creature &c) ->int { return (*game->lua_state)[item_base.func](i, c); });
+    effect = target_modify_func([&item_base](int i, Creature &c) ->int { return (*game->lua_state)[item_base.func](i, c); });
   else if (is_trigger_type<target_generic_func>(trigger))
-    effect = target_generic_func([&game, &item_base](Creature &c) { (*game->lua_state)[item_base.func](c); });
+    effect = target_generic_func([&item_base](Creature &c) { (*game->lua_state)[item_base.func](c); });
 }
 
 Item::~Item() = default;

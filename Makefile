@@ -39,7 +39,7 @@ monster.o: monster.cpp monster.hpp creature.hpp map.hpp game.hpp lua.hpp player.
 creature.o: creature.cpp creature.hpp
 	g++ $(CXXFLAGS) -c -o $@ $<
 
-lua.o: lua.cpp lua.hpp game.hpp mon_id.hpp item.hpp player.hpp
+lua.o: lua.cpp lua.hpp game.hpp mon_id.hpp item.hpp player.hpp gui.hpp
 	g++ $(CXXFLAGS) -c -o $@ $<
 
 gui.o: gui.cpp gui.hpp tcod_util.hpp

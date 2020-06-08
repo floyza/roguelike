@@ -6,7 +6,7 @@
 class TCODConsole;
 
 struct Message {
-  Message(const std::string& text, const TCODColor &color=TCODColor::white, bool center=false);
+  Message(const std::string& text="", const TCODColor &color=TCODColor::white, bool center=false);
   std::string text;
   TCODColor color;
   bool center;
