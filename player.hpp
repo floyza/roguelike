@@ -24,7 +24,7 @@ public:
   void do_attack_sans_triggers(Creature &target); // still calls DAM_MOD triggers
   void die() override;
 
-  void take_damage(int amount, const std::string &msg);
+  void take_damage(int amount);
 
   void aquire(const std::string &id);
   void call_triggers(const Trigger &trigger); // generic_func

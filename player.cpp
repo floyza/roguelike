@@ -132,8 +132,7 @@ void Player::do_attack_sans_triggers(Creature &target) {
 
 void Player::take_damage(int amount, Player &source) {
   amount = call_triggers(Trigger::DAM_REDUCE, amount, source);
-  g->msg_log->send_msg({"You hit yourself for " + std::to_string(amount) + " damage!"});
-  g->msg_log->send_nl();
+  g->send_msg({"You hit yourself for " + std::to_string(amount) + " damage!"});
   hp -= amount;
   if (hp<=0)
     die();
@@ -142,19 +141,16 @@ void Player::take_damage(int amount, Player &source) {
 
 void Player::take_damage(int amount, Monster &source) {
   amount = call_triggers(Trigger::DAM_REDUCE, amount, source);
-  g->msg_log->send_msg({"The " + source.name() + " attacks you for " + std::to_string(amount) + " damage!"});
-  g->msg_log->send_nl();
+  g->send_msg({"The " + source.name() + " attacks you for " + std::to_string(amount) + " damage!"});
   hp -= amount;
   if (hp<=0)
     die();
   call_triggers(Trigger::ON_DAM, source);
 }
 
-void Player::take_damage(int amount, const std::string &msg) {
+void Player::take_damage(int amount) {
   Monster dummy = Monster{"dummy", *g->map};
   amount = call_triggers(Trigger::DAM_REDUCE, amount, dummy);/*quick fix, TODO: probably have an actual source*/
-  g->msg_log->send_msg({msg});
-  g->msg_log->send_nl();
   hp -= amount;
   if (hp<=0)
     die();  
@@ -162,7 +158,7 @@ void Player::take_damage(int amount, const std::string &msg) {
 }
 
 void Player::die() {
-  g->msg_log->send_msg({"You are dead...", TCODColor::red});
+  g->send_msg({"You are dead...", TCODColor::red});
   dead = true;
 };
 

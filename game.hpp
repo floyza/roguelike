@@ -12,6 +12,7 @@ class Map;
 class Display;
 class Player;
 class Gui;
+struct Message;
 
 class Game {
   std::vector<Map> levels;
@@ -23,13 +24,15 @@ class Game {
   std::unique_ptr<Gui> log_header;
   std::map<std::string, Lua_item> item_generators;
   std::map<std::string, mon_id> monster_generators;
+  std::unique_ptr<Gui> msg_log;
 public:
   Game();
   ~Game();
   std::unique_ptr<Player> you;
   std::unique_ptr<sol::state> lua_state;
-  std::unique_ptr<Gui> msg_log;
   Map *map;
+
+  void send_msg(const Message &msg);
 
   /**
    * Returns true if game is not over

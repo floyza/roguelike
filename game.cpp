@@ -54,3 +54,8 @@ const mon_id &Game::get_mon(const std::string &id) const {
     throw std::runtime_error{"Game::get_mon: invalid item id"};
   return iter->second;
 }
+
+void Game::send_msg(const Message &msg) {
+  msg_log->send_msg(msg);
+  msg_log->send_nl();
+}
