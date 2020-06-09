@@ -126,12 +126,13 @@ void Player::do_attack(Creature &target) {
 }
 
 void Player::do_attack_sans_triggers(Creature &target) {
-  int damage = call_triggers(Trigger::DAM_MOD, attack, target);
+  int damage = attack;
+  call_triggers(Trigger::DAM_MOD, damage, target);
   target.take_damage(damage, *this);
 }
 
 void Player::take_damage(int amount, Player &source) {
-  amount = call_triggers(Trigger::DAM_REDUCE, amount, source);
+  call_triggers(Trigger::DAM_REDUCE, amount, source);
   game->send_msg({"You hit yourself for " + std::to_string(amount) + " damage!"});
   hp -= amount;
   if (hp<=0)
@@ -140,7 +141,7 @@ void Player::take_damage(int amount, Player &source) {
 }
 
 void Player::take_damage(int amount, Monster &source) {
-  amount = call_triggers(Trigger::DAM_REDUCE, amount, source);
+  call_triggers(Trigger::DAM_REDUCE, amount, source);
   game->send_msg({"The " + source.name() + " attacks you for " + std::to_string(amount) + " damage!"});
   hp -= amount;
   if (hp<=0)
@@ -150,7 +151,7 @@ void Player::take_damage(int amount, Monster &source) {
 
 void Player::take_damage(int amount) {
   Monster dummy = Monster{"dummy", *game->map};
-  amount = call_triggers(Trigger::DAM_REDUCE, amount, dummy);/*quick fix, TODO: probably have an actual source*/
+  call_triggers(Trigger::DAM_REDUCE, amount, dummy);/*quick fix, TODO: probably have an actual source*/
   hp -= amount;
   if (hp<=0)
     die();  
@@ -178,13 +179,12 @@ void Player::call_triggers(const Trigger &trigger) {
   }
 }
 
-int Player::call_triggers(const Trigger &trigger, int arg) {
+void Player::call_triggers(const Trigger &trigger, int &arg) {
   assert(is_trigger_type<Item::modify_func>(trigger));
   for (Item &item : items) {
     if (item.trigger == trigger)
-      arg = std::get<Item::modify_func>(item.effect)(arg);
+      std::get<Item::modify_func>(item.effect)(std::ref(arg));
   }
-  return arg;
 }
 
 void Player::call_triggers(const Trigger &trigger, Creature &target) {
@@ -195,11 +195,10 @@ void Player::call_triggers(const Trigger &trigger, Creature &target) {
   }
 }
 
-int Player::call_triggers(const Trigger &trigger, int arg, Creature &target) {
+void Player::call_triggers(const Trigger &trigger, int &arg, Creature &target) {
   assert(is_trigger_type<Item::target_modify_func>(trigger));
   for (Item &item : items) {
     if (item.trigger == trigger)
-      arg = std::get<Item::target_modify_func>(item.effect)(arg, target);
+      std::get<Item::target_modify_func>(item.effect)(std::ref(arg), target);
   }
-  return arg;
 }

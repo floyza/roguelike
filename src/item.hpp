@@ -13,11 +13,15 @@ class Item {
 public:
   typedef std::function<void(void)> generic_func;
   typedef std::function<void(Creature &)> target_generic_func;
-  typedef std::function<int(int)> modify_func;
-  typedef std::function<int(int,Creature &)> target_modify_func;
+  typedef std::function<void(int &)> modify_func;
+  typedef std::function<void(int &,Creature &)> target_modify_func;
   Item(const std::string &id);
   Item(const std::string &id, int x, int y);
+
+  // template<typename Args...>
+  // call_effect(Args... args);
   std::variant<modify_func, generic_func, target_modify_func, target_generic_func> effect;
+
   Trigger trigger;
   std::string name;
   void draw() const;
