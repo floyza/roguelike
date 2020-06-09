@@ -2,6 +2,7 @@
 #define PLAYER_HPP_DEFINED
 
 #include "creature.hpp"
+#include "item.hpp"
 #include <vector>
 #include <string>
 
@@ -27,10 +28,8 @@ public:
   void take_damage(int amount);
 
   void aquire(const std::string &id);
-  void call_triggers(const Trigger &trigger); // generic_func
-  void call_triggers(const Trigger &trigger, Creature &target); // target_generic_func
-  void call_triggers(const Trigger &trigger, int &arg); // modify_func
-  void call_triggers(const Trigger &trigger, int &arg, Creature &target); // target_modify_func
+  template<Trigger trigger, typename... Args>
+  void call_triggers(Args... args);
 
   int turn_count() const;
 
@@ -38,5 +37,12 @@ public:
 
   static constexpr int view_range=9;
 };
+
+template<Trigger trigger, typename... Args>
+void Player::call_triggers(Args... args) {
+  for (Item &item : items)
+    if (item.trigger == trigger)
+      std::get<Trigger_type<trigger>>(item.effect)(args...);
+}
 
 #endif //PLAYER_HPP_DEFINED

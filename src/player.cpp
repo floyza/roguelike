@@ -111,51 +111,51 @@ void Player::do_move() {
       if (!attacked) {
 	x = new_x;
 	y = new_y;
-	call_triggers(Trigger::ON_MOVE);
+	call_triggers<Trigger::ON_MOVE>();
       }
       moving = false;
     }
   }
-  call_triggers(Trigger::ON_TURN);
+  call_triggers<Trigger::ON_TURN>();
   ++total_turns;
 }
 
 void Player::do_attack(Creature &target) {
   do_attack_sans_triggers(target);
-  call_triggers(Trigger::ON_HIT, target);
+  call_triggers<Trigger::ON_HIT>(std::ref(target));
 }
 
 void Player::do_attack_sans_triggers(Creature &target) {
   int damage = attack;
-  call_triggers(Trigger::DAM_MOD, damage, target);
+  call_triggers<Trigger::DAM_MOD>(std::ref(damage), std::ref(target));
   target.take_damage(damage, *this);
 }
 
 void Player::take_damage(int amount, Player &source) {
-  call_triggers(Trigger::DAM_REDUCE, amount, source);
+  call_triggers<Trigger::DAM_REDUCE>(std::ref(amount), std::ref(source));
   game->send_msg({"You hit yourself for " + std::to_string(amount) + " damage!"});
   hp -= amount;
   if (hp<=0)
     die();
-  call_triggers(Trigger::ON_DAM, source);
+  call_triggers<Trigger::ON_DAM>(source);
 }
 
 void Player::take_damage(int amount, Monster &source) {
-  call_triggers(Trigger::DAM_REDUCE, amount, source);
+  call_triggers<Trigger::DAM_REDUCE>(std::ref(amount), std::ref(source));
   game->send_msg({"The " + source.name() + " attacks you for " + std::to_string(amount) + " damage!"});
   hp -= amount;
   if (hp<=0)
     die();
-  call_triggers(Trigger::ON_DAM, source);
+  call_triggers<Trigger::ON_DAM>(std::ref(source));
 }
 
 void Player::take_damage(int amount) {
   Monster dummy = Monster{"dummy", *game->map};
-  call_triggers(Trigger::DAM_REDUCE, amount, dummy);/*quick fix, TODO: probably have an actual source*/
+  call_triggers<Trigger::DAM_REDUCE>(std::ref(amount), std::ref(dummy));/*quick fix, TODO: probably have an actual source*/
   hp -= amount;
   if (hp<=0)
     die();  
-  call_triggers(Trigger::ON_DAM, dummy);
+  call_triggers<Trigger::ON_DAM>(std::ref(dummy));
 }
 
 void Player::die() {
@@ -169,36 +169,4 @@ void Player::aquire(const std::string &id) {
 
 int Player::turn_count() const {
   return total_turns;
-}
-
-void Player::call_triggers(const Trigger &trigger) {
-  assert(is_trigger_type<Item::generic_func>(trigger));
-  for (Item &item : items) {
-    if (item.trigger == trigger)
-      std::get<Item::generic_func>(item.effect)();
-  }
-}
-
-void Player::call_triggers(const Trigger &trigger, int &arg) {
-  assert(is_trigger_type<Item::modify_func>(trigger));
-  for (Item &item : items) {
-    if (item.trigger == trigger)
-      std::get<Item::modify_func>(item.effect)(std::ref(arg));
-  }
-}
-
-void Player::call_triggers(const Trigger &trigger, Creature &target) {
-  assert(is_trigger_type<Item::target_generic_func>(trigger));
-  for (Item &item : items) {
-    if (item.trigger == trigger)
-      std::get<Item::target_generic_func>(item.effect)(target);
-  }
-}
-
-void Player::call_triggers(const Trigger &trigger, int &arg, Creature &target) {
-  assert(is_trigger_type<Item::target_modify_func>(trigger));
-  for (Item &item : items) {
-    if (item.trigger == trigger)
-      std::get<Item::target_modify_func>(item.effect)(std::ref(arg), target);
-  }
 }

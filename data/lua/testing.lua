@@ -8,7 +8,7 @@ local item_table_addition={
   ["dam_reduce"] = Item.new(Trigger.DAM_REDUCE, "dam_reduce", "dam_reduce", 0)
 }
 
-for k,v in pairs(item_table_addition) item_table[k] = v end
+for k,v in pairs(item_table_addition) do item_table[k] = v end
 
 --[[
 add this to main.cpp:

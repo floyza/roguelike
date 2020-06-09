@@ -29,6 +29,49 @@ public:
   ~Item();
 };
 
+template<Trigger trigger>
+struct Trigger_type_impl {
+  typedef void type;
+};
+
+template<>
+struct Trigger_type_impl<Trigger::ON_MOVE> {
+  typedef Item::generic_func type;
+};
+
+template<>
+struct Trigger_type_impl<Trigger::ON_TURN> {
+  typedef Item::generic_func type;
+};
+
+template<>
+struct Trigger_type_impl<Trigger::ON_HIT> {
+  typedef Item::target_generic_func type;
+};
+
+template<>
+struct Trigger_type_impl<Trigger::ON_KILL> {
+  typedef Item::target_generic_func type;
+};
+
+template<>
+struct Trigger_type_impl<Trigger::ON_DAM> {
+  typedef Item::target_generic_func type;
+};
+
+template<>
+struct Trigger_type_impl<Trigger::DAM_MOD> {
+  typedef Item::target_modify_func type;
+};
+
+template<>
+struct Trigger_type_impl<Trigger::DAM_REDUCE> {
+  typedef Item::target_modify_func type;
+};
+
+template<Trigger trigger>
+using Trigger_type = typename Trigger_type_impl<trigger>::type;
+
 template<typename T>
 constexpr bool is_trigger_type(Trigger trigger) {
   switch (trigger) {
