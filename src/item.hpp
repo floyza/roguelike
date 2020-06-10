@@ -3,11 +3,13 @@
 
 #include <functional>
 #include <string>
+#include <type_traits>
 #include <variant>
+#include <stdexcept>
 
 class Creature;
 
-enum class Trigger { DAM_MOD, DAM_REDUCE, ON_HIT, ON_KILL, ON_MOVE, ON_TURN, ON_DAM };
+enum class Trigger { DAM_MOD, DAM_REDUCE, ON_HIT, ON_KILL, ON_MOVE, ON_TURN, ON_DAM, last };
 
 class Item {
 public:
@@ -69,20 +71,41 @@ struct Trigger_type_impl<Trigger::DAM_REDUCE> {
   typedef Item::target_modify_func type;
 };
 
-template<Trigger trigger>
+template <Trigger trigger>
 using Trigger_type = typename Trigger_type_impl<trigger>::type;
 
+
+
+template <Trigger trigger, typename T>
+constexpr bool is_of_type = std::is_same<Trigger_type<trigger>, T>::value;
+
+template<typename T, int N, bool... Rest>
+struct Array_impl {
+  static constexpr auto& value = Array_impl<T, N-1, is_of_type<static_cast<Trigger>(N), T>, Rest...>::value;
+};
+
+template<typename T, bool... Rest>
+struct Array_impl<T, 0, Rest...> {
+  static constexpr bool value[] = { is_of_type<static_cast<Trigger>(0), T>, Rest... };
+};
+
+template<typename T, bool... Rest>
+constexpr bool Array_impl<T, 0, Rest...>::value[];
+
+template<typename T, int N>
+struct Array {
+  static_assert(N >= 0, "N must be at least 0");
+
+  static constexpr auto& value = Array_impl<T, N>::value;
+
+  Array() = delete;
+  Array(const Array&) = delete;
+  Array(Array&&) = delete;
+};
+
 template<typename T>
-constexpr bool is_trigger_type(Trigger trigger) {
-  switch (trigger) {
-  case Trigger::ON_MOVE: case Trigger::ON_TURN:
-    return std::is_same<T,Item::generic_func>::value;
-  case Trigger::ON_HIT: case Trigger::ON_KILL: case Trigger::ON_DAM:
-    return std::is_same<T,Item::target_generic_func>::value;
-  case Trigger::DAM_MOD: case Trigger::DAM_REDUCE:
-    return std::is_same<T,Item::target_modify_func>::value;
-  }
-  throw std::runtime_error{"is_type<T>(Trigger): invalid trigger"};
+bool is_trigger_type(Trigger trigger) {
+  return Array<T, (int)Trigger::last>::value[static_cast<int>(trigger)];
 }
 
 #endif //DEFINED_ITEM_HPP

@@ -1,4 +1,5 @@
 #include "game.hpp"
+#include "item.hpp"
 #include "map.hpp"
 #include "tcod_util.hpp"
 #include "player.hpp"
