@@ -32,5 +32,14 @@ function thorns(target)
   game.you:do_attack_sans_triggers(target)
 end
 
+function recursive_attack(target)
+  -- ON_ATTACK
+  local attack_amount = 1.1
+  local chance = 1 - (1/attack_amount)
+  if ( percent_chance(chance) ) then
+    game.you:do_attack(target)
+  end
+end
+
 function test_effect()
 end

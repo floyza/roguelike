@@ -6,6 +6,7 @@
 #include "map.hpp"
 #include "monster.hpp"
 #include "mon_id.hpp"
+#include "tcod_util.hpp"
 
 Lua_item::Lua_item() = default;
 
@@ -23,6 +24,7 @@ void Game::init_lua() {
 				{"DAM_MOD", Trigger::DAM_MOD},
 				{"DAM_REDUCE", Trigger::DAM_REDUCE},
 				{"ON_HIT", Trigger::ON_HIT},
+				{"ON_ATTACK", Trigger::ON_ATTACK},
 				{"ON_KILL", Trigger::ON_KILL},
 				{"ON_MOVE", Trigger::ON_MOVE},
 				{"ON_TURN", Trigger::ON_TURN},
@@ -94,6 +96,8 @@ void Game::init_lua() {
 				   sol::constructors<Message(), Message(const std::string &), Message(const std::string &, const TCODColor &), Message(const std::string &, const TCODColor &, bool)>());
 
   lua_state->set("game", std::ref(*game));
+  lua_state->set("rand_int", rand_int);
+  lua_state->set("percent_chance", percent_chance);
 
   lua_state->script_file("data/lua/items.lua");
   lua_state->script_file("data/lua/monsters.lua");

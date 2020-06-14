@@ -121,6 +121,7 @@ void Player::do_move() {
 }
 
 void Player::do_attack(Creature &target) {
+  call_triggers<Trigger::ON_ATTACK>(std::ref(target));
   do_attack_sans_triggers(target);
   call_triggers<Trigger::ON_HIT>(std::ref(target));
 }

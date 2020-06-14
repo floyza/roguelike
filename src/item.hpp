@@ -9,7 +9,7 @@
 
 class Creature;
 
-enum class Trigger { DAM_MOD, DAM_REDUCE, ON_HIT, ON_KILL, ON_MOVE, ON_TURN, ON_DAM, last };
+enum class Trigger { DAM_MOD, DAM_REDUCE, ON_ATTACK, ON_HIT, ON_KILL, ON_MOVE, ON_TURN, ON_DAM, last };
 
 class Item {
 public:
@@ -48,6 +48,11 @@ struct Trigger_type_impl<Trigger::ON_TURN> {
 
 template<>
 struct Trigger_type_impl<Trigger::ON_HIT> {
+  typedef Item::target_generic_func type;
+};
+
+template<>
+struct Trigger_type_impl<Trigger::ON_ATTACK> {
   typedef Item::target_generic_func type;
 };
 
