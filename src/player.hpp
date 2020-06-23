@@ -41,8 +41,8 @@ public:
 template<Trigger trigger, typename... Args>
 void Player::call_triggers(Args... args) {
   for (Item &item : items)
-    if (item.trigger == trigger)
-      std::get<Trigger_type<trigger>>(item.effect)(args...);
+    if (item.get_trigger() == trigger)
+      item.call_effect<trigger>(args...);
 }
 
 #endif //PLAYER_HPP_DEFINED
