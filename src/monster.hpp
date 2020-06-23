@@ -10,8 +10,8 @@ struct mon_id;
 
 class Monster : public Creature {
   std::string name_;
-  void take_damage(int amount, Player &source);
-  void take_damage(int amount, Monster &source);
+  void take_damage(int amount, Player &source) override;
+  void take_damage(int amount, Monster &source) override;
   int dest_x=-1, dest_y=-1;
   std::pair<int, int> step_to_dest();
   Monster(const mon_id &id, Map &parent, int x=0, int y=0);
@@ -21,7 +21,7 @@ public:
   const std::string &name() { return name_; }
 
   void do_move() override;
-  void do_attack(Creature &target) override;
+  void do_attack(Creature &target);
   void die() override;
 
   Map *parent;

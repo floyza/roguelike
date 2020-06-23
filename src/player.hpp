@@ -11,8 +11,8 @@ class Item;
 enum class Trigger;
 
 class Player : public Creature {
-  void take_damage(int amount, Player &source);
-  void take_damage(int amount, Monster &source);
+  void take_damage(int amount, Player &source) override;
+  void take_damage(int amount, Monster &source) override;
   bool dead=false;
   std::vector<Item> items;
   int total_turns=0;
@@ -21,7 +21,7 @@ public:
   ~Player();
 
   void do_move() override;
-  void do_attack(Creature &target) override;
+  void do_attack(Creature &target);
   void do_attack_sans_triggers(Creature &target); // still calls DAM_MOD triggers
   void die() override;
 

@@ -53,7 +53,6 @@ void Game::init_lua() {
 				    sol::no_constructor,
 				    "hp", sol::property(&Creature::get_hp),
 				    "attack", sol::property(&Creature::get_attack),
-				    "do_attack", &Creature::do_attack,
 				    "die", &Creature::die,
 				    "x", &Creature::x,
 				    "y", &Creature::y);
