@@ -53,14 +53,14 @@ const Lua_item &Game::get_item(const std::string &id) const {
 const mon_id &Game::get_mon(const std::string &id) const {
   auto iter = monster_generators.find(id);
   if (iter == monster_generators.end())
-    throw std::runtime_error{"Game::get_mon: invalid item id"};
+    throw std::runtime_error{"Game::get_mon: invalid monster id"};
   return iter->second;
 }
 
 const Lua_status &Game::get_status(const std::string &id) const {
   auto iter = status_generators.find(id);
   if (iter == status_generators.end())
-    throw std::runtime_error{"Game::get_status: invalid item id"};
+    throw std::runtime_error{"Game::get_status: invalid status id"};
   return iter->second;
 }
 

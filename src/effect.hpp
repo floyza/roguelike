@@ -79,33 +79,37 @@ using Trigger_type = typename Trigger_type_impl<trigger>::type;
 template <Trigger trigger, typename T>
 constexpr bool is_of_type = std::is_same<Trigger_type<trigger>, T>::value;
 
+
+// compute an table of trigger types ahead of time
+// https://stackoverflow.com/questions/19019252/create-n-element-constexpr-array-in-c11
+
 template<typename T, int N, bool... Rest>
-struct Array_impl {
-  static constexpr auto& value = Array_impl<T, N-1, is_of_type<static_cast<Trigger>(N), T>, Rest...>::value;
+struct Trigger_array_impl {
+  static constexpr auto& value = Trigger_array_impl<T, N-1, is_of_type<static_cast<Trigger>(N), T>, Rest...>::value;
 };
 
 template<typename T, bool... Rest>
-struct Array_impl<T, 0, Rest...> {
+struct Trigger_array_impl<T, 0, Rest...> {
   static constexpr bool value[] = { is_of_type<static_cast<Trigger>(0), T>, Rest... };
 };
 
 template<typename T, bool... Rest>
-constexpr bool Array_impl<T, 0, Rest...>::value[];
+constexpr bool Trigger_array_impl<T, 0, Rest...>::value[];
 
 template<typename T, int N>
-struct Array {
+struct Trigger_array {
   static_assert(N >= 0, "N must be at least 0");
 
-  static constexpr auto& value = Array_impl<T, N>::value;
+  static constexpr auto& value = Trigger_array_impl<T, N>::value;
 
-  Array() = delete;
-  Array(const Array&) = delete;
-  Array(Array&&) = delete;
+  Trigger_array() = delete;
+  Trigger_array(const Trigger_array&) = delete;
+  Trigger_array(Trigger_array&&) = delete;
 };
 
 template<typename T>
 bool is_trigger_type(Trigger trigger) {
-  return Array<T, (int)Trigger::last>::value[static_cast<int>(trigger)];
+  return Trigger_array<T, (int)Trigger::last>::value[static_cast<int>(trigger)];
 }
 
 template<Trigger T, typename... Args>

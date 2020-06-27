@@ -117,7 +117,7 @@ void Map::gen_rand_walk() {
   const int width = get_width();
   const int height = get_height();
   const int soft_edge_limit = std::min(width,height)*(soft_edge_limit_percent/100);
-  int req_tiles = (width*height)*(percentage/100);
+  const int req_tiles = (width*height)*(percentage/100);
 
   
   int done_tiles = rand_int(cave_min, cave_max);
