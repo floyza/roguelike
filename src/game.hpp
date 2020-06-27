@@ -25,6 +25,7 @@ class Game {
   std::unique_ptr<Gui> msg_log;
   std::map<std::string, Lua_item> item_generators;
   std::map<std::string, mon_id> monster_generators;
+  std::map<std::string, Lua_status> status_generators;
 public:
   Game();
   Game(const Game &) = delete;
@@ -46,6 +47,7 @@ public:
 
   const Lua_item &get_item(const std::string &id) const;
   const mon_id &get_mon(const std::string &id) const;
+  const Lua_status &get_status(const std::string &id) const;
 };
 
 extern std::unique_ptr<Game> game;

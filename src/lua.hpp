@@ -16,4 +16,13 @@ struct Lua_item {
   int rarity;
 };
 
+struct Lua_status {
+  Lua_status();
+  Lua_status(Trigger type, const std::string &func, const std::string &name, int duration);
+  Trigger type;
+  std::string func;
+  std::string name;
+  int duration;
+};
+
 #endif //DEFINED_LUA_HPP

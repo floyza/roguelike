@@ -15,6 +15,13 @@ Lua_item::Lua_item(Trigger type, const std::string &func, const std::string &nam
 {
 }
 
+Lua_status::Lua_status() = default;
+
+Lua_status::Lua_status(Trigger type, const std::string &func, const std::string &name, int duration)
+  : type(type), func(func), name(name), duration(duration)
+{
+}
+
 void Game::init_lua() {
   lua_state = std::make_unique<sol::state>();
   lua_state->open_libraries(sol::lib::base, sol::lib::math);
@@ -36,6 +43,12 @@ void Game::init_lua() {
 				    "func", &Lua_item::func,
 				    "name", &Lua_item::name,
 				    "rarity", &Lua_item::rarity);
+  lua_state->new_usertype<Lua_status>("Status",
+				    sol::constructors<Lua_status(),Lua_status(Trigger, const std::string &, const std::string &, int)>(),
+				    "type", &Lua_status::type,
+				    "func", &Lua_status::func,
+				    "name", &Lua_status::name,
+				    "duration", &Lua_status::duration);
   lua_state->new_usertype<TCODColor>("color",
 				     sol::constructors<TCODColor(),TCODColor(int,int,int)>(),
 				     "r", &TCODColor::r,
@@ -100,6 +113,7 @@ void Game::init_lua() {
 
   lua_state->script_file("data/lua/items.lua");
   lua_state->script_file("data/lua/monsters.lua");
+  lua_state->script_file("data/lua/status.lua");
 
   sol::table item_table = (*lua_state)["item_table"];
   for (const auto &[key, obj] : item_table) {
@@ -108,5 +122,9 @@ void Game::init_lua() {
   sol::table mon_table = (*lua_state)["monster_table"];
   for (const auto &[key, obj] : mon_table) {
     monster_generators[key.as<std::string>()] = obj.as<mon_id>();
+  }
+  sol::table status_table = (*lua_state)["status_table"];
+  for (const auto &[key, obj] : status_table) {
+    status_generators[key.as<std::string>()] = obj.as<Lua_status>();
   }
 }

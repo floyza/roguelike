@@ -23,6 +23,4 @@ void Item::draw() const {
   TCODConsole::root->setChar(x,y,'*');
 }
 
-Trigger Item::get_trigger(){
-  return effect.get_trigger();
-}
+Trigger Item::get_trigger() { return effect.get_trigger(); }

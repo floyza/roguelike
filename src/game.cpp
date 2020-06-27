@@ -1,9 +1,11 @@
 #include "game.hpp"
+#include "lua.hpp"
 #include "map.hpp"
 #include "player.hpp"
 #include "gui.hpp"
 #include "monster.hpp"
 #include <libtcod/libtcod.hpp>
+#include <lua.h>
 
 std::unique_ptr<Game> game;
 
@@ -52,6 +54,13 @@ const mon_id &Game::get_mon(const std::string &id) const {
   auto iter = monster_generators.find(id);
   if (iter == monster_generators.end())
     throw std::runtime_error{"Game::get_mon: invalid item id"};
+  return iter->second;
+}
+
+const Lua_status &Game::get_status(const std::string &id) const {
+  auto iter = status_generators.find(id);
+  if (iter == status_generators.end())
+    throw std::runtime_error{"Game::get_status: invalid item id"};
   return iter->second;
 }
 

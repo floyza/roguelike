@@ -1,10 +1,13 @@
 #include "player.hpp"
+#include "creature.hpp"
 #include "game.hpp"
 #include "map.hpp"
 #include "gui.hpp"
 #include "monster.hpp"
 #include "item.hpp"
+#include "status.hpp"
 #include <cassert>
+#include <string>
 
 Player::Player(char icon, const TCODColor &color, int max_hp, int attack, int x, int y)
   : Creature(icon, color, max_hp, attack, x, y)
@@ -117,6 +120,9 @@ void Player::do_move() {
     }
   }
   call_triggers<Trigger::ON_TURN>();
+  for (Status &status : statuses) {
+    status.tick();
+  }
   ++total_turns;
 }
 
@@ -164,8 +170,19 @@ void Player::die() {
   dead = true;
 };
 
-void Player::aquire(const std::string &id) {
+void Player::aquire_item(const std::string &id) {
   items.emplace_back(id);
+}
+
+void Player::aquire_status(const std::string &id) {
+  statuses.emplace_back(id);
+}
+
+void Player::remove_status(const std::string &id) {
+  for (Status &status : statuses) {
+    auto iter = std::remove_if(statuses.begin(), statuses.end(), [&status](const Status &s){return status.name==s.name;});
+    statuses.erase(iter, statuses.end());
+  }
 }
 
 int Player::turn_count() const {
