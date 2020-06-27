@@ -115,16 +115,38 @@ void Game::init_lua() {
   lua_state->script_file("data/lua/monsters.lua");
   lua_state->script_file("data/lua/status.lua");
 
+  // sol::table::size only works for numerical keys
+
   sol::table item_table = (*lua_state)["item_table"];
+  int table_size=0;
+  for (auto i=item_table.begin(); i!=item_table.end(); ++i)
+    ++table_size;
+
+  item_generators.reserve(table_size);
   for (const auto &[key, obj] : item_table) {
-    item_generators[key.as<std::string>()] = obj.as<Lua_item>();
+    item_generators.push_back(obj.as<Lua_item>());
+    item_name_map[key.as<std::string>()] = &item_generators.back();
   }
+
   sol::table mon_table = (*lua_state)["monster_table"];
+  table_size=0;
+  for (auto i=mon_table.begin(); i!=mon_table.end(); ++i)
+    ++table_size;
+
+  monster_generators.reserve(table_size);
   for (const auto &[key, obj] : mon_table) {
-    monster_generators[key.as<std::string>()] = obj.as<mon_id>();
+    monster_generators.push_back(obj.as<mon_id>());
+    monster_name_map[key.as<std::string>()] = &monster_generators.back();
   }
+
   sol::table status_table = (*lua_state)["status_table"];
+  table_size=0;
+  for (auto i=status_table.begin(); i!=status_table.end(); ++i)
+    ++table_size;
+
+  status_generators.reserve(table_size);
   for (const auto &[key, obj] : status_table) {
-    status_generators[key.as<std::string>()] = obj.as<Lua_status>();
+    status_generators.push_back(obj.as<Lua_status>());
+    status_name_map[key.as<std::string>()] = &status_generators.back();
   }
 }

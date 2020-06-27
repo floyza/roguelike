@@ -23,9 +23,14 @@ class Game {
 
   std::unique_ptr<Gui> log_header;
   std::unique_ptr<Gui> msg_log;
-  std::map<std::string, Lua_item> item_generators;
-  std::map<std::string, mon_id> monster_generators;
-  std::map<std::string, Lua_status> status_generators;
+
+  std::vector<Lua_item> item_generators;
+  std::vector<mon_id> monster_generators;
+  std::vector<Lua_status> status_generators;
+
+  std::map<std::string, Lua_item *> item_name_map;
+  std::map<std::string, mon_id *> monster_name_map;
+  std::map<std::string, Lua_status *> status_name_map;
 public:
   Game();
   Game(const Game &) = delete;

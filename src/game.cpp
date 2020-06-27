@@ -44,24 +44,26 @@ bool Game::do_turn() {
 }
 
 const Lua_item &Game::get_item(const std::string &id) const {
-  auto iter = item_generators.find(id);
-  if (iter == item_generators.end())
+  auto iter = item_name_map.find(id);
+  if (iter == item_name_map.end())
     throw std::runtime_error{"Game::get_item: invalid item id"};
-  return iter->second;
+  return *iter->second;
 }
 
 const mon_id &Game::get_mon(const std::string &id) const {
-  auto iter = monster_generators.find(id);
-  if (iter == monster_generators.end())
+  auto iter = monster_name_map.find(id);
+  if (iter == monster_name_map.end())
     throw std::runtime_error{"Game::get_mon: invalid monster id"};
-  return iter->second;
+  return *iter->second;
 }
 
 const Lua_status &Game::get_status(const std::string &id) const {
-  auto iter = status_generators.find(id);
-  if (iter == status_generators.end())
+  auto iter = status_name_map.find(id);
+  if (iter == status_name_map.end())
     throw std::runtime_error{"Game::get_status: invalid status id"};
-  return iter->second;
+  return *iter->second;
+}
+
 }
 
 void Game::send_msg(const Message &msg) {
