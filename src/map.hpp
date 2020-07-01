@@ -10,7 +10,8 @@ class Item;
 enum class Dir;
 
 struct Tile {
-  bool discovered=false;
+  Tile(bool discovered=false) : discovered(discovered) { }
+  bool discovered;
 };
 
 class Map {
