@@ -45,8 +45,7 @@ public:
 
   void send_msg(const Message &msg);
 
-  /**
-   * Returns true if game is not over
+  /** Returns true if game is not over
    */
   bool do_turn();
   void generate_map();
