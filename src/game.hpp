@@ -31,6 +31,9 @@ class Game {
   std::map<std::string, Lua_item *> item_name_map;
   std::map<std::string, mon_id *> monster_name_map;
   std::map<std::string, Lua_status *> status_name_map;
+
+  std::multimap<int, Lua_item *> item_rarity_map;
+  std::multimap<int, mon_id *> monster_rarity_map;
 public:
   Game();
   Game(const Game &) = delete;
@@ -53,6 +56,9 @@ public:
   const Lua_item &get_item(const std::string &id) const;
   const mon_id &get_mon(const std::string &id) const;
   const Lua_status &get_status(const std::string &id) const;
+
+  const Lua_item &get_rand_item(int depth) const;
+  const mon_id &get_rand_mon(int depth) const;
 };
 
 extern std::unique_ptr<Game> game;

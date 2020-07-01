@@ -4,12 +4,16 @@
 #include <string>
 
 #include "effect.hpp"
+#include "lua.hpp"
+
+struct Lua_status;
 
 class Status {
   Effect effect;
   int duration;
 public:
   Status(const std::string &id);
+  Status(const Lua_status &base);
 
   template<Trigger trigger, typename... Args>
   void call_effect(Args... args);

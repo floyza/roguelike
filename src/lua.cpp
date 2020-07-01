@@ -125,7 +125,9 @@ void Game::init_lua() {
   item_generators.reserve(table_size);
   for (const auto &[key, obj] : item_table) {
     item_generators.push_back(obj.as<Lua_item>());
-    item_name_map[key.as<std::string>()] = &item_generators.back();
+    Lua_item &o = item_generators.back();
+    item_name_map.insert({key.as<std::string>(), &o});
+    item_rarity_map.insert({o.rarity, &o});
   }
 
   sol::table mon_table = (*lua_state)["monster_table"];
@@ -136,7 +138,9 @@ void Game::init_lua() {
   monster_generators.reserve(table_size);
   for (const auto &[key, obj] : mon_table) {
     monster_generators.push_back(obj.as<mon_id>());
-    monster_name_map[key.as<std::string>()] = &monster_generators.back();
+    mon_id &o = monster_generators.back();
+    monster_name_map.insert({key.as<std::string>(), &o});
+    monster_rarity_map.insert({o.rarity, &o});
   }
 
   sol::table status_table = (*lua_state)["status_table"];
@@ -147,6 +151,7 @@ void Game::init_lua() {
   status_generators.reserve(table_size);
   for (const auto &[key, obj] : status_table) {
     status_generators.push_back(obj.as<Lua_status>());
-    status_name_map[key.as<std::string>()] = &status_generators.back();
+    Lua_status &o = status_generators.back();
+    status_name_map.insert({key.as<std::string>(), &o});
   }
 }

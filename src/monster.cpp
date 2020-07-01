@@ -12,8 +12,8 @@ Monster::Monster(const std::string &id, Map &parent, int x, int y)
 {
 }
 
-Monster::Monster(const mon_id &id, Map &parent, int x, int y)
-  : Creature(id.icon, id.color, id.max_hp, id.attack, x, y), name_(id.name), parent(&parent)
+Monster::Monster(const mon_id &base, Map &parent, int x, int y)
+  : Creature(base.icon, base.color, base.max_hp, base.attack, x, y), name_(base.name), parent(&parent)
 {
 }
 

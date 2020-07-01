@@ -4,6 +4,8 @@
 #include "player.hpp"
 #include "gui.hpp"
 #include "monster.hpp"
+#include "tcod_util.hpp"
+#include <iostream>
 #include <libtcod/libtcod.hpp>
 #include <lua.h>
 
@@ -64,6 +66,14 @@ const Lua_status &Game::get_status(const std::string &id) const {
   return *iter->second;
 }
 
+const Lua_item &Game::get_rand_item(int depth) const {
+  auto range = item_rarity_map.equal_range(depth);
+  return *random_element(range.first, range.second)->second;
+}
+
+const mon_id &Game::get_rand_mon(int depth) const {
+  auto range = monster_rarity_map.equal_range(depth);
+  return *random_element(range.first, range.second)->second;
 }
 
 void Game::send_msg(const Message &msg) {

@@ -4,12 +4,15 @@
 #include <string>
 
 #include "effect.hpp"
+#include "lua.hpp"
+
+struct Lua_item;
 
 class Item {
   Effect effect;
 public:
-  Item(const std::string &id);
-  Item(const std::string &id, int x, int y);
+  Item(const std::string &id, int x=0, int y=0);
+  Item(const Lua_item &base, int x=0, int y=0);
 
   template<Trigger trigger, typename... Args>
   void call_effect(Args... args);

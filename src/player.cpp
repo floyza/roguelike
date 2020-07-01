@@ -1,6 +1,7 @@
 #include "player.hpp"
 #include "creature.hpp"
 #include "game.hpp"
+#include "lua.hpp"
 #include "map.hpp"
 #include "gui.hpp"
 #include "monster.hpp"
@@ -174,8 +175,16 @@ void Player::aquire_item(const std::string &id) {
   items.emplace_back(id);
 }
 
+void Player::aquire_item(const Lua_item &base) {
+  items.emplace_back(base);
+}
+
 void Player::aquire_status(const std::string &id) {
   statuses.emplace_back(id);
+}
+
+void Player::aquire_status(const Lua_status &base) {
+  statuses.emplace_back(base);
 }
 
 void Player::remove_status(const std::string &id) {

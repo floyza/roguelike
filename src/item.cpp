@@ -3,17 +3,14 @@
 #include "lua.hpp"
 #include "game.hpp"
 
-Item::Item(const std::string &id)
-  : Item(id, 0, 0)
+Item::Item(const std::string &id, int x, int y)
+  : Item(game->get_item(id), x, y)
 {
 }
 
-Item::Item(const std::string &id, int x, int y)
-  : x(x), y(y)
+Item::Item(const Lua_item &base, int x, int y)
+  : effect(base.type, base.func), name(base.name), x(x), y(y)
 {
-  const Lua_item &item_base = game->get_item(id);
-  name = item_base.name;
-  effect = Effect{item_base.type, item_base.func};
 }
 
 Item::~Item() = default;

@@ -316,11 +316,11 @@ void Map::draw()
 }
 
 void Map::generate_monster(int x, int y) {
-  monsters.emplace_back("goblin", *this, x, y);
+  monsters.emplace_back(game->get_rand_mon(depth), *this, x, y);
 }
 
 void Map::generate_item(int x, int y) {
-  items.emplace_back("basic_armor", x, y);
+  items.emplace_back(game->get_rand_item(depth), x, y);
 }
 
 void Map::compute_fov(int x, int y, int range) {
