@@ -1,7 +1,7 @@
 item_table={
-  ["basic_armor"] = Item.new(Trigger.DAM_REDUCE, "armor_apply", "Armor", 0),
-  ["stealth_kit"] = Item.new(Trigger.DAM_MOD, "stealth_attack", "Stealth Kit", 0),
-  ["test"] = Item.new(Trigger.ON_MOVE, "test_effect", "Test Item", 10000)
+  ["basic_armor"] = Lua_item.new(Trigger.DAM_REDUCE, "armor_apply", "Armor", 0),
+  ["stealth_kit"] = Lua_item.new(Trigger.DAM_MOD, "stealth_attack", "Stealth Kit", 0),
+  ["test"] = Lua_item.new(Trigger.ON_MOVE, "test_effect", "Test Item", 10000)
 }
 
 function armor_apply(armor_val, target)

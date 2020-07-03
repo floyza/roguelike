@@ -3,8 +3,8 @@
 #include "game.hpp"
 #include "player.hpp"
 #include "gui.hpp"
-#include "mon_id.hpp"
 #include "item.hpp"
+#include "lua.hpp"
 #include <algorithm>
 
 Monster::Monster(const std::string &id, Map &parent, int x, int y)
@@ -12,7 +12,7 @@ Monster::Monster(const std::string &id, Map &parent, int x, int y)
 {
 }
 
-Monster::Monster(const mon_id &base, Map &parent, int x, int y)
+Monster::Monster(const Lua_monster &base, Map &parent, int x, int y)
   : Creature(base.icon, base.color, base.max_hp, base.attack, x, y), name_(base.name), parent(&parent)
 {
 }

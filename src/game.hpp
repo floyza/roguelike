@@ -6,7 +6,6 @@
 #include <map>
 #include <vector>
 #include "lua.hpp"
-#include "mon_id.hpp"
 
 class Map;
 class Display;
@@ -25,15 +24,15 @@ class Game {
   std::unique_ptr<Gui> msg_log;
 
   std::vector<Lua_item> item_generators;
-  std::vector<mon_id> monster_generators;
+  std::vector<Lua_monster> monster_generators;
   std::vector<Lua_status> status_generators;
 
   std::map<std::string, Lua_item *> item_name_map;
-  std::map<std::string, mon_id *> monster_name_map;
+  std::map<std::string, Lua_monster *> monster_name_map;
   std::map<std::string, Lua_status *> status_name_map;
 
   std::multimap<int, Lua_item *> item_rarity_map;
-  std::multimap<int, mon_id *> monster_rarity_map;
+  std::multimap<int, Lua_monster *> monster_rarity_map;
 public:
   Game();
   Game(const Game &) = delete;
@@ -53,11 +52,11 @@ public:
   void init_lua();
 
   const Lua_item &get_item(const std::string &id) const;
-  const mon_id &get_mon(const std::string &id) const;
+  const Lua_monster &get_mon(const std::string &id) const;
   const Lua_status &get_status(const std::string &id) const;
 
   const Lua_item &get_rand_item(int depth) const;
-  const mon_id &get_rand_mon(int depth) const;
+  const Lua_monster &get_rand_mon(int depth) const;
 };
 
 extern std::unique_ptr<Game> game;

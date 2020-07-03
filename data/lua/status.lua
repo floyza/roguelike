@@ -1,5 +1,5 @@
 status_table={
-  ["burn"] = Status.new(Trigger.ON_MOVE, "take_damage", "Burn", 10)
+  ["burn"] = Lua_status.new(Trigger.ON_MOVE, "take_damage", "Burn", 10)
 }
 
 function take_damage()

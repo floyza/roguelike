@@ -6,7 +6,7 @@
 
 class Map;
 class Player;
-struct mon_id;
+struct Lua_monster;
 
 class Monster : public Creature {
   std::string name_;
@@ -16,7 +16,7 @@ class Monster : public Creature {
   std::pair<int, int> step_to_dest();
 public:
   Monster(const std::string &id, Map &parent, int x=0, int y=0);
-  Monster(const mon_id &base, Map &parent, int x=0, int y=0);
+  Monster(const Lua_monster &base, Map &parent, int x=0, int y=0);
   ~Monster();
 
   const std::string &name() { return name_; }

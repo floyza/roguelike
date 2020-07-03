@@ -52,7 +52,7 @@ const Lua_item &Game::get_item(const std::string &id) const {
   return *iter->second;
 }
 
-const mon_id &Game::get_mon(const std::string &id) const {
+const Lua_monster &Game::get_mon(const std::string &id) const {
   auto iter = monster_name_map.find(id);
   if (iter == monster_name_map.end())
     throw std::runtime_error{"Game::get_mon: invalid monster id"};
@@ -71,7 +71,7 @@ const Lua_item &Game::get_rand_item(int depth) const {
   return *random_element(range.first, range.second)->second;
 }
 
-const mon_id &Game::get_rand_mon(int depth) const {
+const Lua_monster &Game::get_rand_mon(int depth) const {
   auto range = monster_rarity_map.equal_range(depth);
   return *random_element(range.first, range.second)->second;
 }

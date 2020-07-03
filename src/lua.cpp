@@ -5,7 +5,6 @@
 #include "gui.hpp"
 #include "map.hpp"
 #include "monster.hpp"
-#include "mon_id.hpp"
 #include "tcod_util.hpp"
 
 Lua_item::Lua_item() = default;
@@ -19,6 +18,13 @@ Lua_status::Lua_status() = default;
 
 Lua_status::Lua_status(Trigger type, const std::string &func, const std::string &name, int duration)
   : type(type), func(func), name(name), duration(duration)
+{
+}
+
+Lua_monster::Lua_monster() = default;
+
+Lua_monster::Lua_monster(char icon, const TCODColor &color, const std::string &name, int max_hp, int attack, int rarity)
+  : icon(icon), color(color), name(name), max_hp(max_hp), attack(attack), rarity(rarity)
 {
 }
 
@@ -37,13 +43,13 @@ void Game::init_lua() {
 				{"ON_TURN", Trigger::ON_TURN},
 				{"ON_DAM", Trigger::ON_DAM}
 			       });
-  lua_state->new_usertype<Lua_item>("Item",
+  lua_state->new_usertype<Lua_item>("Lua_item",
 				    sol::constructors<Lua_item(),Lua_item(Trigger, const std::string &, const std::string &, int)>(),
 				    "type", &Lua_item::type,
 				    "func", &Lua_item::func,
 				    "name", &Lua_item::name,
 				    "rarity", &Lua_item::rarity);
-  lua_state->new_usertype<Lua_status>("Status",
+  lua_state->new_usertype<Lua_status>("Lua_status",
 				    sol::constructors<Lua_status(),Lua_status(Trigger, const std::string &, const std::string &, int)>(),
 				    "type", &Lua_status::type,
 				    "func", &Lua_status::func,
@@ -54,14 +60,14 @@ void Game::init_lua() {
 				     "r", &TCODColor::r,
 				     "g", &TCODColor::g,
 				     "b", &TCODColor::b);
-  lua_state->new_usertype<mon_id>("mon_id",
-				  sol::constructors<mon_id(), mon_id(char, const TCODColor &, const std::string &, int, int, int)>(),
-				  "icon", &mon_id::icon,
-				  "color", &mon_id::color,
-				  "name", &mon_id::name,
-				  "max_hp", &mon_id::max_hp,
-				  "attack", &mon_id::attack,
-				  "rarity", &mon_id::rarity);
+  lua_state->new_usertype<Lua_monster>("Lua_monster",
+				       sol::constructors<Lua_monster(), Lua_monster(char, const TCODColor &, const std::string &, int, int, int)>(),
+				       "icon", &Lua_monster::icon,
+				       "color", &Lua_monster::color,
+				       "name", &Lua_monster::name,
+				       "max_hp", &Lua_monster::max_hp,
+				       "attack", &Lua_monster::attack,
+				       "rarity", &Lua_monster::rarity);
   lua_state->new_usertype<Creature>("Creature",
 				    sol::no_constructor,
 				    "hp", sol::property(&Creature::get_hp),
@@ -90,7 +96,7 @@ void Game::init_lua() {
 				  "x", &Player::x,
 				  "y", &Player::y);
   lua_state->new_usertype<Monster>("Monster",
-				   sol::constructors<Monster(const std::string &, Map &, int, int), Monster(const mon_id &, Map &, int, int)>(),
+				   sol::constructors<Monster(const std::string &, Map &, int, int), Monster(const Lua_monster &, Map &, int, int)>(),
 				   "hp", sol::property(&Creature::get_hp),
 				   "attack", sol::property(&Creature::get_attack),
 				   "name", sol::property(&Monster::name),
@@ -155,8 +161,8 @@ void Game::init_lua() {
 
   monster_generators.reserve(table_size);
   for (const auto &[key, obj] : mon_table) {
-    monster_generators.push_back(obj.as<mon_id>());
-    mon_id &o = monster_generators.back();
+    monster_generators.push_back(obj.as<Lua_monster>());
+    Lua_monster &o = monster_generators.back();
     monster_name_map.insert({key.as<std::string>(), &o});
     monster_rarity_map.insert({o.rarity, &o});
   }
