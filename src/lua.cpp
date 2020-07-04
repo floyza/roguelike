@@ -179,3 +179,7 @@ void Game::init_lua() {
     status_name_map.insert({key.as<std::string>(), &o});
   }
 }
+
+sol::function Game::get_lua_func(const std::string &func) {
+  return (*lua_state)[func];
+}

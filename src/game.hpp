@@ -5,13 +5,16 @@
 #include <memory>
 #include <map>
 #include <vector>
-#include "lua.hpp"
 
 class Map;
 class Display;
 class Player;
 class Gui;
 struct Message;
+
+struct Lua_item;
+struct Lua_monster;
+struct Lua_status;
 
 class Game {
   std::vector<Map> levels;
@@ -33,13 +36,14 @@ class Game {
 
   std::multimap<int, Lua_item *> item_rarity_map;
   std::multimap<int, Lua_monster *> monster_rarity_map;
+
+  std::unique_ptr<sol::state> lua_state;
 public:
   Game();
   Game(const Game &) = delete;
   Game& operator=(const Game &) = delete;
   ~Game();
   std::unique_ptr<Player> you;
-  std::unique_ptr<sol::state> lua_state;
   Map *map;
 
   void send_msg(const Message &msg);
@@ -50,6 +54,7 @@ public:
   void generate_map();
 
   void init_lua();
+  sol::function get_lua_func(const std::string &func);
 
   const Lua_item &get_item(const std::string &id) const;
   const Lua_monster &get_mon(const std::string &id) const;

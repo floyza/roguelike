@@ -1,8 +1,6 @@
 #ifndef DEFINED_LUA_HPP
 #define DEFINED_LUA_HPP
 
-#define SOL_ALL_SAFETIES_ON 1
-
 #include <string>
 #include <memory>
 #include <libtcod/libtcod.hpp>
