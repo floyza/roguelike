@@ -4,7 +4,7 @@
 #include "game.hpp"
 
 Item::Item(const std::string &id, int x, int y)
-  : Item(game->get_item(id), x, y)
+  : Item(game->lua_manager->get_item(id), x, y)
 {
 }
 

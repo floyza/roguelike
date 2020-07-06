@@ -10,7 +10,6 @@ int main() {
   tcod_rand = std::make_unique<TCODRandom>();
   
   game = std::make_unique<Game>();
-  game->init_lua();
   game->generate_map();
 
   game->you->aquire_item("test");

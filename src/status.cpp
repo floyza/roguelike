@@ -5,9 +5,9 @@
 #include "player.hpp"
 
 Status::Status(const std::string &id)
-  : Status(game->get_status(id))
+  : Status(game->lua_manager->get_status(id))
 {
-  const Lua_status &status_base = game->get_status(id);
+  const Lua_status &status_base = game->lua_manager->get_status(id);
   name = status_base.name;
   effect = Effect{status_base.type, status_base.func};
   duration = status_base.duration;

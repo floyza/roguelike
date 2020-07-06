@@ -8,7 +8,7 @@
 #include <algorithm>
 
 Monster::Monster(const std::string &id, Map &parent, int x, int y)
-  : Monster(game->get_mon(id), parent, x, y)
+  : Monster(game->lua_manager->get_mon(id), parent, x, y)
 {
 }
 

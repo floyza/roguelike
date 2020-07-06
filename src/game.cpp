@@ -8,6 +8,7 @@
 #include <iostream>
 #include <libtcod/libtcod.hpp>
 #include <lua.h>
+#include <memory>
 
 std::unique_ptr<Game> game;
 
@@ -16,7 +17,8 @@ const char *Game::font_file = "data/fonts/cp866_8x12.png";
 Game::Game()
   : log_header(std::make_unique<Gui>(map_width, 0, log_width, 3)),
     msg_log(std::make_unique<Gui>(map_width, 2, log_width, map_height-2)),
-    you(std::make_unique<Player>('@', TCODColor::white, 30, 5))
+    you(std::make_unique<Player>('@', TCODColor::white, 30, 5)),
+    lua_manager(std::make_unique<Lua_manager>())
 {
   log_header->send_msg({"LOG", TCODColor::white, true});
   TCODConsole::setCustomFont(font_file, TCOD_FONT_LAYOUT_ASCII_INROW);
@@ -43,37 +45,6 @@ bool Game::do_turn() {
     return true;
   }
   return false;
-}
-
-const Lua_item &Game::get_item(const std::string &id) const {
-  auto iter = item_name_map.find(id);
-  if (iter == item_name_map.end())
-    throw std::runtime_error{"Game::get_item: invalid item id"};
-  return *iter->second;
-}
-
-const Lua_monster &Game::get_mon(const std::string &id) const {
-  auto iter = monster_name_map.find(id);
-  if (iter == monster_name_map.end())
-    throw std::runtime_error{"Game::get_mon: invalid monster id"};
-  return *iter->second;
-}
-
-const Lua_status &Game::get_status(const std::string &id) const {
-  auto iter = status_name_map.find(id);
-  if (iter == status_name_map.end())
-    throw std::runtime_error{"Game::get_status: invalid status id"};
-  return *iter->second;
-}
-
-const Lua_item &Game::get_rand_item(int depth) const {
-  auto range = item_rarity_map.equal_range(depth);
-  return *random_element(range.first, range.second)->second;
-}
-
-const Lua_monster &Game::get_rand_mon(int depth) const {
-  auto range = monster_rarity_map.equal_range(depth);
-  return *random_element(range.first, range.second)->second;
 }
 
 void Game::send_msg(const Message &msg) {

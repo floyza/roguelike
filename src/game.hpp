@@ -3,13 +3,13 @@
 
 #include "sol.hpp"
 #include <memory>
-#include <map>
 #include <vector>
 
 class Map;
 class Display;
 class Player;
 class Gui;
+class Lua_manager;
 struct Message;
 
 struct Lua_item;
@@ -25,19 +25,6 @@ class Game {
 
   std::unique_ptr<Gui> log_header;
   std::unique_ptr<Gui> msg_log;
-
-  std::vector<Lua_item> item_generators;
-  std::vector<Lua_monster> monster_generators;
-  std::vector<Lua_status> status_generators;
-
-  std::map<std::string, Lua_item *> item_name_map;
-  std::map<std::string, Lua_monster *> monster_name_map;
-  std::map<std::string, Lua_status *> status_name_map;
-
-  std::multimap<int, Lua_item *> item_rarity_map;
-  std::multimap<int, Lua_monster *> monster_rarity_map;
-
-  std::unique_ptr<sol::state> lua_state;
 public:
   Game();
   Game(const Game &) = delete;
@@ -48,20 +35,12 @@ public:
 
   void send_msg(const Message &msg);
 
+  std::unique_ptr<Lua_manager> lua_manager;
+
   /** Returns true if game is not over
    */
   bool do_turn();
   void generate_map();
-
-  void init_lua();
-  sol::function get_lua_func(const std::string &func);
-
-  const Lua_item &get_item(const std::string &id) const;
-  const Lua_monster &get_mon(const std::string &id) const;
-  const Lua_status &get_status(const std::string &id) const;
-
-  const Lua_item &get_rand_item(int depth) const;
-  const Lua_monster &get_rand_mon(int depth) const;
 };
 
 extern std::unique_ptr<Game> game;
