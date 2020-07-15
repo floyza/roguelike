@@ -46,7 +46,6 @@ class Lua_manager {
   std::multimap<int, Lua_item *> item_rarity_map;
   std::multimap<int, Lua_monster *> monster_rarity_map;
 
-
   template<typename T>
   void mandatory(const std::string &table, int id, const std::string &flag, T &member);
   template<typename T>
@@ -68,8 +67,11 @@ public:
   sol::function get_func(const std::string &func);
 
   const Lua_item &get_item(int id) const;
+  const Lua_item &get_item(const std::string &id) const;
   const Lua_monster &get_mon(int id) const;
+  const Lua_monster &get_mon(const std::string &name) const;
   const Lua_status &get_status(int id) const;
+  const Lua_status &get_status(const std::string &name) const;
 
   const Lua_item &get_rand_item(int depth) const;
   const Lua_monster &get_rand_mon(int depth) const;

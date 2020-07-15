@@ -8,6 +8,11 @@ Item::Item(int id, int x, int y)
 {
 }
 
+Item::Item(const std::string &name, int x, int y)
+  : Item(game->lua_manager->get_item(name), x, y)
+{
+}
+
 Item::Item(const Lua_item &base, int x, int y)
   : effect(base.type, base.func), id_(base.id), name_(base.name), x(x), y(y)
 {

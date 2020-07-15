@@ -15,6 +15,7 @@ class Status {
   int id_;
 public:
   Status(int id);
+  Status(const std::string &name);
   Status(const Lua_status &base);
 
   template<Trigger trigger, typename... Args>

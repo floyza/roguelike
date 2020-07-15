@@ -175,6 +175,10 @@ void Player::aquire_item(int id) {
   items.emplace_back(id);
 }
 
+void Player::aquire_item(const std::string &name) {
+  items.emplace_back(name);
+}
+
 void Player::aquire_item(const Lua_item &base) {
   items.emplace_back(base);
 }
@@ -183,12 +187,21 @@ void Player::aquire_status(int id) {
   statuses.emplace_back(id);
 }
 
+void Player::aquire_status(const std::string &name) {
+  statuses.emplace_back(name);
+}
+
 void Player::aquire_status(const Lua_status &base) {
   statuses.emplace_back(base);
 }
 
 void Player::remove_status(int id) {
   auto iter = std::remove_if(statuses.begin(), statuses.end(), [id](const Status &s){return s.id() == id;});
+  statuses.erase(iter, statuses.end());
+}
+
+void Player::remove_status(const std::string &name) {
+  auto iter = std::remove_if(statuses.begin(), statuses.end(), [&name](const Status &s){return s.name() == name;});
   statuses.erase(iter, statuses.end());
 }
 

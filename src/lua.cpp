@@ -194,14 +194,34 @@ const Lua_item &Lua_manager::get_item(int id) const {
   return item_generators.at(id);
 }
 
+const Lua_item &Lua_manager::get_item(const std::string &name) const {
+  return *std::find_if(item_generators.begin(), item_generators.end(),
+		      [&name](const Lua_item &item){
+			return item.name == name;
+		      });
+}
+
 const Lua_monster &Lua_manager::get_mon(int id) const {
   return monster_generators.at(id);
+}
+
+const Lua_monster &Lua_manager::get_mon(const std::string &name) const {
+  return *std::find_if(monster_generators.begin(), monster_generators.end(),
+		      [&name](const Lua_monster &monster){
+			return monster.name == name;
+		      });
 }
 
 const Lua_status &Lua_manager::get_status(int id) const {
   return status_generators.at(id);
 }
 
+const Lua_status &Lua_manager::get_status(const std::string &name) const {
+  return *std::find_if(status_generators.begin(), status_generators.end(),
+		      [&name](const Lua_status &status){
+			return status.name == name;
+		      });
+}
 const Lua_item &Lua_manager::get_rand_item(int depth) const {
   auto range = item_rarity_map.equal_range(depth);
   return *random_element(range.first, range.second)->second;

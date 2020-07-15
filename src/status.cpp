@@ -9,6 +9,11 @@ Status::Status(int id)
 {
 }
 
+Status::Status(const std::string &name)
+  : Status(game->lua_manager->get_status(name))
+{
+}
+
 Status::Status(const Lua_status &base)
   : effect(base.type, base.func), duration(base.duration), name_(base.name), id_(base.id)
 {

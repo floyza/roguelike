@@ -31,11 +31,14 @@ public:
   void take_damage(int amount);
 
   void aquire_item(int id);
+  void aquire_item(const std::string &name);
   void aquire_item(const Lua_item &base);
 
   void aquire_status(int id);
+  void aquire_status(const std::string &name);
   void aquire_status(const Lua_status &base);
   void remove_status(int id);
+  void remove_status(const std::string &name);
 
   template<Trigger trigger, typename... Args>
   void call_triggers(Args... args);
