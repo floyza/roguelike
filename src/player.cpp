@@ -158,7 +158,7 @@ void Player::take_damage(int amount, Monster &source) {
 }
 
 void Player::take_damage(int amount) {
-  Monster dummy = Monster{"dummy", *game->map};
+  Monster dummy = Monster{0, *game->map}; // dummy monster
   call_triggers<Trigger::DAM_REDUCE>(std::ref(amount), std::ref(dummy));/*quick fix, TODO: probably have an actual source*/
   hp -= amount;
   if (hp<=0)
@@ -171,7 +171,7 @@ void Player::die() {
   dead = true;
 };
 
-void Player::aquire_item(const std::string &id) {
+void Player::aquire_item(int id) {
   items.emplace_back(id);
 }
 
@@ -179,7 +179,7 @@ void Player::aquire_item(const Lua_item &base) {
   items.emplace_back(base);
 }
 
-void Player::aquire_status(const std::string &id) {
+void Player::aquire_status(int id) {
   statuses.emplace_back(id);
 }
 
@@ -187,11 +187,9 @@ void Player::aquire_status(const Lua_status &base) {
   statuses.emplace_back(base);
 }
 
-void Player::remove_status(const std::string &id) {
-  for (Status &status : statuses) {
-    auto iter = std::remove_if(statuses.begin(), statuses.end(), [&status](const Status &s){return status.name==s.name;});
-    statuses.erase(iter, statuses.end());
-  }
+void Player::remove_status(int id) {
+  auto iter = std::remove_if(statuses.begin(), statuses.end(), [id](const Status &s){return s.id() == id;});
+  statuses.erase(iter, statuses.end());
 }
 
 int Player::turn_count() const {

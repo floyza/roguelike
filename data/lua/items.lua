@@ -1,7 +1,22 @@
-item_table={
-  ["basic_armor"] = Lua_item.new(Trigger.DAM_REDUCE, "armor_apply", "Armor", 0),
-  ["stealth_kit"] = Lua_item.new(Trigger.DAM_MOD, "stealth_attack", "Stealth Kit", 0),
-  ["test"] = Lua_item.new(Trigger.ON_MOVE, "test_effect", "Test Item", 10000)
+item_definitions = {
+  {
+    name = "Armor",
+    trigger = Trigger.DAM_REDUCE,
+    effect = "armor_apply",
+    rarity = 0
+  },
+  {
+    name = "Stealth Kit",
+    trigger = Trigger.DAM_MOD,
+    effect = "stealth_attack",
+    rarity = 0
+  },
+  {
+    name = "Test Item",
+    trigger = Trigger.ON_MOVE,
+    effect = "test_effect",
+    rarity = 10000
+  }
 }
 
 function armor_apply(armor_val, target)
@@ -42,4 +57,5 @@ function recursive_attack(target)
 end
 
 function test_effect()
+  game.send_msg(Message.new("hihihi"))
 end

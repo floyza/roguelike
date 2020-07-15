@@ -7,13 +7,13 @@
 #include "lua.hpp"
 #include <algorithm>
 
-Monster::Monster(const std::string &id, Map &parent, int x, int y)
+Monster::Monster(int id, Map &parent, int x, int y)
   : Monster(game->lua_manager->get_mon(id), parent, x, y)
 {
 }
 
 Monster::Monster(const Lua_monster &base, Map &parent, int x, int y)
-  : Creature(base.icon, base.color, base.max_hp, base.attack, x, y), name_(base.name), parent(&parent)
+  : Creature(base.icon, base.color, base.max_hp, base.attack, x, y), name_(base.name), id_(base.id), parent(&parent)
 {
 }
 
@@ -82,6 +82,8 @@ void Monster::do_attack(Creature &target) {
 }
 
 void Monster::take_damage(int amount, Player &source) {
+  (void)source; // we aren't using the reference to player for now
+  // we will later once we implement effects on monsters
   game->send_msg({"You attack the " + name() + " for " + std::to_string(amount) + " damage!"});
   hp -= amount;
   if (hp<=0)
@@ -101,3 +103,7 @@ void Monster::die() {
   auto iter = std::remove_if(parent->monsters.begin(), parent->monsters.end(), [this](const Monster &mon){return this==&mon;});
   parent->monsters.erase(iter, parent->monsters.end());
 }
+
+int Monster::id() const { return id_; }
+
+const std::string &Monster::name() const { return name_; }

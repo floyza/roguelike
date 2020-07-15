@@ -1,5 +1,10 @@
-status_table={
-  ["burn"] = Lua_status.new(Trigger.ON_MOVE, "take_damage", "Burn", 10)
+status_definitions = {
+  {
+    name = "Burn",
+    trigger = Trigger.ON_MOVE,
+    effect = "take_damage",
+    duration = 10
+  }
 }
 
 function take_damage()

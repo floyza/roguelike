@@ -7,30 +7,9 @@
 #include "monster.hpp"
 #include "tcod_util.hpp"
 
-Lua_item::Lua_item() = default;
-
-Lua_item::Lua_item(Trigger type, const std::string &func, const std::string &name, int rarity)
-  : type(type), func(func), name(name), rarity(rarity)
-{
-}
-
-Lua_status::Lua_status() = default;
-
-Lua_status::Lua_status(Trigger type, const std::string &func, const std::string &name, int duration)
-  : type(type), func(func), name(name), duration(duration)
-{
-}
-
-Lua_monster::Lua_monster() = default;
-
-Lua_monster::Lua_monster(char icon, const TCODColor &color, const std::string &name, int max_hp, int attack, int rarity)
-  : icon(icon), color(color), name(name), max_hp(max_hp), attack(attack), rarity(rarity)
-{
-}
-
 Lua_manager::Lua_manager()
 {
-  lua_state.open_libraries(sol::lib::base, sol::lib::math);
+  lua_state.open_libraries(sol::lib::base, sol::lib::math, sol::lib::string);
 
   lua_state.new_enum<Trigger>("Trigger",
 			       {
@@ -43,31 +22,31 @@ Lua_manager::Lua_manager()
 				{"ON_TURN", Trigger::ON_TURN},
 				{"ON_DAM", Trigger::ON_DAM}
 			       });
-  lua_state.new_usertype<Lua_item>("Lua_item",
-				    sol::constructors<Lua_item(),Lua_item(Trigger, const std::string &, const std::string &, int)>(),
-				    "type", &Lua_item::type,
-				    "func", &Lua_item::func,
-				    "name", &Lua_item::name,
-				    "rarity", &Lua_item::rarity);
-  lua_state.new_usertype<Lua_status>("Lua_status",
-				    sol::constructors<Lua_status(),Lua_status(Trigger, const std::string &, const std::string &, int)>(),
-				    "type", &Lua_status::type,
-				    "func", &Lua_status::func,
-				    "name", &Lua_status::name,
-				    "duration", &Lua_status::duration);
+  // lua_state.new_usertype<Lua_item>("Lua_item",
+  // 				   sol::constructors<Lua_item(),Lua_item(const std::string &, Trigger, const std::string &, int)>(),
+  // 				    "type", &Lua_item::type,
+  // 				    "func", &Lua_item::func,
+  // 				    "name", &Lua_item::name,
+  // 				    "rarity", &Lua_item::rarity);
+  // lua_state.new_usertype<Lua_status>("Lua_status",
+  // 				     sol::constructors<Lua_status(),Lua_status(const std::string &, Trigger, const std::string &, int)>(),
+  // 				     "type", &Lua_status::type,
+  // 				     "func", &Lua_status::func,
+  // 				     "name", &Lua_status::name,
+  // 				     "duration", &Lua_status::duration);
+  // lua_state.new_usertype<Lua_monster>("Lua_monster",
+  // 				      sol::constructors<Lua_monster(), Lua_monster(const std::string &, char, const TCODColor &, int, int, int)>(),
+  // 				      "icon", &Lua_monster::icon,
+  // 				      "color", &Lua_monster::color,
+  // 				      "name", &Lua_monster::name,
+  // 				      "max_hp", &Lua_monster::max_hp,
+  // 				      "attack", &Lua_monster::attack,
+  // 				      "rarity", &Lua_monster::rarity);
   lua_state.new_usertype<TCODColor>("color",
 				     sol::constructors<TCODColor(),TCODColor(int,int,int)>(),
 				     "r", &TCODColor::r,
 				     "g", &TCODColor::g,
 				     "b", &TCODColor::b);
-  lua_state.new_usertype<Lua_monster>("Lua_monster",
-				       sol::constructors<Lua_monster(), Lua_monster(char, const TCODColor &, const std::string &, int, int, int)>(),
-				       "icon", &Lua_monster::icon,
-				       "color", &Lua_monster::color,
-				       "name", &Lua_monster::name,
-				       "max_hp", &Lua_monster::max_hp,
-				       "attack", &Lua_monster::attack,
-				       "rarity", &Lua_monster::rarity);
   lua_state.new_usertype<Creature>("Creature",
 				    sol::no_constructor,
 				    "hp", sol::property(&Creature::get_hp),
@@ -83,9 +62,9 @@ Lua_manager::Lua_manager()
 				  "do_attack", &Player::do_attack,
 				  "do_attack_sans_triggers", &Player::do_attack_sans_triggers,
 				  "do_move", &Player::do_move,
-				  "aquire_item", static_cast<void(Player::*)(const std::string &)>(&Player::aquire_item),
+				  "aquire_item", static_cast<void(Player::*)(int)>(&Player::aquire_item),
 				  "aquire_item", static_cast<void(Player::*)(const Lua_item &)>(&Player::aquire_item),
-				  "aquire_status", static_cast<void(Player::*)(const std::string &)>(&Player::aquire_status),
+				  "aquire_status", static_cast<void(Player::*)(int)>(&Player::aquire_status),
 				  "aquire_status", static_cast<void(Player::*)(const Lua_status &)>(&Player::aquire_status),
 				  "remove_status", &Player::remove_status,
 				  // make sure we get the correct overloaded take_damage function
@@ -96,7 +75,7 @@ Lua_manager::Lua_manager()
 				  "x", &Player::x,
 				  "y", &Player::y);
   lua_state.new_usertype<Monster>("Monster",
-				   sol::constructors<Monster(const std::string &, Map &, int, int), Monster(const Lua_monster &, Map &, int, int)>(),
+				   sol::constructors<Monster(int, Map &, int, int), Monster(const Lua_monster &, Map &, int, int)>(),
 				   "hp", sol::property(&Creature::get_hp),
 				   "attack", sol::property(&Creature::get_attack),
 				   "name", sol::property(&Monster::name),
@@ -143,74 +122,84 @@ Lua_manager::Lua_manager()
   load_file("data/lua/monsters.lua");
   load_file("data/lua/status.lua");
 
-  // sol::table::size only works for numerical keys
+  sol::table item_table = lua_state[item_def_table];
+  item_generators.reserve(item_table.size());
+  item_table.for_each([this](sol::object i, sol::object) {
+			item_generators.push_back(load_item(i.as<int>()));
+			Lua_item &o = item_generators.back();
+			item_rarity_map.insert({o.rarity, &o});
+		      });
 
-  sol::table item_table = lua_state["item_table"];
-  int table_size=0;
-  for (auto i=item_table.begin(); i!=item_table.end(); ++i)
-    ++table_size;
+  sol::table mon_table = lua_state[monster_def_table];
+  monster_generators.reserve(mon_table.size());
+  mon_table.for_each([this](sol::object i, sol::object) {
+			monster_generators.push_back(load_monster(i.as<int>()));
+			Lua_monster &o = monster_generators.back();
+			monster_rarity_map.insert({o.rarity, &o});
+		     });
+  
+  sol::table status_table = lua_state[status_def_table];
+  status_generators.reserve(status_table.size());
+  status_table.for_each([this](sol::object i, sol::object) {
+			  status_generators.push_back(load_status(i.as<int>()));
+			  // Lua_status &o = status_generators.back();
+			});
+}
 
-  item_generators.reserve(table_size);
-  for (const auto &[key, obj] : item_table) {
-    item_generators.push_back(obj.as<Lua_item>());
-    Lua_item &o = item_generators.back();
-    item_name_map.insert({key.as<std::string>(), &o});
-    item_rarity_map.insert({o.rarity, &o});
-  }
+Lua_item Lua_manager::load_item(int id) {
+  Lua_item item;
+  item.id = id-1;
+  mandatory(item_def_table, id, "name", item.name);
+  mandatory(item_def_table, id, "trigger", item.type);
+  mandatory(item_def_table, id, "effect", item.func);
+  mandatory(item_def_table, id, "rarity", item.rarity);
+  return item;
+}
 
-  sol::table mon_table = lua_state["monster_table"];
-  table_size=0;
-  for (auto i=mon_table.begin(); i!=mon_table.end(); ++i)
-    ++table_size;
+Lua_status Lua_manager::load_status(int id) {
+  Lua_status status;
+  status.id = id-1;
+  mandatory(status_def_table, id, "name", status.name);
+  mandatory(status_def_table, id, "trigger", status.type);
+  mandatory(status_def_table, id, "effect", status.func);
+  mandatory(status_def_table, id, "duration", status.duration);
+  return status;
+}
 
-  monster_generators.reserve(table_size);
-  for (const auto &[key, obj] : mon_table) {
-    monster_generators.push_back(obj.as<Lua_monster>());
-    Lua_monster &o = monster_generators.back();
-    monster_name_map.insert({key.as<std::string>(), &o});
-    monster_rarity_map.insert({o.rarity, &o});
-  }
-
-  sol::table status_table = lua_state["status_table"];
-  table_size=0;
-  for (auto i=status_table.begin(); i!=status_table.end(); ++i)
-    ++table_size;
-
-  status_generators.reserve(table_size);
-  for (const auto &[key, obj] : status_table) {
-    status_generators.push_back(obj.as<Lua_status>());
-    Lua_status &o = status_generators.back();
-    status_name_map.insert({key.as<std::string>(), &o});
-  }
+Lua_monster Lua_manager::load_monster(int id) {
+  Lua_monster monster;
+  monster.id = id-1;
+  mandatory(monster_def_table, id, "name", monster.name);
+  mandatory(monster_def_table, id, "icon", monster.icon);
+  mandatory(monster_def_table, id, "color", monster.color);
+  mandatory(monster_def_table, id, "hp", monster.max_hp);
+  mandatory(monster_def_table, id, "attack", monster.attack);
+  mandatory(monster_def_table, id, "rarity", monster.rarity);
+  return monster;
 }
 
 void Lua_manager::load_file(const std::string &file) {
-  lua_state.script_file("data/lua/items.lua");
+  lua_state.script_file(file);
+}
+
+void Lua_manager::script(const std::string &input) {
+  lua_state.script(input);
 }
 
 sol::function Lua_manager::get_func(const std::string &func) {
   return lua_state[func];
 }
 
-const Lua_item &Lua_manager::get_item(const std::string &id) const {
-  auto iter = item_name_map.find(id);
-  if (iter == item_name_map.end())
-    throw std::runtime_error{"Lua_manager::get_item: invalid item id"};
-  return *iter->second;
+const Lua_item &Lua_manager::get_item(int id) const {
+  return item_generators.at(id);
 }
 
-const Lua_monster &Lua_manager::get_mon(const std::string &id) const {
-  auto iter = monster_name_map.find(id);
-  if (iter == monster_name_map.end())
-    throw std::runtime_error{"Lua_manager::get_mon: invalid monster id"};
-  return *iter->second;
+const Lua_monster &Lua_manager::get_mon(int id) const {
+  return monster_generators.at(id);
 }
 
-const Lua_status &Lua_manager::get_status(const std::string &id) const {
-  auto iter = status_name_map.find(id);
-  if (iter == status_name_map.end())
-    throw std::runtime_error{"Lua_manager::get_status: invalid status id"};
-  return *iter->second;
+const Lua_status &Lua_manager::get_status(int id) const {
+  return status_generators.at(id);
 }
 
 const Lua_item &Lua_manager::get_rand_item(int depth) const {

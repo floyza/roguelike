@@ -12,7 +12,7 @@ int main() {
   game = std::make_unique<Game>();
   game->generate_map();
 
-  game->you->aquire_item("test");
+  game->you->aquire_item(2);
 
   while (game->do_turn()) ;
 }

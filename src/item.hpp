@@ -10,8 +10,10 @@ struct Lua_item;
 
 class Item {
   Effect effect;
+  int id_;
+  std::string name_;
 public:
-  Item(const std::string &id, int x=0, int y=0);
+  Item(int id, int x=0, int y=0);
   Item(const Lua_item &base, int x=0, int y=0);
 
   template<Trigger trigger, typename... Args>
@@ -19,7 +21,9 @@ public:
 
   Trigger get_trigger();
 
-  std::string name;
+  int id() const;
+  const std::string &name() const;
+
   void draw() const;
   int x,y;
   ~Item();

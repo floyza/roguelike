@@ -11,8 +11,10 @@ struct Lua_status;
 class Status {
   Effect effect;
   int duration;
+  std::string name_;
+  int id_;
 public:
-  Status(const std::string &id);
+  Status(int id);
   Status(const Lua_status &base);
 
   template<Trigger trigger, typename... Args>
@@ -22,7 +24,9 @@ public:
   void tick();
   void remove();
 
-  std::string name;
+  int id() const;
+  const std::string &name() const;
+
   ~Status();
 };
 

@@ -4,17 +4,13 @@
 #include "game.hpp"
 #include "player.hpp"
 
-Status::Status(const std::string &id)
+Status::Status(int id)
   : Status(game->lua_manager->get_status(id))
 {
-  const Lua_status &status_base = game->lua_manager->get_status(id);
-  name = status_base.name;
-  effect = Effect{status_base.type, status_base.func};
-  duration = status_base.duration;
 }
 
 Status::Status(const Lua_status &base)
-  : effect(base.type, base.func), duration(base.duration), name(base.name)
+  : effect(base.type, base.func), duration(base.duration), name_(base.name), id_(base.id)
 {
 }
 
@@ -24,7 +20,7 @@ Status::~Status() = default;
 Trigger Status::get_trigger() { return effect.get_trigger(); }
 
 void Status::remove() {
-  game->you->remove_status(name);
+  game->you->remove_status(id_);
 }
 
 void Status::tick() {
@@ -32,3 +28,8 @@ void Status::tick() {
     remove();
   }
 }
+
+int Status::id() const { return id_; }
+
+
+const std::string &Status::name() const { return name_; }

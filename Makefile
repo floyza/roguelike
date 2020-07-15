@@ -4,7 +4,7 @@ OBJ_DIR=obj
 TARGET = roguelike
 _OBJS = main.o map.o tcod_util.o game.o player.o creature.o gui.o monster.o lua.o item.o effect.o status.o
 OBJS = $(patsubst %,$(OBJ_DIR)/%,$(_OBJS))
-CXXFLAGS += -std=c++17 -Wall -I/usr/include/libtcod -ltcod -ltcodxx -llua -MMD -DSOL_ALL_SAFETIES_ON
+CXXFLAGS += -std=c++17 -Wall -Wextra -I/usr/include/libtcod -ltcod -ltcodxx -llua -MMD -DSOL_ALL_SAFETIES_ON
 DEPENDS = $(OBJS:.o=.d)
 
 ifndef RELEASE
