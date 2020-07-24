@@ -14,7 +14,7 @@
 #include <string>
 
 Player::Player(char icon, const TCODColor &color, int max_hp, int attack, int x, int y)
-  : Creature(icon, color, max_hp, attack, x, y), current_input{std::make_unique<Default_input_handler>(*this)}
+  : Creature(icon, color, max_hp, attack, x, y), current_input{std::make_unique<Player_input_handler>(*this)}
 {
 }
 

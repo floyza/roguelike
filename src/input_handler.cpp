@@ -4,10 +4,15 @@
 #include "player.hpp"
 #include <cctype>
 
-Default_input_handler::Default_input_handler(Player &target)
+Move_input_handler::Move_input_handler(Creature &target)
   : move_up_{target,0,-1}, move_down_{target,0,1}, move_right_{target,1,0}, move_left_{target,-1,0},
     move_nw_{target,-1,-1}, move_ne_{target,1,-1}, move_sw_{target,-1,1}, move_se_{target,1,1},
     null_command_{}
+{
+}
+
+Player_input_handler::Player_input_handler(Creature &target)
+    : Move_input_handler{target}
 {
   buttons_[tcod_key_of_char('k')] = &move_up_;
   buttons_[tcod_key_of_char('j')] = &move_down_;
@@ -19,13 +24,13 @@ Default_input_handler::Default_input_handler(Player &target)
   buttons_[tcod_key_of_char('n')] = &move_se_;
 }
 
-Command &Default_input_handler::get_input() {
+Command &Player_input_handler::get_input() {
   TCOD_key_t key;
   TCODSystem::waitForEvent(TCOD_EVENT_KEY_PRESS,&key,nullptr,true);
-  return handle_input(key);
+  return handle_key(key);
 }
 
-Command &Default_input_handler::handle_input(const TCOD_key_t &input) {
+Command &Player_input_handler::handle_key(const TCOD_key_t &input) {
   auto it = buttons_.find(input);
   if (it != buttons_.end()) {
     return *it->second;
@@ -44,4 +49,12 @@ TCOD_key_t tcod_key_of_char(char c) {
   key.ralt=false;
   key.rctrl=false;
   return key;
+}
+
+Monster_input_handler::Monster_input_handler(Creature &target)
+  : Move_input_handler{target}, target{target}
+{
+}
+
+Command &Monster_input_handler::get_input() {
 }
