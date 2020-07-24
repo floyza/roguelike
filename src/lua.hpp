@@ -61,10 +61,13 @@ class Lua_manager {
 public:
   Lua_manager();
 
+  void init();
+
   void load_file(const std::string &file);
   void script(const std::string &input);
+  void script_cin();
 
-  sol::function get_func(const std::string &func);
+  sol::protected_function get_func(const std::string &func);
 
   const Lua_item &get_item(int id) const;
   const Lua_item &get_item(const std::string &id) const;

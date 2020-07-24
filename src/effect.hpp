@@ -117,7 +117,8 @@ void Effect::call_effect(Args... args) {
   // we have to take a template argument of our trigger because it needs
   // to be constexpr
   assert(T == trigger);
-  std::get<Trigger_type<T>>(func)(args...);
+  auto x=std::get<Trigger_type<T>>(func);
+  x(args...);
 }
 
 #endif //DEFINED_EFFECT_HPP

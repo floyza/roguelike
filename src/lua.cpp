@@ -6,9 +6,13 @@
 #include "map.hpp"
 #include "monster.hpp"
 #include "tcod_util.hpp"
+#include <iostream>
 
 Lua_manager::Lua_manager()
 {
+}
+
+void Lua_manager::init() {
   lua_state.open_libraries(sol::lib::base, sol::lib::math, sol::lib::string);
 
   lua_state.new_enum<Trigger>("Trigger",
@@ -22,26 +26,6 @@ Lua_manager::Lua_manager()
 			       {"ON_TURN", Trigger::ON_TURN},
 			       {"ON_DAM", Trigger::ON_DAM}
 			      });
-  // lua_state.new_usertype<Lua_item>("Lua_item",
-  // 				   sol::constructors<Lua_item(),Lua_item(const std::string &, Trigger, const std::string &, int)>(),
-  // 				    "type", &Lua_item::type,
-  // 				    "func", &Lua_item::func,
-  // 				    "name", &Lua_item::name,
-  // 				    "rarity", &Lua_item::rarity);
-  // lua_state.new_usertype<Lua_status>("Lua_status",
-  // 				     sol::constructors<Lua_status(),Lua_status(const std::string &, Trigger, const std::string &, int)>(),
-  // 				     "type", &Lua_status::type,
-  // 				     "func", &Lua_status::func,
-  // 				     "name", &Lua_status::name,
-  // 				     "duration", &Lua_status::duration);
-  // lua_state.new_usertype<Lua_monster>("Lua_monster",
-  // 				      sol::constructors<Lua_monster(), Lua_monster(const std::string &, char, const TCODColor &, int, int, int)>(),
-  // 				      "icon", &Lua_monster::icon,
-  // 				      "color", &Lua_monster::color,
-  // 				      "name", &Lua_monster::name,
-  // 				      "max_hp", &Lua_monster::max_hp,
-  // 				      "attack", &Lua_monster::attack,
-  // 				      "rarity", &Lua_monster::rarity);
   lua_state.new_usertype<TCODColor>("color",
 				    sol::constructors<TCODColor(),TCODColor(int,int,int)>(),
 				    "r", &TCODColor::r,
@@ -51,7 +35,7 @@ Lua_manager::Lua_manager()
 				   sol::no_constructor,
 				   "hp", sol::property(&Creature::get_hp),
 				   "attack", sol::property(&Creature::get_attack),
-				   "do_move", &Creature::do_move,
+				   "do_turn", &Creature::do_turn,
 				   "die", &Creature::die,
 				   "x", &Creature::x,
 				   "y", &Creature::y);
@@ -61,6 +45,7 @@ Lua_manager::Lua_manager()
 				 "attack", sol::property(&Creature::get_attack),
 				 "do_attack", &Player::do_attack,
 				 "do_attack_sans_triggers", &Player::do_attack_sans_triggers,
+				 "do_turn", &Player::do_turn,
 				 "do_move", &Player::do_move,
 				 "aquire_item", static_cast<void(Player::*)(int)>(&Player::aquire_item),
 				 "aquire_item", static_cast<void(Player::*)(const std::string &)>(&Player::aquire_item),
@@ -83,7 +68,7 @@ Lua_manager::Lua_manager()
 				  "attack", sol::property(&Creature::get_attack),
 				  "name", sol::property(&Monster::name),
 				  "do_attack", &Monster::do_attack,
-				  "do_move", &Monster::do_move,
+				  "do_turn", &Monster::do_turn,
 				  "die", &Monster::die,
 				  "x", &Monster::x,
 				  "y", &Monster::y);
@@ -107,7 +92,7 @@ Lua_manager::Lua_manager()
 			       "send_msg", &Game::send_msg,
 			       "map", &Game::map);
   lua_state.new_usertype<Lua_manager>("Lua_manager",
-				      sol::constructors<Lua_manager>(),
+				      sol::no_constructor,
 				      "get_func", &Lua_manager::get_func,
 				      "get_item", static_cast<const Lua_item &(Lua_manager::*)(int) const>(&Lua_manager::get_item),
 				      "get_item", static_cast<const Lua_item &(Lua_manager::*)(const std::string &) const>(&Lua_manager::get_item),
@@ -192,7 +177,14 @@ void Lua_manager::script(const std::string &input) {
   lua_state.script(input);
 }
 
-sol::function Lua_manager::get_func(const std::string &func) {
+void Lua_manager::script_cin() {
+  std::string in;
+  while (std::getline(std::cin, in)) {
+    script(in);
+  }
+}
+
+sol::protected_function Lua_manager::get_func(const std::string &func) {
   return lua_state[func];
 }
 

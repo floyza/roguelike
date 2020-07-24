@@ -57,5 +57,4 @@ function recursive_attack(target)
 end
 
 function test_effect()
-  game.send_msg(Message.new("hihihi"))
 end
