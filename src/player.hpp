@@ -10,6 +10,7 @@
 class Monster;
 class Item;
 class Status;
+class Input_hander;
 enum class Trigger;
 
 class Player : public Creature {
@@ -19,11 +20,13 @@ class Player : public Creature {
   std::vector<Item> items;
   std::vector<Status> statuses;
   int total_turns=0;
+  std::unique_ptr<Input_hander> current_input;
 public:
   Player(char icon, const TCODColor &color, int max_hp, int attack, int x=0, int y=0);
   ~Player();
 
-  void do_move() override;
+  bool do_move(int x, int y) override;
+  void do_turn() override;
   void do_attack(Creature &target);
   void do_attack_sans_triggers(Creature &target); // still calls DAM_MOD triggers
   void die() override;

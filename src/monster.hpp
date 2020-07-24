@@ -24,9 +24,11 @@ public:
   int id() const;
   const std::string &name() const;
 
-  void do_move() override;
+  void do_turn() override;
   void do_attack(Creature &target);
   void die() override;
+
+  bool do_move(int /*x*/, int /*y*/) override {/*do nothing TODO:IMPLEMENT*/}
 
   Map *parent;
 };

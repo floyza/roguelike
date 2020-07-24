@@ -18,9 +18,10 @@ public:
   void draw() const;
   int get_hp() const;
   int get_attack() const;
-  virtual void do_move()=0;
+  virtual void do_turn()=0;
   virtual void take_damage(int amount, Player &source)=0;
   virtual void take_damage(int amount, Monster &source)=0;
+  virtual bool do_move(int x, int y)=0;
   virtual void die()=0;
   virtual ~Creature()=0;
   int x,y;

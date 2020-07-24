@@ -39,9 +39,9 @@ bool Game::do_turn() {
     msg_log->draw();
     log_header->draw();
     TCODConsole::root->flush();
-    you->do_move();
+    you->do_turn();
     for (Monster &mon : map->monsters)
-      mon.do_move();
+      mon.do_turn();
     return true;
   }
   return false;
