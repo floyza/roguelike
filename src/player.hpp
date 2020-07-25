@@ -10,7 +10,7 @@
 class Monster;
 class Item;
 class Status;
-class Input_hander;
+class Input_handler;
 enum class Trigger;
 
 class Player : public Creature {
@@ -20,7 +20,7 @@ class Player : public Creature {
   std::vector<Item> items;
   std::vector<Status> statuses;
   int total_turns=0;
-  std::unique_ptr<Input_hander> current_input;
+  std::unique_ptr<Input_handler> current_input;
 public:
   Player(char icon, const TCODColor &color, int max_hp, int attack, int x=0, int y=0);
   ~Player();

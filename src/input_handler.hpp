@@ -10,7 +10,7 @@ class Player;
 
 class Input_handler {
 public:
-  virtual ~Input_hander() { };
+  virtual ~Input_handler() { };
   virtual Command &get_input()=0;
 };
 
