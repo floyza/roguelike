@@ -31,6 +31,8 @@ public:
   void do_attack_sans_triggers(Creature &target); // still calls DAM_MOD triggers
   void die() override;
 
+  Faction faction() const override { return Faction::Player; }
+
   void take_damage(int amount);
 
   void aquire_item(int id);

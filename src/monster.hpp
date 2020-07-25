@@ -28,6 +28,8 @@ public:
   void do_attack(Creature &target);
   void die() override;
 
+  Faction faction() const override { return Faction::Enemy; }
+
   bool do_move(int /*x*/, int /*y*/) override {/*do nothing TODO:IMPLEMENT*/}
 
   Map *parent;

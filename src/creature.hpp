@@ -2,6 +2,7 @@
 #define CREATURE_HPP_DEFINED
 
 #include <libtcod/libtcod.hpp>
+#include "factions.hpp"
 
 class Player;
 class Monster;
@@ -22,6 +23,7 @@ public:
   virtual void take_damage(int amount, Player &source)=0;
   virtual void take_damage(int amount, Monster &source)=0;
   virtual bool do_move(int x, int y)=0;
+  virtual Faction faction() const=0;
   virtual void die()=0;
   virtual ~Creature()=0;
   int x,y;
