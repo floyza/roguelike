@@ -30,7 +30,7 @@ public:
 
   Faction faction() const override { return Faction::Enemy; }
 
-  bool do_move(int /*x*/, int /*y*/) override {/*do nothing TODO:IMPLEMENT*/}
+  bool do_move(int x, int y) override;
 
   Map *parent;
 };

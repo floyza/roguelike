@@ -48,17 +48,8 @@ std::pair<int, int> Monster::step_to_dest() {
       int pstep_x, pstep_y;
       if (!path_closer.isEmpty()) {
 	path_closer.get(0, &pstep_x, &pstep_y);
-	bool can_step = true;
-	for (const Monster &monster : parent->monsters) {
-	  if (monster.x == pstep_x && monster.y == pstep_y) {
-	    can_step = false;
-	    break;
-	  }
-	}
-	if (can_step) {
-	  step.first = pstep_x;
-	  step.second = pstep_y;
-	}
+	step.first = pstep_x;
+	step.second = pstep_y;
       }
     }
   }
@@ -73,17 +64,28 @@ void Monster::do_turn() {
   }
 
   std::pair<int,int> step = step_to_dest();
-
-  if (game->you->x == step.first && game->you->y == step.second) {
-    do_attack(*game->you);
-  } else {
-    x = step.first;
-    y = step.second;
-  }
+  do_move(step.first, step.second);
 }
 
 void Monster::do_attack(Creature &target) {
   target.take_damage(attack, *this);
+}
+
+bool Monster::do_move(int x, int y) {
+  for (const Monster &monster : parent->monsters) {
+    if (monster.x == x && monster.y == y) {
+      return true;
+    }
+  }
+
+  if (game->you->x == x && game->you->y == y) {
+    do_attack(*game->you);
+  } else {
+    this->x = x;
+    this->y = y;
+  }
+
+  return true;
 }
 
 void Monster::take_damage(int amount, Player &source) {
