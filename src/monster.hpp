@@ -28,7 +28,7 @@ public:
   void do_attack(Creature &target);
   void die() override;
 
-  Faction faction() const override { return Faction::Enemy; }
+  Faction faction() const override { return Faction::Monster; }
 
   bool do_move(int x, int y) override;
 
