@@ -51,8 +51,6 @@ public:
   int turn_count() const;
 
   bool is_dead() const { return dead; }
-
-  static constexpr int view_range=9;
 };
 
 template<Trigger trigger, typename... Args>

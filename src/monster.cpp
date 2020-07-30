@@ -57,7 +57,7 @@ std::pair<int, int> Monster::step_to_dest() {
 }
 
 void Monster::do_turn() {
-  if (parent->in_fov(x,y)) {
+  if (parent->in_fov(x, y, game->you->x,game->you->y)) {
     // the player can see us, so we can see them
     dest_x = game->you->x;
     dest_y = game->you->y;

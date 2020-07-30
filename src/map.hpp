@@ -27,8 +27,6 @@ class Map {
   bool in_level(int x, int y);
   void generate_monster(int x, int y);
   void generate_item(int x, int y);
-
-  void compute_fov(int x, int y, int range);
 public:
   Map(int w, int h, int depth);
   ~Map();
@@ -41,7 +39,7 @@ public:
   void set_walkable(int x, int y, bool walkable);
   void draw();
   Tile &tile(int x, int y);
-  bool in_fov(int x, int y);
+  bool in_fov(int posx, int posy, int x, int y);
 };
 
 #endif //MAP_HPP_DEFINED
