@@ -23,7 +23,7 @@ class Map {
   void gen_rand_walk();
   bool soft_edge_limit_dir(const Pos &pos, Pos &d, int limit);
   int in_soft_limit(const Pos &pos, int limit);
-  bool can_sober(const Pos &pos, const Pos &dir, int hall_len, int limit, int density_allowed);
+  bool can_sober(const Pos &pos, const Pos &dir, int hall_len, int limit, double density_allowed);
   bool in_level(const Pos &pos);
   void generate_monster(const Pos &pos);
   void generate_item(const Pos &pos);

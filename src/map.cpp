@@ -75,8 +75,8 @@ void Map::gen_rand_walk() {
 
   // tweakable variables:
   constexpr double percentage = 30;
-  constexpr int sober_chance = 30;
-  constexpr int sober_density_allowed = 35;
+  constexpr double sober_chance = 30;
+  constexpr double sober_density_allowed = 35;
   constexpr double soft_edge_limit_percent = 20;
   constexpr double monster_chance = 2;
   constexpr double item_chance = .5;
@@ -109,10 +109,6 @@ void Map::gen_rand_walk() {
   bool last_room = false;
 
   while (true) {
-    TCODConsole::root->clear();
-    draw();
-    TCODConsole::root->flush();
-    std::cout << total_steps << std::endl;
     if (done_tiles >= req_tiles && !sober) {
       if (last_room)
 	break;
@@ -184,16 +180,16 @@ bool Map::soft_edge_limit_dir(const Pos &pos, Pos &d, int limit)
 {
   bool changed = false;
   if (pos.x < limit) {
-    d = {0, 1};
+    d = Dir::e;
     changed = true;
   } else if (pos.x > get_width()-1 - limit) {
-    d = {0, -1};
+    d = Dir::w;
     changed = true;
   } else if (pos.y < limit) {
-    d = {1, 0};
+    d = Dir::s;
     changed = true;
   } else if (pos.y > get_height()-1 - limit) {
-    d = {-1, 0};
+    d = Dir::n;
     changed = true;
   }
   return changed;
@@ -214,19 +210,19 @@ int Map::in_soft_limit(const Pos &pos, int limit)
   return depth;
 }
 
-bool Map::can_sober(const Pos &pos, const Pos &dir, int hall_len, int limit, int density_allowed)
+bool Map::can_sober(const Pos &pos, const Pos &dir, int hall_len, int limit, double density_allowed)
 {
   if (in_soft_limit(pos, limit))
     return false;
 
   // increase hall_len to make it odd
   const int rect_size = hall_len + !(hall_len%2);
-  Pos rect =
-  {(pos.x - hall_len / 2) + dir.x * (hall_len / 2),
-   (pos.y - hall_len / 2) + dir.y * (hall_len / 2) };
+  Pos rect = {
+	      (pos.x - hall_len / 2) + dir.x * (hall_len / 2),
+	      (pos.y - hall_len / 2) + dir.y * (hall_len / 2) };
 
   // max 25% of tiles can be floor tiles
-  const int max_amount = rect_size * rect_size * (100. / density_allowed);
+  const int max_amount = rect_size * rect_size * (density_allowed / 100);
   int floor_count=0;
 
   Pos curr=rect;
@@ -262,8 +258,7 @@ void Map::draw()
 	  has_seen = true;
 	}
       }
-      if (// has_seen
-	  true) {
+      if (has_seen) {
         if (is_walkable(Pos{x, y})) {
           TCODConsole::root->setCharForeground(x, y, can_see ? floor_seen : floor_unseen);
 	  TCODConsole::root->setChar(x,y,'.');
