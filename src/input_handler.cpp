@@ -2,11 +2,12 @@
 #include "tcod_util.hpp"
 #include "command.hpp"
 #include "player.hpp"
+#include "dir.hpp"
 #include <cctype>
 
 Move_input_handler::Move_input_handler(Creature &target)
-  : move_up_{target,0,-1}, move_down_{target,0,1}, move_right_{target,1,0}, move_left_{target,-1,0},
-    move_nw_{target,-1,-1}, move_ne_{target,1,-1}, move_sw_{target,-1,1}, move_se_{target,1,1},
+  : move_up_{target,Dir::n}, move_down_{target,Dir::s}, move_right_{target,Dir::e}, move_left_{target,Dir::w},
+    move_nw_{target,Dir::nw}, move_ne_{target,Dir::ne}, move_sw_{target,Dir::sw}, move_se_{target,Dir::se},
     null_command_{}
 {
 }

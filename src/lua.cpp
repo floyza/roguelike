@@ -6,6 +6,7 @@
 #include "map.hpp"
 #include "monster.hpp"
 #include "tcod_util.hpp"
+#include "pos.hpp"
 #include <iostream>
 
 Lua_manager::Lua_manager()
@@ -31,16 +32,19 @@ void Lua_manager::init() {
 				    "r", &TCODColor::r,
 				    "g", &TCODColor::g,
 				    "b", &TCODColor::b);
+  lua_state.new_usertype<Pos>("Pos",
+			      sol::constructors<Pos(), Pos(int,int)>(),
+			      "x", &Pos::x,
+			      "y", &Pos::y);
   lua_state.new_usertype<Creature>("Creature",
 				   sol::no_constructor,
 				   "hp", sol::property(&Creature::get_hp),
 				   "attack", sol::property(&Creature::get_attack),
 				   "do_turn", &Creature::do_turn,
 				   "die", &Creature::die,
-				   "x", &Creature::x,
-				   "y", &Creature::y);
+				   "pos", &Creature::pos);
   lua_state.new_usertype<Player>("Player",
-				 sol::constructors<Player(char, const TCODColor &, int, int, int, int)>(),
+				 sol::constructors<Player(char, const TCODColor &, int, int, const Pos &)>(),
 				 "hp", sol::property(&Creature::get_hp),
 				 "attack", sol::property(&Creature::get_attack),
 				 "do_attack", &Player::do_attack,
@@ -60,18 +64,16 @@ void Lua_manager::init() {
 				 "turn_count", sol::property(&Player::turn_count),
 				 "die", &Player::die,
 				 "is_dead", &Player::is_dead,
-				 "x", &Player::x,
-				 "y", &Player::y);
+				 "pos", &Player::pos);
   lua_state.new_usertype<Monster>("Monster",
-				  sol::constructors<Monster(int, Map &, int, int), Monster(const std::string &, Map &, int, int), Monster(const Lua_monster &, Map &, int, int)>(),
+				  sol::constructors<Monster(int, Map &, const Pos &), Monster(const std::string &, Map &, const Pos &), Monster(const Lua_monster &, Map &, const Pos &)>(),
 				  "hp", sol::property(&Creature::get_hp),
 				  "attack", sol::property(&Creature::get_attack),
 				  "name", sol::property(&Monster::name),
 				  "do_attack", &Monster::do_attack,
 				  "do_turn", &Monster::do_turn,
 				  "die", &Monster::die,
-				  "x", &Monster::x,
-				  "y", &Monster::y);
+				  "pos", &Monster::pos);
   lua_state.new_usertype<Tile>("Tile",
 			       sol::constructors<Tile(bool)>(),
 			       "discovered", &Tile::discovered);

@@ -7,49 +7,47 @@
 #include "lua.hpp"
 #include <algorithm>
 
-Monster::Monster(int id, Map &parent, int x, int y)
-  : Monster(game->lua_manager->get_mon(id), parent, x, y)
+Monster::Monster(int id, Map &parent, const Pos &pos)
+  : Monster(game->lua_manager->get_mon(id), parent, pos)
 {
 }
 
-Monster::Monster(const std::string &name, Map &parent, int x, int y)
-  : Monster(game->lua_manager->get_mon(name), parent, x, y)
+Monster::Monster(const std::string &name, Map &parent, const Pos &pos)
+  : Monster(game->lua_manager->get_mon(name), parent, pos)
 {
 }
 
-Monster::Monster(const Lua_monster &base, Map &parent, int x, int y)
-  : Creature(base.icon, base.color, base.max_hp, base.attack, x, y), name_(base.name), id_(base.id), parent(&parent)
+Monster::Monster(const Lua_monster &base, Map &parent, const Pos &pos)
+  : Creature(base.icon, base.color, base.max_hp, base.attack, pos), name_(base.name), id_(base.id), parent(&parent)
 {
 }
 
 Monster::~Monster() = default;
 
-std::pair<int, int> Monster::step_to_dest() {
+Pos Monster::step_to_dest() {
   // first try to walk around monsters
   // if this doesn't work, walk as if the
   // other monsters dont exist
-  std::pair<int,int> step(x,y);
-  if (dest_x != -1 && dest_y != -1) {
+  Pos step = pos;
+  if (dest.x != -1 && dest.y != -1) {
     TCODMap map(parent->get_map()->getWidth(), parent->get_map()->getHeight());
     map.copy(parent->get_map());
     for (const Monster &monster : parent->monsters) {
-      int mon_x = monster.x, mon_y = monster.y;
-      map.setProperties(mon_x, mon_y, map.isWalkable(mon_x, mon_y), false);
+      map.setProperties(monster.pos.x, monster.pos.y, map.isWalkable(monster.pos.x, monster.pos.y), false);
     }
     TCODPath path(&map);
-    path.compute(x, y, dest_x, dest_y);
+    path.compute(pos.x, pos.y, dest.x, dest.y);
 
     if (!path.isEmpty()) {
-      path.get(0, &step.first, &step.second);
+      path.get(0, &step.x, &step.y);
     } else {
       // still try to walk towards the player
       TCODPath path_closer(parent->get_map());
-      path_closer.compute(x, y, dest_x, dest_y);
-      int pstep_x, pstep_y;
+      path_closer.compute(pos.x, pos.y, dest.x, dest.y);
+      Pos pstep;
       if (!path_closer.isEmpty()) {
-	path_closer.get(0, &pstep_x, &pstep_y);
-	step.first = pstep_x;
-	step.second = pstep_y;
+	path_closer.get(0, &pstep.x, &pstep.y);
+	step = pstep;
       }
     }
   }
@@ -57,32 +55,29 @@ std::pair<int, int> Monster::step_to_dest() {
 }
 
 void Monster::do_turn() {
-  if (parent->in_fov(x, y, game->you->x,game->you->y)) {
+  if (parent->in_fov(pos, game->you->pos)) {
     // the player can see us, so we can see them
-    dest_x = game->you->x;
-    dest_y = game->you->y;
+    dest = game->you->pos;
   }
 
-  std::pair<int,int> step = step_to_dest();
-  do_move(step.first, step.second);
+  do_move(step_to_dest());
 }
 
 void Monster::do_attack(Creature &target) {
   target.take_damage(attack, *this);
 }
 
-bool Monster::do_move(int x, int y) {
+bool Monster::do_move(const Pos &new_pos) {
   for (const Monster &monster : parent->monsters) {
-    if (monster.x == x && monster.y == y) {
+    if (monster.pos == new_pos) {
       return true;
     }
   }
 
-  if (game->you->x == x && game->you->y == y) {
+  if (game->you->pos == new_pos) {
     do_attack(*game->you);
   } else {
-    this->x = x;
-    this->y = y;
+    pos = new_pos;
   }
 
   return true;

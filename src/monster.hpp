@@ -13,12 +13,12 @@ class Monster : public Creature {
   int id_;
   void take_damage(int amount, Player &source) override;
   void take_damage(int amount, Monster &source) override;
-  int dest_x=-1, dest_y=-1;
-  std::pair<int, int> step_to_dest();
+  Pos dest = { -1, -1 };
+  Pos step_to_dest();
 public:
-  Monster(int id, Map &parent, int x=0, int y=0);
-  Monster(const std::string &name, Map &parent, int x=0, int y=0);
-  Monster(const Lua_monster &base, Map &parent, int x=0, int y=0);
+  Monster(int id, Map &parent, const Pos &pos = {0, 0});
+  Monster(const std::string &name, Map &parent, const Pos &pos = {0, 0});
+  Monster(const Lua_monster &base, Map &parent, const Pos &pos = {0, 0});
   ~Monster();
 
   int id() const;
@@ -30,7 +30,7 @@ public:
 
   Faction faction() const override { return Faction::Monster; }
 
-  bool do_move(int x, int y) override;
+  bool do_move(const Pos &new_pos) override;
 
   Map *parent;
 };

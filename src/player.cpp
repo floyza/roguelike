@@ -13,8 +13,8 @@
 #include <memory>
 #include <string>
 
-Player::Player(char icon, const TCODColor &color, int max_hp, int attack, int x, int y)
-  : Creature(icon, color, max_hp, attack, x, y), current_input{std::make_unique<Player_input_handler>(*this)}
+Player::Player(char icon, const TCODColor &color, int max_hp, int attack, const Pos &pos)
+  : Creature(icon, color, max_hp, attack, pos), current_input{std::make_unique<Player_input_handler>(*this)}
 {
 }
 
@@ -34,16 +34,15 @@ void Player::do_turn() {
   ++total_turns;
 }
 
-bool Player::do_move(int new_x, int new_y) {
+bool Player::do_move(const Pos &new_pos) {
   for (Monster &mon : game->map->monsters) {
-    if (mon.x == new_x && mon.y == new_y) {
+    if (mon.pos == new_pos) {
       do_attack(mon);
       return true;
     }
   }
-  if (game->map->is_walkable(new_x, new_y)) {
-    x = new_x;
-    y = new_y;
+  if (game->map->is_walkable(new_pos)) {
+    pos = new_pos;
     call_triggers<Trigger::ON_MOVE>();
     return true;
   } else {

@@ -22,10 +22,10 @@ class Player : public Creature {
   int total_turns=0;
   std::unique_ptr<Input_handler> current_input;
 public:
-  Player(char icon, const TCODColor &color, int max_hp, int attack, int x=0, int y=0);
+  Player(char icon, const TCODColor &color, int max_hp, int attack, const Pos &pos = {0, 0});
   ~Player();
 
-  bool do_move(int x, int y) override;
+  bool do_move(const Pos &new_pos) override;
   void do_turn() override;
   void do_attack(Creature &target);
   void do_attack_sans_triggers(Creature &target); // still calls DAM_MOD triggers

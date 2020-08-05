@@ -7,7 +7,7 @@
 class TCODMap;
 class Monster;
 class Item;
-enum class Dir;
+class Pos;
 
 struct Tile {
   Tile(bool discovered=false) : discovered(discovered) { }
@@ -21,12 +21,12 @@ class Map {
 
   // map gen stuff
   void gen_rand_walk();
-  bool soft_edge_limit_dir(int x, int y, Dir &d, int limit);
-  int in_soft_limit(int x, int y, int limit);
-  bool can_sober(int x, int y, Dir dir, int hall_len, int limit, int density_allowed);
-  bool in_level(int x, int y);
-  void generate_monster(int x, int y);
-  void generate_item(int x, int y);
+  bool soft_edge_limit_dir(const Pos &pos, Pos &d, int limit);
+  int in_soft_limit(const Pos &pos, int limit);
+  bool can_sober(const Pos &pos, const Pos &dir, int hall_len, int limit, int density_allowed);
+  bool in_level(const Pos &pos);
+  void generate_monster(const Pos &pos);
+  void generate_item(const Pos &pos);
 public:
   Map(int w, int h, int depth);
   ~Map();
@@ -35,11 +35,11 @@ public:
   std::vector<Item> items;
   int get_width();
   int get_height();
-  int is_walkable(int x, int y);
-  void set_walkable(int x, int y, bool walkable);
+  int is_walkable(const Pos &pos);
+  void set_walkable(const Pos &pos, bool walkable);
   void draw();
-  Tile &tile(int x, int y);
-  bool in_fov(int posx, int posy, int x, int y);
+  Tile &tile(const Pos &pos);
+  bool in_fov(const Pos &pos, const Pos &target);
 };
 
 #endif //MAP_HPP_DEFINED

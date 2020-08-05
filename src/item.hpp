@@ -5,6 +5,7 @@
 
 #include "effect.hpp"
 #include "lua.hpp"
+#include "pos.hpp"
 
 struct Lua_item;
 
@@ -13,9 +14,9 @@ class Item {
   int id_;
   std::string name_;
 public:
-  Item(int id, int x=0, int y=0);
-  Item(const std::string &name, int x=0, int y=0);
-  Item(const Lua_item &base, int x=0, int y=0);
+  Item(int id, const Pos &pos = {0, 0});
+  Item(const std::string &name, const Pos &pos = {0, 0});
+  Item(const Lua_item &base, const Pos &pos = {0, 0});
 
   template<Trigger trigger, typename... Args>
   void call_effect(Args... args);
@@ -26,7 +27,7 @@ public:
   const std::string &name() const;
 
   void draw() const;
-  int x,y;
+  Pos pos;
   ~Item();
 };
 
