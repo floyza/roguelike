@@ -10,11 +10,10 @@ DEPENDS = $(OBJS:.o=.d)
 ifndef RELEASE
 CXXFLAGS += -ggdb -O0
 else
-CXXFLAGS += -O2 -DNDEBUG
+ifdef DEBUG
+CXXFLAGS += -ggdb
 endif
-
-ifdef PROF
-CXXFLAGS += -g -pg
+CXXFLAGS += -O2 -DNDEBUG
 endif
 
 
