@@ -247,11 +247,12 @@ void Map::draw()
   TCODColor floor_seen(0xff,0xff,0xff);
   TCODColor floor_unseen(0x9e,0x9e,0x9e);
   const int width = get_width(), height = get_height();
+  calculate_fov(game->you->pos);
   for (int x=0; x<width; ++x) {
     for (int y=0; y<height; ++y) {
       bool can_see = false;
       bool has_seen = tiles[x][y].discovered;
-      if (in_fov(game->you->pos, Pos{x, y})) {
+      if (in_fov(game->you->pos, Pos{x, y}, false)) {
         can_see = true;
 	if (!has_seen) {
 	  tiles[x][y].discovered = true;
@@ -270,12 +271,12 @@ void Map::draw()
     }
   }
   for (const Item &item : items) {
-    if (in_fov(game->you->pos, item.pos)) {
+    if (in_fov(game->you->pos, item.pos, false)) {
       item.draw();
     }
   }
   for (const Monster &mon : monsters) {
-    if (in_fov(game->you->pos, mon.pos)) {
+    if (in_fov(game->you->pos, mon.pos, false)) {
       mon.draw();
     }
   }
@@ -289,8 +290,13 @@ void Map::generate_item(const Pos &pos) {
   items.emplace_back(game->lua_manager->get_rand_item(depth), pos);
 }
 
-bool Map::in_fov(const Pos &pos, const Pos &target) {
-  map->computeFov(pos.x, pos.y, 9, true, FOV_PERMISSIVE_3);
+void Map::calculate_fov(const Pos &src) {
+  map->computeFov(src.x, src.y, 9, true, FOV_PERMISSIVE_3);
+}
+
+bool Map::in_fov(const Pos &pos, const Pos &target, bool recalculate) {
+  if (recalculate)
+    calculate_fov(pos);
   return map->isInFov(target.x,target.y);
 }
 

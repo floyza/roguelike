@@ -39,7 +39,8 @@ public:
   void set_walkable(const Pos &pos, bool walkable);
   void draw();
   Tile &tile(const Pos &pos);
-  bool in_fov(const Pos &pos, const Pos &target);
+  bool in_fov(const Pos &pos, const Pos &target, bool recalculate=true);
+  void calculate_fov(const Pos &src);
 };
 
 #endif //MAP_HPP_DEFINED
