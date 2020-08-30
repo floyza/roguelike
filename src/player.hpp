@@ -27,8 +27,7 @@ public:
 
   bool do_move(const Pos &new_pos) override;
   void do_turn() override;
-  void do_attack(Creature &target);
-  void do_attack_sans_triggers(Creature &target); // still calls DAM_MOD triggers
+  void do_attack(Creature &target, bool triggers=true);
   void die() override;
 
   Faction faction() const override { return Faction::Player; }

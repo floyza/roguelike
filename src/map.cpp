@@ -12,14 +12,14 @@
 
 Pos rand_dir() {
   switch(rand_int(0,3)) {
-  case 0:
-    return Dir::n;
-  case 1:
-    return Dir::s;
-  case 2:
-    return Dir::w;
-  case 3:
-    return Dir::e;
+    case 0:
+      return Dir::n;
+    case 1:
+      return Dir::s;
+    case 2:
+      return Dir::w;
+    case 3:
+      return Dir::e;
   }
   throw std::runtime_error { "rand_int returns invalid int" };
 }
@@ -46,17 +46,17 @@ Map::Map(int w, int h, int depth)
 
     for (int x=0; x<w; x+=granularity) {
       for (int y=0; y<h; y+=granularity) {
-	++total_grids;
-	for (int x_fine=x; x_fine<x+granularity && x_fine<w; ++x_fine) {
-	  for (int y_fine=y; y_fine<y+granularity && y_fine<h; ++y_fine) {
+        ++total_grids;
+        for (int x_fine=x; x_fine<x+granularity && x_fine<w; ++x_fine) {
+          for (int y_fine=y; y_fine<y+granularity && y_fine<h; ++y_fine) {
             if (is_walkable(Pos{x_fine, y_fine})) {
               ++filled_grids;
-	      // break out of x_fine and y_fine loops
-	      x_fine=w;
-	      break;
+              // break out of x_fine and y_fine loops
+              x_fine=w;
+              break;
             }
           }
-	}
+        }
       }
     }
 
@@ -111,9 +111,9 @@ void Map::gen_rand_walk() {
   while (true) {
     if (done_tiles >= req_tiles && !sober) {
       if (last_room)
-	break;
+        break;
       else
-	last_room = true;
+        last_room = true;
     }
     if (!is_walkable(loc)) {
       set_walkable(loc, true);
@@ -123,19 +123,19 @@ void Map::gen_rand_walk() {
     if (steps-- == 0) {
       int hall_len = rand_int(hall_min, hall_max);
       if (percent_chance(sober_chance) &&
-	  can_sober(loc, dir, hall_len, soft_edge_limit, sober_density_allowed) &&
-	  !sober) {
-	sober = true;
-	steps = hall_len;
+          can_sober(loc, dir, hall_len, soft_edge_limit, sober_density_allowed) &&
+          !sober) {
+        sober = true;
+        steps = hall_len;
       } else {
-	if (percent_chance(monster_chance)) {
-	  generate_monster(loc);
-	}
-	if (percent_chance(item_chance)) {
-	  generate_item(loc);
-	}
-	sober = false;
-	steps = rand_int(cave_min, cave_max);
+        if (percent_chance(monster_chance)) {
+          generate_monster(loc);
+        }
+        if (percent_chance(item_chance)) {
+          generate_item(loc);
+        }
+        sober = false;
+        steps = rand_int(cave_min, cave_max);
       }
     }
 
@@ -148,11 +148,11 @@ void Map::gen_rand_walk() {
       // turn
       Pos old_dir = dir;
       while (old_dir == dir) {
-	dir = rand_dir();
+        dir = rand_dir();
       }
       int limit_tier = in_soft_limit(loc, soft_edge_limit);
       if (rand_int(1,soft_edge_limit*soft_edge_limit) <= limit_tier*limit_tier)
-	soft_edge_limit_dir(loc, dir, soft_edge_limit);
+        soft_edge_limit_dir(loc, dir, soft_edge_limit);
     }
 
     loc += dir;
@@ -218,8 +218,8 @@ bool Map::can_sober(const Pos &pos, const Pos &dir, int hall_len, int limit, dou
   // increase hall_len to make it odd
   const int rect_size = hall_len + !(hall_len%2);
   Pos rect = {
-	      (pos.x - hall_len / 2) + dir.x * (hall_len / 2),
-	      (pos.y - hall_len / 2) + dir.y * (hall_len / 2) };
+  (pos.x - hall_len / 2) + dir.x * (hall_len / 2),
+  (pos.y - hall_len / 2) + dir.y * (hall_len / 2) };
 
   // max 25% of tiles can be floor tiles
   const int max_amount = rect_size * rect_size * (density_allowed / 100);
@@ -230,11 +230,11 @@ bool Map::can_sober(const Pos &pos, const Pos &dir, int hall_len, int limit, dou
   for (; curr.x < rect.x+rect_size; ++curr.x) {
     for (; curr.y < rect.y+rect_size; ++curr.y) {
       if (!in_level(curr))
-	return false;
+        return false;
       if (is_walkable(curr))
-	++floor_count;
+        ++floor_count;
       if (floor_count > max_amount)
-	return false;
+        return false;
     }
   }
   return true;
@@ -254,18 +254,18 @@ void Map::draw()
       bool has_seen = tiles[x][y].discovered;
       if (in_fov(game->you->pos, Pos{x, y}, false)) {
         can_see = true;
-	if (!has_seen) {
-	  tiles[x][y].discovered = true;
-	  has_seen = true;
-	}
+        if (!has_seen) {
+          tiles[x][y].discovered = true;
+          has_seen = true;
+        }
       }
       if (has_seen) {
         if (is_walkable(Pos{x, y})) {
           TCODConsole::root->setCharForeground(x, y, can_see ? floor_seen : floor_unseen);
-	  TCODConsole::root->setChar(x,y,'.');
+          TCODConsole::root->setChar(x,y,'.');
         } else {
           TCODConsole::root->setCharForeground(x, y, can_see ? wall_seen : wall_unseen);
-	  TCODConsole::root->setChar(x,y,'#');
+          TCODConsole::root->setChar(x,y,'#');
         }
       }
     }

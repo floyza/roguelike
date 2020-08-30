@@ -1,7 +1,6 @@
 #ifndef DEFINED_TCOD_HPP
 #define DEFINED_TCOD_HPP
 
-#include "console_types.h"
 #include <algorithm>
 #include <functional>
 #include <memory>

@@ -13,7 +13,7 @@ item_definitions = {
   },
   {
     name = "Test Item",
-    trigger = Trigger.ON_MOVE,
+    trigger = Trigger.ON_HIT,
     effect = "test_effect",
     rarity = 10000
   }
@@ -48,7 +48,7 @@ function thorns(target)
 end
 
 function recursive_attack(target)
-  -- ON_ATTACK
+  -- ON_HIT
   local attack_amount = 1.1
   local chance = 1 - (1/attack_amount)
   if ( percent_chance(chance) ) then
@@ -56,5 +56,7 @@ function recursive_attack(target)
   end
 end
 
-function test_effect()
+function test_effect(target)
+	-- ON_HIT
+	game.you:do_attack(target,false)
 end

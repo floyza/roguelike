@@ -50,16 +50,16 @@ bool Player::do_move(const Pos &new_pos) {
   }
 }
 
-void Player::do_attack(Creature &target) {
-  call_triggers<Trigger::ON_ATTACK>(std::ref(target));
-  do_attack_sans_triggers(target);
-  call_triggers<Trigger::ON_HIT>(std::ref(target));
-}
+void Player::do_attack(Creature &target, bool triggers) {
+  if (triggers)
+    call_triggers<Trigger::ON_ATTACK>(std::ref(target));
 
-void Player::do_attack_sans_triggers(Creature &target) {
   int damage = attack;
   call_triggers<Trigger::DAM_MOD>(std::ref(damage), std::ref(target));
   target.take_damage(damage, *this);
+
+  if (triggers)
+    call_triggers<Trigger::ON_HIT>(std::ref(target));
 }
 
 void Player::take_damage(int amount, Player &source) {
