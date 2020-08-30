@@ -42,6 +42,8 @@ bool Game::do_turn() {
     you->do_turn();
     for (Monster &mon : map->monsters)
       mon.do_turn();
+    for (Monster &mon : map->monsters)
+      mon.push_death();
     return true;
   }
   return false;

@@ -78,7 +78,7 @@ void Map::gen_rand_walk() {
   constexpr double sober_chance = 30;
   constexpr double sober_density_allowed = 35;
   constexpr double soft_edge_limit_percent = 20;
-  constexpr double monster_chance = 2;
+  constexpr double monster_chance = 5;
   constexpr double item_chance = .5;
   constexpr int hall_min = 5;
   constexpr int hall_max = 10;
