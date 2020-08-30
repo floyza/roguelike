@@ -100,13 +100,13 @@ void Monster::take_damage(int amount, Monster &source) {
 }
 
 void Monster::die() {
-  game->you->call_triggers<Trigger::ON_KILL>(std::ref(*this));
-  game->send_msg({"The " + name() + " dies!"});
   dead_ = true;
 }
 
 void Monster::push_death() {
   if (dead_) {
+    game->you->call_triggers<Trigger::ON_KILL>(std::ref(*this));
+    game->send_msg({"The " + name() + " dies!"});
     auto iter = std::remove_if(parent->monsters.begin(), parent->monsters.end(), [this](const Monster &mon){return this==&mon;});
     parent->monsters.erase(iter, parent->monsters.end());
   }
