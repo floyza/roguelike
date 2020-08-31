@@ -4,6 +4,7 @@
 #include "tcod_util.hpp"
 #include "command.hpp"
 #include <unordered_map>
+#include <memory>
 
 class Command;
 class Player;
@@ -11,7 +12,7 @@ class Player;
 class Input_handler {
 public:
   virtual ~Input_handler() { };
-  virtual Command &get_input()=0;
+  virtual std::unique_ptr<Command> get_input()=0;
 };
 
 /** Helper for Input_handlers that are used for movement
@@ -31,23 +32,29 @@ protected:
 };
 
 class Player_input_handler : public Move_input_handler {
-  std::unordered_map<TCOD_key_t, Command *> buttons_;
+  // need to fix: temporary: if we want it to be a map of Command*s,  then we need to
+  // implement a `clone` function in Command or something, because otherwise we can't copy
+  // them
+  std::unordered_map<TCOD_key_t, Move_command *> buttons_;
 public:
-  Player_input_handler(Creature &target);
-  Command &get_input() override;
-  Command &handle_key(const TCOD_key_t &input);
+  Player_input_handler(Creature &player);
+  std::unique_ptr<Command> get_input() override;
+  std::unique_ptr<Command> handle_key(const TCOD_key_t &input);
 };
 
 class Monster_input_handler : public Move_input_handler {
+  Creature &monster;
   Creature &target;
+  Pos dest {-1,-1};
+  Pos step_to_dest();
 public:
-  Monster_input_handler(Creature &target);
-  Command &get_input() override;
+  Monster_input_handler(Creature &monster);
+  std::unique_ptr<Command> get_input() override;
 };
 
 class Lua_input_handler : public Input_handler {
 public:
-  Command &get_input() override {/*do nothing*/};
+  std::unique_ptr<Command> get_input() override {/*do nothing*/};
   //Command &handle_input(const TCOD_key_t &input);
 };
 

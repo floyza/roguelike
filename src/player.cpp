@@ -23,8 +23,8 @@ Player::~Player() = default;
 void Player::do_turn() {
   bool doing_actions=true;
   while (doing_actions && !TCODConsole::isWindowClosed()) {
-    Command &action = current_input->get_input();
-    int cost = action.execute();
+    auto action = current_input->get_input();
+    int cost = action->execute();
     doing_actions = cost==0;
   }
   call_triggers<Trigger::ON_TURN>();
