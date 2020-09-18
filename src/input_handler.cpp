@@ -37,9 +37,9 @@ std::unique_ptr<Command> Player_input_handler::get_input() {
 std::unique_ptr<Command> Player_input_handler::handle_key(const TCOD_key_t &input) {
   auto it = buttons_.find(input);
   if (it != buttons_.end()) {
-    return std::make_unique<Move_command>(*it->second);
+    return it->second->clone();
   }
-  return std::make_unique<Null_command>(null_command_);
+  return null_command_.clone();
 }
 
 TCOD_key_t tcod_key_of_char(char c) {
