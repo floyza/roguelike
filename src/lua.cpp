@@ -76,7 +76,7 @@ void Lua_manager::init() {
 																 "is_dead", &Player::is_dead,
 																 "pos", &Player::pos);
   lua_state.new_usertype<Monster>("Monster",
-																	sol::constructors<Monster(int, Map &, const Pos &), Monster(const std::string &, Map &, const Pos &), Monster(const Lua_monster &, Map &, const Pos &)>(),
+																	sol::constructors<Monster(int, int, const Pos &), Monster(const std::string &, int, const Pos &), Monster(const Lua_monster &, int, const Pos &)>(),
 																	"hp", sol::property(&Creature::get_hp),
 																	"attack", sol::property(&Creature::get_attack),
 																	"name", sol::property(&Monster::name),
@@ -104,7 +104,9 @@ void Lua_manager::init() {
 															 "lua_manager", sol::property([](Game &self){
     return std::ref(self.lua_manager);}),
 															 "send_msg", &Game::send_msg,
-															 "map", &Game::map);
+															 "map", sol::property([](Game &self){
+                                 return std::ref(self.map());
+                               }));
   lua_state.new_usertype<Lua_manager>("Lua_manager",
 																			sol::no_constructor,
 																			"get_func", &Lua_manager::get_func,

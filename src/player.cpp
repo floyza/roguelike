@@ -35,13 +35,13 @@ void Player::do_turn() {
 }
 
 bool Player::do_move(const Pos &new_pos) {
-  for (Monster &mon : game->map->monsters) {
+  for (Monster &mon : game->map().monsters) {
     if (mon.pos == new_pos) {
       do_attack(mon);
       return true;
     }
   }
-  if (game->map->is_walkable(new_pos)) {
+  if (game->map().is_walkable(new_pos)) {
     pos = new_pos;
     call_triggers<Trigger::ON_MOVE>();
     return true;
@@ -81,7 +81,7 @@ void Player::take_damage(int amount, Monster &source) {
 }
 
 void Player::take_damage(int amount) {
-  Monster dummy = Monster{0, *game->map}; // dummy monster
+  Monster dummy = Monster{0, game->depth()}; // dummy monster
   call_triggers<Trigger::DAM_REDUCE>(std::ref(amount), std::ref(dummy));/*quick fix, TODO: probably have an actual source*/
   hp -= amount;
   if (hp<=0)

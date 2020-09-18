@@ -61,7 +61,7 @@ Monster_input_handler::Monster_input_handler(Creature &monster)
 }
 
 std::unique_ptr<Command> Monster_input_handler::get_input() {
-  if (game->map->in_fov(monster.pos, target.pos)) {
+  if (game->map().in_fov(monster.pos, target.pos)) {
     dest = target.pos;
   }
 
@@ -71,9 +71,9 @@ std::unique_ptr<Command> Monster_input_handler::get_input() {
 Pos Monster_input_handler::step_to_dest() {
   Pos step = target.pos;
   if (dest.x != -1 && dest.y != -1) {
-    TCODMap map(game->map->get_map()->getWidth(), game->map->get_map()->getHeight());
-    map.copy(game->map->get_map());
-    for (const Monster &other_monster : game->map->monsters) {
+    TCODMap map(game->map().get_map().getWidth(), game->map().get_map().getHeight());
+    map.copy(&game->map().get_map());
+    for (const Monster &other_monster : game->map().monsters) {
       map.setProperties(other_monster.pos.x, other_monster.pos.y, map.isWalkable(other_monster.pos.x, other_monster.pos.y), false);
     }
     TCODPath path(&map);
@@ -83,7 +83,7 @@ Pos Monster_input_handler::step_to_dest() {
       path.get(0, &step.x, &step.y);
     } else {
       // still try to walk towards the player
-      TCODPath path_closer(game->map->get_map());
+      TCODPath path_closer(&game->map().get_map());
       path_closer.compute(monster.pos.x, monster.pos.y, dest.x, dest.y);
       Pos pstep;
       if (!path_closer.isEmpty()) {

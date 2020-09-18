@@ -4,6 +4,7 @@
 #include "pos.hpp"
 
 class Creature;
+class Player;
 
 class Command {
 public:
@@ -19,11 +20,22 @@ public:
 class Move_command : public Command {
   Creature &target;
   Pos pos_;
-  int cost_;
 public:
   // moves relative to current position
   Move_command(Creature &target, const Pos &pos) : target{target}, pos_{pos} {}
   int execute() override;
+};
+
+class Stairs_move_command : public Command {
+  public:
+    enum class Direction { Up, Down };
+  private:
+    Player &target; // only works on the player
+    Direction dir;
+  public:
+    Stairs_move_command(Player &target, Direction dir)
+      : target{target}, dir{dir} {}
+    int execute() override;
 };
 
 #endif

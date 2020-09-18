@@ -17,10 +17,11 @@ class Monster : public Creature
   void take_damage(int amount, Monster &source) override;
   Pos dest = { -1, -1 };
   Pos step_to_dest();
+  int parent_index;
 public:
-  Monster(int id, Map &parent, const Pos &pos = {0, 0});
-  Monster(const std::string &name, Map &parent, const Pos &pos = {0, 0});
-  Monster(const Lua_monster &base, Map &parent, const Pos &pos = {0, 0});
+  Monster(int id, int parent, const Pos &pos = {0, 0});
+  Monster(const std::string &name, int parent, const Pos &pos = {0, 0});
+  Monster(const Lua_monster &base, int parent, const Pos &pos = {0, 0});
   ~Monster();
 
   int id() const;
@@ -35,7 +36,8 @@ public:
 
   bool do_move(const Pos &new_pos) override;
 
-  Map *parent;
+  Map &parent();
+  const Map &parent() const;
 };
 
 #endif //MONSTER_HPP_DEFINED

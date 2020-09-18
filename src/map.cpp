@@ -25,34 +25,57 @@ Pos rand_dir() {
 }
 
 Map::Map(int w, int h, int depth)
-  : map(std::make_unique<TCODMap>(w,h)), tiles(boost::extents[w][h]), depth(depth)
+  : map(w,h), tiles(boost::extents[w][h]), depth(depth)
 {
+  generate();
+}
+
+Map::~Map() = default;
+
+Map::Map(const Map &other)
+  : map(other.get_width(),other.get_height()), tiles(other.tiles), depth(other.depth), entrance_(other.entrance_), exit_(other.exit_), monsters(other.monsters), items(other.items)
+{
+  map.copy(&other.map);
+}
+
+Map &Map::operator=(const Map &other) {
+  tiles = other.tiles;
+  depth = other.depth;
+  map.copy(&other.map);
+  entrance_ = other.entrance_;
+  exit_ = other.exit_;
+  monsters = other.monsters;
+  items = other.items;
+  return *this;
+}
+
+void Map::generate() {
   constexpr double grain_count=5;
   constexpr double filled_percent=75;
 
-  const int granularity = std::min(std::ceil(w/grain_count), std::ceil(h/grain_count));
+  const int granularity = std::min(std::ceil(get_width()/grain_count), std::ceil(get_height()/grain_count));
 
   int tries=0;
 
   bool generating = true;
   while (generating) {
     ++tries;
-    map = std::make_unique<TCODMap>(w,h);
+    map.clear();
     monsters=std::vector<Monster>{};
     gen_rand_walk();
 
     int total_grids=0;
     int filled_grids=0;
 
-    for (int x=0; x<w; x+=granularity) {
-      for (int y=0; y<h; y+=granularity) {
+    for (int x=0; x<get_width(); x+=granularity) {
+      for (int y=0; y<get_height(); y+=granularity) {
         ++total_grids;
-        for (int x_fine=x; x_fine<x+granularity && x_fine<w; ++x_fine) {
-          for (int y_fine=y; y_fine<y+granularity && y_fine<h; ++y_fine) {
+        for (int x_fine=x; x_fine<x+granularity && x_fine<get_width(); ++x_fine) {
+          for (int y_fine=y; y_fine<y+granularity && y_fine<get_height(); ++y_fine) {
             if (is_walkable(Pos{x_fine, y_fine})) {
               ++filled_grids;
               // break out of x_fine and y_fine loops
-              x_fine=w;
+              x_fine=get_width();
               break;
             }
           }
@@ -65,9 +88,6 @@ Map::Map(int w, int h, int depth)
   }
   std::cerr << "map gen done in " << tries << " try(s)\n";
 }
-
-Map::~Map() = default;
-
 void Map::gen_rand_walk() {
   // Map generation done with modified 'drunkard's walk' algorithm
   // Basic algorithm described here: http://www.roguebasin.com/index.php?title=Random_Walk_Cave_Generation
@@ -100,7 +120,7 @@ void Map::gen_rand_walk() {
   Pos loc;
   loc.x = width/2 + rand_int(-start_variation, start_variation);
   loc.y = height/2 + rand_int(-start_variation, start_variation);
-  game->you->pos = loc;
+  entrance_ = loc;
   
   bool sober = false; // true if we are digging a corridor
   int steps = rand_int(cave_min, cave_max); // steps until change sober state
@@ -170,6 +190,8 @@ void Map::gen_rand_walk() {
       break;
     }
   }
+  exit_ = loc;
+  set_walkable(loc, true);
 }
 
 bool Map::in_level(const Pos &pos) {
@@ -270,6 +292,16 @@ void Map::draw()
       }
     }
   }
+  if (tiles[entrance_.x][entrance_.y].discovered) {
+    TCODConsole::root->setCharForeground(entrance_.x, entrance_.y,
+                                         in_fov(game->you->pos, entrance_, false) ? floor_seen : floor_unseen);
+    TCODConsole::root->setChar(entrance_.x,entrance_.y,'<');
+  }
+  if (tiles[exit_.x][exit_.y].discovered) {
+    TCODConsole::root->setCharForeground(exit_.x, exit_.y,
+                                         in_fov(game->you->pos, exit_, false) ? floor_seen : floor_unseen);
+    TCODConsole::root->setChar(exit_.x,exit_.y,'>');
+  }
   for (const Item &item : items) {
     if (in_fov(game->you->pos, item.pos, false)) {
       item.draw();
@@ -283,7 +315,7 @@ void Map::draw()
 }
 
 void Map::generate_monster(const Pos &pos) {
-  monsters.emplace_back(game->lua_manager->get_rand_mon(depth), *this, pos);
+  monsters.emplace_back(game->lua_manager->get_rand_mon(depth), depth, pos);
 }
 
 void Map::generate_item(const Pos &pos) {
@@ -291,35 +323,35 @@ void Map::generate_item(const Pos &pos) {
 }
 
 void Map::calculate_fov(const Pos &src) {
-  map->computeFov(src.x, src.y, 9, true, FOV_PERMISSIVE_3);
+  map.computeFov(src.x, src.y, 9, true, FOV_PERMISSIVE_3);
 }
 
 bool Map::in_fov(const Pos &pos, const Pos &target, bool recalculate) {
   if (recalculate)
     calculate_fov(pos);
-  return map->isInFov(target.x,target.y);
+  return map.isInFov(target.x,target.y);
 }
 
-int Map::get_width() {
-  return map->getWidth();
+int Map::get_width() const {
+  return map.getWidth();
 }
 
-int Map::get_height() {
-  return map->getHeight();
+int Map::get_height() const {
+  return map.getHeight();
 }
 
 int Map::is_walkable(const Pos &pos) {
-  return map->isWalkable(pos.x, pos.y);
+  return map.isWalkable(pos.x, pos.y);
 }
 
 void Map::set_walkable(const Pos &pos, bool walkable) {
-  map->setProperties(pos.x,pos.y,walkable,walkable);
+  map.setProperties(pos.x,pos.y,walkable,walkable);
 }
 
 Tile &Map::tile(const Pos &pos) {
   return tiles[pos.x][pos.y];
 }
 
-TCODMap *Map::get_map() {
-  return map.get();
+TCODMap &Map::get_map() {
+  return map;
 }
