@@ -95,15 +95,15 @@ void Player::die() {
 };
 
 void Player::aquire_item(int id) {
-  items.emplace_back(id);
+  items.push_back(Inven_item{id});
 }
 
 void Player::aquire_item(const std::string &name) {
-  items.emplace_back(name);
+  items.push_back(Inven_item{name});
 }
 
 void Player::aquire_item(const Lua_item &base) {
-  items.emplace_back(base);
+  items.push_back(Inven_item{base});
 }
 
 void Player::aquire_status(int id) {
@@ -130,4 +130,16 @@ void Player::remove_status(const std::string &name) {
 
 int Player::turn_count() const {
   return total_turns;
+}
+
+int Player::inven_size() const {
+  return items.size();
+}
+
+Inven_item &Player::inven_item(int i) {
+  return items[i];
+}
+
+const Inven_item &Player::inven_item(int i) const {
+  return items[i];
 }

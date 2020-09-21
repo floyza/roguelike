@@ -13,11 +13,17 @@ class Status;
 class Input_handler;
 enum class Trigger;
 
+struct Inven_item {
+  Item item;
+  bool equipped=false;
+};
+
 class Player : public Creature {
+private:
   void take_damage(int amount, Player &source) override;
   void take_damage(int amount, Monster &source) override;
   bool dead=false;
-  std::vector<Item> items;
+  std::vector<Inven_item> items;
   std::vector<Status> statuses;
   int total_turns=0;
   std::unique_ptr<Input_handler> current_input;
@@ -44,6 +50,10 @@ public:
   void remove_status(int id);
   void remove_status(const std::string &name);
 
+  int inven_size() const;
+  Inven_item &inven_item(int i);
+  const Inven_item &inven_item(int i) const;
+
   template<Trigger trigger, typename... Args>
   void call_triggers(Args... args);
 
@@ -54,9 +64,10 @@ public:
 
 template<Trigger trigger, typename... Args>
 void Player::call_triggers(Args... args) {
-  for (Item &item : items)
-    if (item.get_trigger() == trigger)
-      item.call_effect<trigger>(args...);
+  for (auto &item : items)
+    if (item.equipped)
+      if (item.item.get_trigger() == trigger)
+        item.item.call_effect<trigger>(args...);
   for (Status &status : statuses)
     if (status.get_trigger() == trigger)
       status.call_effect<trigger>(args...);
