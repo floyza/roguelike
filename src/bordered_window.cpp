@@ -34,7 +34,7 @@ TCODConsole &Bordered_window::operator*() {
 }
 
 void Bordered_window::blit() {
-  draw_border();
+  draw_border(); // maybe we don't need to do this every time?
   TCODConsole::blit(&window, 0,0,0,0, &border, 1,1);
   TCODConsole::blit(&border, 0,0,0,0, TCODConsole::root, border_pos.x, border_pos.y);
 }
