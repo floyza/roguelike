@@ -67,7 +67,11 @@ int wall_merge(int wall1, int wall2) {
 	};
   auto wall1_it = std::find(wall_chars.begin(), wall_chars.end(), wall1);
   auto wall2_it = std::find(wall_chars.begin(), wall_chars.end(), wall2);
-  assert(wall1_it != wall_chars.end() && wall2_it != wall_chars.end());
+  assert(wall1_it != wall_chars.end() || wall2_it != wall_chars.end()); // why did you even call it?
+  if (wall1_it == wall_chars.end())
+    return wall2;
+  if (wall2_it == wall_chars.end())
+    return wall1;
   Wall_tile result = wall_data[wall1_it - wall_chars.begin()];
   result += wall_data[wall2_it - wall_chars.begin()];
   return wall_chars[std::find(wall_data.data(), wall_data.end(), result) - wall_data.begin()];

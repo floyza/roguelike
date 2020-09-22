@@ -3,36 +3,17 @@
 #include <sstream>
 
 Gui::Gui(int x, int y, int w, int h)
-  : con(std::make_unique<TCODConsole>(w, h)), rootx(x), rooty(y)
+  : con(Pos{x,y}, w, h)
 {
 }
 
 void Gui::draw() {
-  draw_border();
   draw_msgs();
-  TCODConsole::blit(con.get(), 0,0,0,0, TCODConsole::root, rootx, rooty);
-}
-
-void Gui::draw_border() {
-  const int width = con->getWidth();
-  const int height = con->getHeight();
-  
-  for (int x=1; x<width-1; ++x) {
-    con->putChar(x, 0, wall_merge(TCOD_CHAR_HLINE, TCODConsole::root->getChar(x+rootx, rooty)));
-    con->putChar(x, height-1, wall_merge(TCOD_CHAR_HLINE, TCODConsole::root->getChar(x+rootx, rooty+height-1)));
-  }
-  for (int y=1; y<height-1; ++y) {
-    con->putChar(0, y, wall_merge(TCOD_CHAR_VLINE, TCODConsole::root->getChar(rootx, rooty+y)));
-    con->putChar(width-1, y, wall_merge(TCOD_CHAR_VLINE, TCODConsole::root->getChar(rootx+width-1, rooty+y)));
-  }
-  con->putChar(0, 0, wall_merge(TCOD_CHAR_NW, TCODConsole::root->getChar(rootx, rooty)));
-  con->putChar(width-1, 0, wall_merge(TCOD_CHAR_NE, TCODConsole::root->getChar(rootx+width-1, rooty+0)));
-  con->putChar(0, height-1, wall_merge(TCOD_CHAR_SW, TCODConsole::root->getChar(rootx, rooty+height-1)));
-  con->putChar(width-1, height-1, wall_merge(TCOD_CHAR_SE, TCODConsole::root->getChar(rootx+width-1, rooty+height-1)));
+  con.blit();
 }
 
 void Gui::draw_msgs() {
-  con->rect(1,1, con->getWidth()-2, con->getHeight()-2, true);
+  con->clear();
   for (std::size_t i=0; i<lines.size(); ++i) {
     const Message &line_msg = lines[i];
     con->setDefaultForeground(line_msg.color);
@@ -44,13 +25,13 @@ void Gui::draw_msgs() {
       con->setAlignment(TCOD_LEFT);
       x = 1;
     }
-    con->print(x, i+1, line_msg.text.c_str());
+    con->print(x, i, line_msg.text);
   }
 }
 
 void Gui::add_line(const Message &msg) {
   lines.push_back(msg);
-  if (lines.size() > static_cast<std::size_t>(con->getHeight()-2))
+  if (lines.size() > static_cast<std::size_t>(con->getHeight()))
     lines.pop_front();
 }
 
