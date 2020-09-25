@@ -3,9 +3,11 @@
 
 #include <memory>
 #include "pos.hpp"
+#include "tcod_util.hpp"
 
 class Creature;
 class Player;
+class Inventory_gui;
 
 class Command {
   public:
@@ -41,6 +43,16 @@ class Stairs_move_command : public Command {
       : target{target}, dir{dir} {}
     int execute() override;
     std::unique_ptr<Command> clone() override { return std::make_unique<Stairs_move_command>(*this); }
+};
+
+class Inventory_command : public Command {
+  private:
+    Inventory_gui &gui;
+    TCOD_key_t key;
+  public:
+    Inventory_command(Inventory_gui &gui, TCOD_key_t key);
+    int execute() override;
+    std::unique_ptr<Command> clone() override { return std::make_unique<Inventory_command>(*this); }
 };
 
 #endif

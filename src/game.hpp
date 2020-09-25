@@ -20,9 +20,6 @@ class Game {
   private:
     std::vector<Map> levels;
     int current_level;
-    static constexpr int log_width = 20;
-    static constexpr int map_width = 100;
-    static constexpr int map_height = 50;
     static const char *font_file;
 
     std::unique_ptr<Gui> log_header;
@@ -49,6 +46,9 @@ class Game {
      */
     bool do_turn();
     void generate_map();
+    static constexpr int map_height = 50;
+    static constexpr int map_width = 100;
+    static constexpr int log_width = 20;
 };
 
 extern std::unique_ptr<Game> game;

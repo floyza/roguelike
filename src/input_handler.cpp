@@ -63,6 +63,16 @@ TCOD_key_t tcod_key_of_char(char c) {
   return key;
 }
 
+Inventory_input_handler::Inventory_input_handler(Player &player, std::function<void()> close_callback)
+  : gui{{5,5}, Game::map_width-10, Game::map_height-10, player, close_callback}
+{}
+
+std::unique_ptr<Command> Inventory_input_handler::get_input() {
+  TCOD_key_t key;
+  TCODSystem::waitForEvent(TCOD_EVENT_KEY_PRESS,&key,nullptr,true);
+  return std::make_unique<Inventory_command>(gui, key);
+}
+
 Monster_input_handler::Monster_input_handler(Creature &monster)
   : Move_input_handler{monster}, monster{monster}, target{*game->you}
 {

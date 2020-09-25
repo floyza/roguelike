@@ -1,0 +1,42 @@
+#include "inventory_gui.hpp"
+#include "player.hpp"
+
+Inventory_gui::Inventory_gui(Pos pos, int width, int height, Player &player, std::function<void()> close_callback)
+  : window(pos,width,height), target(player), close_callback(close_callback)
+{}
+
+void Inventory_gui::handle_input(const TCOD_key_t &input) {
+  switch (input.c) {
+    case 'q':
+      close();
+      break;
+    case 'k':
+      ++index;
+      break;
+    case 'j':
+      --index;
+      break;
+  }
+  if (input.vk == TCODK_ENTER) {
+    bool &eq=target.inven_item(index).equipped;
+    eq = !eq;
+  }
+}
+
+void Inventory_gui::update_window() {
+  window->clear();
+  for (int i=0; i < target.inven_size(); ++i) {
+    const Inven_item &item = target.inven_item(i);
+    window->print(0, i, item.equipped ? "o" : "-");
+    window->print(2, i, item.item.name());
+  }
+}
+
+void Inventory_gui::draw() {
+  update_window();
+  window.blit();
+}
+
+void Inventory_gui::close() {
+  close_callback();
+}

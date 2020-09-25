@@ -3,6 +3,7 @@
 
 #include "tcod_util.hpp"
 #include "command.hpp"
+#include "inventory_gui.hpp"
 #include <unordered_map>
 #include <memory>
 
@@ -47,6 +48,14 @@ public:
   Player_input_handler(Player &player);
   std::unique_ptr<Command> get_input() override;
   std::unique_ptr<Command> handle_key(const TCOD_key_t &input);
+};
+
+class Inventory_input_handler : public Input_handler {
+  private:
+    Inventory_gui gui;
+  public:
+    Inventory_input_handler(Player &player, std::function<void()> close_callback);
+    std::unique_ptr<Command> get_input() override;
 };
 
 class Monster_input_handler : protected Move_input_handler, public Input_handler {
