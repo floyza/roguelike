@@ -24,6 +24,8 @@ class Player : public Creature {
     void take_damage(int amount, Player &source) override;
     void take_damage(int amount, Monster &source) override;
     bool dead=false;
+    int energy=0;
+    int speed=100;
     std::vector<Inven_item> items;
     std::vector<Status> statuses;
     int total_turns=0;
@@ -34,7 +36,8 @@ class Player : public Creature {
     ~Player();
 
     bool do_move(const Pos &new_pos) override;
-    void do_turn() override;
+    bool do_turn() override;
+    void gain_energy();
     void do_attack(Creature &target, bool triggers=true);
     void die() override;
 

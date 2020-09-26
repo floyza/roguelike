@@ -42,9 +42,7 @@ class Game {
 
     std::unique_ptr<Lua_manager> lua_manager;
 
-    /** Returns true if game is not over
-     */
-    bool do_turn();
+    void play();
     void generate_map();
     static constexpr int map_height = 50;
     static constexpr int map_width = 100;

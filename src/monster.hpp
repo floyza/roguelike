@@ -18,6 +18,8 @@ class Monster : public Creature
   Pos dest = { -1, -1 };
   Pos step_to_dest();
   int parent_index;
+  int energy=0;
+  int speed=100;
 public:
   Monster(int id, int parent, const Pos &pos = {0, 0});
   Monster(const std::string &name, int parent, const Pos &pos = {0, 0});
@@ -27,7 +29,8 @@ public:
   int id() const;
   const std::string &name() const;
 
-  void do_turn() override;
+  bool do_turn() override;
+  void gain_energy();
   void do_attack(Creature &target);
   void die() override;
   void push_death(); // if we are dead: remove ourselves from existence

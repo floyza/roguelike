@@ -54,13 +54,21 @@ Pos Monster::step_to_dest() {
   return step;
 }
 
-void Monster::do_turn() {
-  if (parent().in_fov(pos, game->you->pos)) {
-    // the player can see us, so we can see them
-    dest = game->you->pos;
+bool Monster::do_turn() {
+  if (energy >= 0) {
+    if (parent().in_fov(pos, game->you->pos)) {
+      // the player can see us, so we can see them
+      dest = game->you->pos;
+    }
+    do_move(step_to_dest());
+    energy -= 100;
+    return true;
   }
+  return false;
+}
 
-  do_move(step_to_dest());
+void Monster::gain_energy() {
+  energy+=speed;
 }
 
 void Monster::do_attack(Creature &target) {

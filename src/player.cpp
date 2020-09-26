@@ -28,18 +28,23 @@ void Player::pop_input_handler() {
 
 Player::~Player() = default;
 
-void Player::do_turn() {
-  bool doing_actions=true;
-  while (doing_actions && !TCODConsole::isWindowClosed()) {
+bool Player::do_turn() {
+  if (energy >= 0) {
     auto action = current_input()->get_input();
     int cost = action->execute();
-    doing_actions = cost==0;
+    energy -= cost;
+    for (Status &status : statuses) {
+      status.tick();
+    }
+    ++total_turns;
+    call_triggers<Trigger::ON_TURN>();
+    return true;
   }
-  call_triggers<Trigger::ON_TURN>();
-  for (Status &status : statuses) {
-    status.tick();
-  }
-  ++total_turns;
+  return false;
+}
+
+void Player::gain_energy() {
+  energy += speed;
 }
 
 bool Player::do_move(const Pos &new_pos) {

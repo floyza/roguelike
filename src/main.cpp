@@ -14,5 +14,5 @@ int main() {
 
   game->you->aquire_item("Test Item");
 
-  while (game->do_turn()) ;
+  game->play();
 }

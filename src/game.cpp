@@ -36,22 +36,27 @@ void Game::start() {
   you->pos = map().entrance();
 }
 
-bool Game::do_turn() {
-  if (!TCODConsole::isWindowClosed() && !you->is_dead()) {
+void Game::play() {
+  while (!TCODConsole::isWindowClosed() && !you->is_dead()) {
     TCODConsole::root->clear();
     map().draw();
     you->draw();
     msg_log->draw();
     log_header->draw();
     TCODConsole::root->flush();
-    you->do_turn();
-    for (Monster &mon : map().monsters)
-      mon.do_turn();
+    bool turns_taken = you->do_turn();
+    for (Monster &mon : map().monsters) {
+      turns_taken |= mon.do_turn();
+    }
     for (Monster &mon : map().monsters)
       mon.push_death();
-    return true;
+    if (!turns_taken) {
+      you->gain_energy();
+      for (Monster &mon : map().monsters) {
+        mon.gain_energy();
+      }
+    }
   }
-  return false;
 }
 
 bool Game::move_upstairs() {
