@@ -33,7 +33,7 @@ Inventory_command::Inventory_command(Inventory_gui &gui, TCOD_key_t key)
 }
 
 int Inventory_command::execute() {
-  gui.handle_input(key);
-  gui.draw();
+  if (gui.handle_input(key))
+    gui.draw();
   return 0; // takes no time
 }

@@ -5,11 +5,11 @@ Inventory_gui::Inventory_gui(Pos pos, int width, int height, Player &player, std
   : window(pos,width,height), target(player), close_callback(close_callback)
 {}
 
-void Inventory_gui::handle_input(const TCOD_key_t &input) {
+bool Inventory_gui::handle_input(const TCOD_key_t &input) {
   switch (input.c) {
     case 'q':
       close();
-      break;
+      return false;
     case 'k':
       ++index;
       break;
@@ -21,6 +21,7 @@ void Inventory_gui::handle_input(const TCOD_key_t &input) {
     bool &eq=target.inven_item(index).equipped;
     eq = !eq;
   }
+  return true;
 }
 
 void Inventory_gui::update_window() {

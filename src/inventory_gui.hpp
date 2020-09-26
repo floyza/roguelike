@@ -16,7 +16,7 @@ class Inventory_gui {
   public:
     Inventory_gui(Pos pos, int width, int height, Player &player, std::function<void()> close_callback);
     void draw();
-    void handle_input(const TCOD_key_t &input);
+    bool handle_input(const TCOD_key_t &input);
     void close();
 };
 
