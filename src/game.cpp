@@ -5,6 +5,7 @@
 #include "gui.hpp"
 #include "monster.hpp"
 #include "tcod_util.hpp"
+#include "input_handler.hpp"
 #include <iostream>
 #include <libtcod/libtcod.hpp>
 #include <lua.h>
@@ -22,6 +23,7 @@ Game::Game()
 {
   log_header->send_msg({"LOG", TCODColor::white, true});
   TCODConsole::setCustomFont(font_file, TCOD_FONT_LAYOUT_ASCII_INROW);
+  you->push_input_handler(std::make_unique<Player_input_handler>(*you));
 }
 
 Game::~Game() = default;

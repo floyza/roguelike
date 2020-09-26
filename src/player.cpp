@@ -14,8 +14,16 @@
 #include <string>
 
 Player::Player(char icon, const TCODColor &color, int max_hp, int attack, const Pos &pos)
-  : Creature(icon, color, max_hp, attack, pos), current_input{std::make_unique<Player_input_handler>(*this)}
+  : Creature(icon, color, max_hp, attack, pos)
 {
+}
+
+void Player::push_input_handler(std::unique_ptr<Input_handler> input) {
+  inputs.push(std::move(input));
+}
+
+void Player::pop_input_handler() {
+  inputs.pop();
 }
 
 Player::~Player() = default;
@@ -23,7 +31,7 @@ Player::~Player() = default;
 void Player::do_turn() {
   bool doing_actions=true;
   while (doing_actions && !TCODConsole::isWindowClosed()) {
-    auto action = current_input->get_input();
+    auto action = current_input()->get_input();
     int cost = action->execute();
     doing_actions = cost==0;
   }

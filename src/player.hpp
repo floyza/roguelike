@@ -6,6 +6,7 @@
 #include "status.hpp"
 #include <vector>
 #include <string>
+#include <stack>
 
 class Monster;
 class Item;
@@ -19,47 +20,51 @@ struct Inven_item {
 };
 
 class Player : public Creature {
-private:
-  void take_damage(int amount, Player &source) override;
-  void take_damage(int amount, Monster &source) override;
-  bool dead=false;
-  std::vector<Inven_item> items;
-  std::vector<Status> statuses;
-  int total_turns=0;
-  std::unique_ptr<Input_handler> current_input;
-public:
-  Player(char icon, const TCODColor &color, int max_hp, int attack, const Pos &pos = {0, 0});
-  ~Player();
+  private:
+    void take_damage(int amount, Player &source) override;
+    void take_damage(int amount, Monster &source) override;
+    bool dead=false;
+    std::vector<Inven_item> items;
+    std::vector<Status> statuses;
+    int total_turns=0;
+    std::stack<std::unique_ptr<Input_handler>> inputs;
+    std::unique_ptr<Input_handler> &current_input() { return inputs.top(); }
+  public:
+    Player(char icon, const TCODColor &color, int max_hp, int attack, const Pos &pos = {0, 0});
+    ~Player();
 
-  bool do_move(const Pos &new_pos) override;
-  void do_turn() override;
-  void do_attack(Creature &target, bool triggers=true);
-  void die() override;
+    bool do_move(const Pos &new_pos) override;
+    void do_turn() override;
+    void do_attack(Creature &target, bool triggers=true);
+    void die() override;
 
-  Faction faction() const override { return Faction::Player; }
+    Faction faction() const override { return Faction::Player; }
 
-  void take_damage(int amount);
+    void take_damage(int amount);
 
-  void aquire_item(int id);
-  void aquire_item(const std::string &name);
-  void aquire_item(const Lua_item &base);
+    void aquire_item(int id);
+    void aquire_item(const std::string &name);
+    void aquire_item(const Lua_item &base);
 
-  void aquire_status(int id);
-  void aquire_status(const std::string &name);
-  void aquire_status(const Lua_status &base);
-  void remove_status(int id);
-  void remove_status(const std::string &name);
+    void aquire_status(int id);
+    void aquire_status(const std::string &name);
+    void aquire_status(const Lua_status &base);
+    void remove_status(int id);
+    void remove_status(const std::string &name);
 
-  int inven_size() const;
-  Inven_item &inven_item(int i);
-  const Inven_item &inven_item(int i) const;
+    int inven_size() const;
+    Inven_item &inven_item(int i);
+    const Inven_item &inven_item(int i) const;
 
-  template<Trigger trigger, typename... Args>
-  void call_triggers(Args... args);
+    void push_input_handler(std::unique_ptr<Input_handler> input);
+    void pop_input_handler(); // used by Input_handlers to remove themselves
 
-  int turn_count() const;
+    template<Trigger trigger, typename... Args>
+    void call_triggers(Args... args);
 
-  bool is_dead() const { return dead; }
+    int turn_count() const;
+
+    bool is_dead() const { return dead; }
 };
 
 template<Trigger trigger, typename... Args>

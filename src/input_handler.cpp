@@ -6,6 +6,7 @@
 #include "game.hpp"
 #include "map.hpp"
 #include "monster.hpp"
+#include "input_handler_command.hpp"
 #include <cctype>
 
 Move_input_handler::Move_input_handler(Creature &target)
@@ -24,6 +25,11 @@ Stairs_input_handler::Stairs_input_handler(Player &target)
 Player_input_handler::Player_input_handler(Player &player)
   : Move_input_handler{player}, Stairs_input_handler{player}
 {
+  auto callback = [&player]{
+    player.pop_input_handler();
+  };
+  commands_.push_back(std::make_unique<Inventory_input_handler_command>(player, callback));
+  buttons_[tcod_key_of_char('i')] = commands_.back().get();
   buttons_[tcod_key_of_char('k')] = &move_up_;
   buttons_[tcod_key_of_char('j')] = &move_down_;
   buttons_[tcod_key_of_char('l')] = &move_right_;
