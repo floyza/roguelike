@@ -38,8 +38,12 @@ Player_input_handler::Player_input_handler(Player &player)
   buttons_[tcod_key_of_char('u')] = &move_ne_;
   buttons_[tcod_key_of_char('b')] = &move_sw_;
   buttons_[tcod_key_of_char('n')] = &move_se_;
-  buttons_[tcod_key_of_char('<')] = &move_upstairs_;
-  buttons_[tcod_key_of_char('>')] = &move_downstairs_;
+  auto upstairs = tcod_key_of_char(',');
+  upstairs.shift = true;
+  buttons_[upstairs] = &move_upstairs_;
+  auto downstairs = tcod_key_of_char('.');
+  downstairs.shift = true;
+  buttons_[downstairs] = &move_downstairs_;
 }
 
 std::unique_ptr<Command> Player_input_handler::get_input() {
