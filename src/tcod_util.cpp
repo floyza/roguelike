@@ -15,10 +15,15 @@ int rand_int(int min, int max) {
 
 int rand_int_log(int min, int max) {
   tcod_rand->setDistribution(TCOD_DISTRIBUTION_GAUSSIAN_RANGE);
-  int result=-1;
-  while (result < 0)
-    result = tcod_rand->getInt(min-max, max-min);
-  return min + result;
+  return tcod_rand->getInt(min, max);
+}
+
+int rand_int_log_bounded(int min, int max, int bmin, int bmax) {
+  while (true) {
+    int result = rand_int_log(min,max);
+    if (bmin <= result && result <= bmax)
+      return result;
+  }
 }
 
 bool percent_chance(double chance) {
