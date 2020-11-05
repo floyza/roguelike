@@ -6,7 +6,7 @@
 #include <memory>
 #include <map>
 #include <libtcod/libtcod.hpp>
-#include "sol.hpp"
+#include <sol/sol.hpp>
 
 enum class Trigger;
 

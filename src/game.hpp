@@ -1,7 +1,7 @@
 #ifndef GAME_HPP_DEFINED
 #define GAME_HPP_DEFINED
 
-#include "sol.hpp"
+#include <sol/sol.hpp>
 #include <memory>
 #include <vector>
 
