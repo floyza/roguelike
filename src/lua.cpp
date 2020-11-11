@@ -237,11 +237,11 @@ const Lua_status &Lua_manager::get_status(const std::string &name) const {
 											 });
 }
 const Lua_item &Lua_manager::get_rand_item(int depth) const {
-  auto range = item_rarity_map.equal_range(rand_int_log_bounded(depth-10, depth+10, 0, game->max_depth));
+  auto range = item_rarity_map.equal_range(rand_int_log_bounded(depth-2, depth+2, 0, game->max_depth));
   return *random_element(range.first, range.second)->second;
 }
 
 const Lua_monster &Lua_manager::get_rand_mon(int depth) const {
-  auto range = monster_rarity_map.equal_range(rand_int_log_bounded(depth-10, depth+10, 0, game->max_depth));
+  auto range = monster_rarity_map.equal_range(rand_int_log_bounded(depth-2, depth+2, 0, game->max_depth));
   return *random_element(range.first, range.second)->second;
 }
