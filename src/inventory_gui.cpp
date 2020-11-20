@@ -11,10 +11,12 @@ bool Inventory_gui::handle_input(const TCOD_key_t &input) {
       close();
       return false;
     case 'k':
-      ++index;
+      if (index > 0)
+        --index;
       break;
     case 'j':
-      --index;
+      if (index < target.inven_size()-1)
+        ++index;
       break;
   }
   if (input.vk == TCODK_ENTER) {
@@ -26,10 +28,12 @@ bool Inventory_gui::handle_input(const TCOD_key_t &input) {
 
 void Inventory_gui::update_window() {
   window->clear();
+  using namespace std::string_literals;
+  window->print(0, index, ">"s);
   for (int i=0; i < target.inven_size(); ++i) {
     const Inven_item &item = target.inven_item(i);
-    window->print(0, i, item.equipped ? "o" : "-");
-    window->print(2, i, item.item.name());
+    window->print(1, i, item.equipped ? "o"s : "-"s);
+    window->print(3, i, item.item.name());
   }
 }
 
