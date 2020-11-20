@@ -9,7 +9,25 @@ item_definitions = {
     name = "Stealth Kit",
     trigger = Trigger.DAM_MOD,
     effect = "stealth_attack",
-    rarity = 0
+    rarity = 1
+  },
+  {
+    name = "Overflow Heal",
+    trigger = Trigger.ON_KILL,
+    effect = "overflow_heal",
+    rarity = 2
+  },
+  {
+    name = "Thorns",
+    trigger = Trigger.ON_HIT,
+    effect = "thorns",
+    rarity = 3
+  },
+  {
+    name = "Recursive Attack",
+    trigger = Trigger.ON_HIT,
+    effect = "recursive_attack",
+    rarity = 4
   },
   {
     name = "Test Item",
