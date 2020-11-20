@@ -62,7 +62,8 @@ void Lua_manager::init() {
 																 "aquire_item", sol::overload(
 																															static_cast<void(Player::*)(int)>(&Player::aquire_item),
 																															static_cast<void(Player::*)(const std::string &)>(&Player::aquire_item),
-																															static_cast<void(Player::*)(const Lua_item &)>(&Player::aquire_item)),
+																															static_cast<void(Player::*)(const Lua_item &)>(&Player::aquire_item),
+																															static_cast<void(Player::*)(const Item &)>(&Player::aquire_item)),
 																 "aquire_status", sol::overload(
 																																static_cast<void(Player::*)(int)>(&Player::aquire_status),
 																																static_cast<void(Player::*)(const std::string &)>(&Player::aquire_status),

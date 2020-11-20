@@ -47,6 +47,7 @@ class Game {
     static constexpr int map_height = 50;
     static constexpr int map_width = 100;
     static constexpr int log_width = 20;
+    static constexpr int max_depth = 4;
 };
 
 extern std::unique_ptr<Game> game;

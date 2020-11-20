@@ -119,6 +119,10 @@ void Player::aquire_item(const Lua_item &base) {
   items.push_back(Inven_item{base});
 }
 
+void Player::aquire_item(const Item &item) {
+  items.push_back(Inven_item{item});
+}
+
 void Player::aquire_status(int id) {
   statuses.emplace_back(id);
 }

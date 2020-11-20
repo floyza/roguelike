@@ -48,6 +48,7 @@ class Player : public Creature {
     void aquire_item(int id);
     void aquire_item(const std::string &name);
     void aquire_item(const Lua_item &base);
+    void aquire_item(const Item &item);
 
     void aquire_status(int id);
     void aquire_status(const std::string &name);

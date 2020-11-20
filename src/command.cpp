@@ -37,3 +37,17 @@ int Inventory_command::execute() {
     gui.draw();
   return 0; // takes no time
 }
+
+int Pickup_command::execute() {
+  Map &map = game->map();
+  for (auto it = map.items.begin(); it != map.items.end(); ++it) {
+    Item &item = *it;
+    if (item.pos == target_.pos) {
+      target_.aquire_item(item);
+    }
+    map.items.erase(it); // invalidates `item` reference
+                         // and iterators
+    break;
+  }
+  return 100;
+}

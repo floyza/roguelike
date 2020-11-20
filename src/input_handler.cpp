@@ -30,6 +30,8 @@ Player_input_handler::Player_input_handler(Player &player)
   };
   commands_.push_back(std::make_unique<Inventory_input_handler_command>(player, callback));
   buttons_[tcod_key_of_char('i')] = commands_.back().get();
+  commands_.push_back(std::make_unique<Pickup_command>(player));
+  buttons_[tcod_key_of_char('g')] = commands_.back().get();
   buttons_[tcod_key_of_char('k')] = &move_up_;
   buttons_[tcod_key_of_char('j')] = &move_down_;
   buttons_[tcod_key_of_char('l')] = &move_right_;

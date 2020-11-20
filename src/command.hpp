@@ -55,4 +55,14 @@ class Inventory_command : public Command {
     std::unique_ptr<Command> clone() override { return std::make_unique<Inventory_command>(*this); }
 };
 
+class Pickup_command : public Command {
+  private:
+    Player &target_;
+  public:
+    Pickup_command(Player &target)
+      : target_{target} {}
+    int execute() override;
+    std::unique_ptr<Command> clone() override { return std::make_unique<Pickup_command>(*this); }
+};
+
 #endif

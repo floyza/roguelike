@@ -8,7 +8,7 @@
 
 int main() {
   tcod_rand = std::make_unique<TCODRandom>();
-  
+
   game = std::make_unique<Game>();
   game->start();
 
