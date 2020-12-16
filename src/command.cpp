@@ -44,10 +44,10 @@ int Pickup_command::execute() {
     Item &item = *it;
     if (item.pos == target_.pos) {
       target_.aquire_item(item);
+      map.items.erase(it); // invalidates `item` reference
+                           // and iterators
+      break;
     }
-    map.items.erase(it); // invalidates `item` reference
-                         // and iterators
-    break;
   }
   return 100;
 }
