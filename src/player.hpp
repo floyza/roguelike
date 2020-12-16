@@ -37,7 +37,8 @@ class Player : public Creature {
 
     bool do_move(const Pos &new_pos) override;
     bool do_turn() override;
-    void gain_energy();
+    void gain_energy() override;
+    bool get_energy() const override { return energy; }
     void do_attack(Creature &target, bool triggers=true);
     void die() override;
 

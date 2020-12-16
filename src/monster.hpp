@@ -30,7 +30,8 @@ public:
   const std::string &name() const;
 
   bool do_turn() override;
-  void gain_energy();
+  void gain_energy() override;
+  bool get_energy() const override { return energy; }
   void do_attack(Creature &target);
   void die() override;
   void push_death(); // if we are dead: remove ourselves from existence

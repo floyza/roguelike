@@ -21,6 +21,8 @@ public:
   int get_hp() const;
   int get_attack() const;
   virtual bool do_turn()=0;
+  virtual void gain_energy()=0;
+  virtual bool get_energy() const=0;
   virtual void take_damage(int amount, Player &source)=0;
   virtual void take_damage(int amount, Monster &source)=0;
   virtual bool do_move(const Pos& new_pos)=0;
