@@ -43,18 +43,7 @@ void Game::play() {
     you->draw();
     msg_log->draw();
     log_header->draw();
-    bool turns_taken = you->do_turn();
-    for (Monster &mon : map().monsters) {
-      turns_taken |= mon.do_turn();
-    }
-    for (Monster &mon : map().monsters)
-      mon.push_death();
-    if (!turns_taken) {
-      you->gain_energy();
-      for (Monster &mon : map().monsters) {
-        mon.gain_energy();
-      }
-    }
+    map().do_turn();
     TCODConsole::root->flush();
   }
 }

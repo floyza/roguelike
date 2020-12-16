@@ -8,11 +8,18 @@
 
 class Monster;
 class Item;
+class Creature;
 
 struct Tile {
   Tile(bool discovered=false) : discovered(discovered) { }
   bool discovered;
 };
+
+// struct Turn_creature {
+//   enum Type { Player, Monster };
+//   Type type;
+//   int id=-1;
+// };
 
 class Map {
   private:
@@ -31,6 +38,8 @@ class Map {
     bool in_level(const Pos &pos);
     void generate_monster(const Pos &pos);
     void generate_item(const Pos &pos);
+
+    Creature *get_highest_turn_priority();
   public:
     Map(int w, int h, int depth);
     ~Map();
@@ -49,6 +58,7 @@ class Map {
     Tile &tile(const Pos &pos);
     bool in_fov(const Pos &pos, const Pos &target, bool recalculate=true);
     void calculate_fov(const Pos &src);
+    void do_turn();
 };
 
 #endif //MAP_HPP_DEFINED

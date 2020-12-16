@@ -355,3 +355,34 @@ Tile &Map::tile(const Pos &pos) {
 TCODMap &Map::get_map() {
   return map;
 }
+
+Creature *Map::get_highest_turn_priority() {
+  Creature *c = nullptr;
+  int max_energy = 0;
+  if (int energy = game->you->get_energy(); energy > max_energy) {
+    c = game->you.get();
+    max_energy = energy;
+  }
+  for (Monster &mon : monsters) {
+    if (int energy = mon.get_energy(); energy > max_energy) {
+      c = &mon;
+      max_energy = energy;
+    }
+  }
+  return c;
+}
+
+void Map::do_turn() {
+  Creature *highest_priority = get_highest_turn_priority();
+  if (highest_priority != nullptr) {
+    highest_priority->do_turn();
+    for (Monster &mon : monsters) {
+      mon.push_death();
+    }
+  } else {
+    game->you->gain_energy();
+    for (Monster &mon : monsters) {
+      mon.gain_energy();
+    }
+  }
+}
