@@ -52,7 +52,7 @@ bool Game::move_upstairs() {
   if (current_level == 0)
     return false;
   --current_level;
-  you->pos = map().entrance();
+  you->pos = map().exit();
   return true;
 }
 
