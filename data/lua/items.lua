@@ -49,10 +49,10 @@ function stealth_attack(damage, target)
   -- DAM_MOD
   local stealth_gap=3
   if ( game.you.turn_count >= last_attack+stealth_gap ) then
-    last_attack = you.turn_count
+    last_attack = game.you.turn_count
     damage = damage * 1.5
   end
-  return damage
+  return math.floor(damage)
 end
 
 function overflow_heal(target)
