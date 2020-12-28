@@ -1,3 +1,6 @@
+#ifndef DEFINED_GUI_HPP
+#define DEFINED_GUI_HPP
+
 #include <memory>
 #include <string>
 #include <deque>
@@ -34,3 +37,5 @@ class Input_gui : public Gui {
 };
 
 //Gui &operator<<(Gui &gui, const std::string &msg);
+
+#endif
