@@ -30,7 +30,15 @@ Player_input_handler::Player_input_handler(Player &player)
   };
   commands_.push_back(std::make_unique<Inventory_input_handler_command>(player, callback));
   buttons_[tcod_key_of_char('i')] = commands_.back().get();
-  commands_.push_back(std::make_unique<Lua_input_handler_command>(player, callback));
+  //commands_.push_back(std::make_unique<Lua_input_handler_command>(player, callback));
+  // The Lua_input_handler does not work right now, due to libtcod not emitting
+  // TCODK_TEXT events, so we cannot use it. This will work for now
+  commands_.push_back(std::make_unique<Lambda_command>([]{
+    // send_msg doesn't work here because we blit the screen after the turn is done
+    //game->send_msg(std::string("Lua scripting activated in stdin/stdout, see command line."));
+    std::cout << "Lua scripting activated, type 'QUIT' to quit.\n";
+    game->lua_manager->script_cin();
+  }, 0));
   buttons_[tcod_key_of_char('`')] = commands_.back().get();
   commands_.push_back(std::make_unique<Pickup_command>(player));
   buttons_[tcod_key_of_char('g')] = commands_.back().get();
