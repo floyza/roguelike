@@ -197,6 +197,8 @@ void Lua_manager::script(const std::string &input) {
 void Lua_manager::script_cin() {
   std::string in;
   while (std::getline(std::cin, in)) {
+    if (in == "QUIT")
+      break;
     script(in);
   }
 }

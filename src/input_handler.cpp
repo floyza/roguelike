@@ -30,6 +30,8 @@ Player_input_handler::Player_input_handler(Player &player)
   };
   commands_.push_back(std::make_unique<Inventory_input_handler_command>(player, callback));
   buttons_[tcod_key_of_char('i')] = commands_.back().get();
+  commands_.push_back(std::make_unique<Lua_input_handler_command>(player, callback));
+  buttons_[tcod_key_of_char('`')] = commands_.back().get();
   commands_.push_back(std::make_unique<Pickup_command>(player));
   buttons_[tcod_key_of_char('g')] = commands_.back().get();
   buttons_[tcod_key_of_char('k')] = &move_up_;
@@ -125,4 +127,16 @@ Pos Monster_input_handler::step_to_dest() {
     }
   }
   return target.pos-step;
+}
+
+Lua_input_handler::Lua_input_handler(std::function<void()> close_callback)
+  : gui({5,5}, Game::map_width-10, Game::map_height-10, close_callback)
+{
+  gui.draw();
+}
+
+std::unique_ptr<Command> Lua_input_handler::get_input() {
+  TCOD_key_t key;
+  TCODSystem::waitForEvent(TCOD_EVENT_KEY_PRESS,&key,nullptr,true);
+  return std::make_unique<Lua_command>(gui, key);
 }

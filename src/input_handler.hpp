@@ -4,6 +4,7 @@
 #include "tcod_util.hpp"
 #include "command.hpp"
 #include "inventory_gui.hpp"
+#include "lua_gui.hpp"
 #include <unordered_map>
 #include <memory>
 #include <vector>
@@ -66,9 +67,11 @@ public:
 };
 
 class Lua_input_handler : public Input_handler {
+  private:
+    Lua_gui gui;
 public:
-  std::unique_ptr<Command> get_input() override {/*do nothing*/};
-  //Command &handle_input(const TCOD_key_t &input);
+    Lua_input_handler(std::function<void()> close_callback);
+    std::unique_ptr<Command> get_input() override;
 };
 
 TCOD_key_t tcod_key_of_char(char c);

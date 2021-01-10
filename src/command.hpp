@@ -8,6 +8,7 @@
 class Creature;
 class Player;
 class Inventory_gui;
+class Lua_gui;
 
 class Command {
   public:
@@ -53,6 +54,16 @@ class Inventory_command : public Command {
     Inventory_command(Inventory_gui &gui, TCOD_key_t key);
     int execute() override;
     std::unique_ptr<Command> clone() override { return std::make_unique<Inventory_command>(*this); }
+};
+
+class Lua_command : public Command {
+  private:
+    Lua_gui &gui;
+    TCOD_key_t key;
+  public:
+    Lua_command(Lua_gui &gui, TCOD_key_t key);
+    int execute() override;
+    std::unique_ptr<Command> clone() override { return std::make_unique<Lua_command>(*this); }
 };
 
 class Pickup_command : public Command {

@@ -3,6 +3,7 @@
 #include "player.hpp"
 #include "map.hpp"
 #include "inventory_gui.hpp"
+#include "lua_gui.hpp"
 
 int Move_command::execute() {
   if (target.do_move(target.pos+pos_)) {
@@ -36,6 +37,17 @@ int Inventory_command::execute() {
   if (gui.handle_input(key))
     gui.draw();
   return 0; // takes no time
+}
+
+Lua_command::Lua_command(Lua_gui &gui, TCOD_key_t key)
+  : gui{gui}, key{key}
+{
+}
+
+int Lua_command::execute() {
+  if (gui.handle_input(key))
+    gui.draw();
+  return 0;
 }
 
 int Pickup_command::execute() {
