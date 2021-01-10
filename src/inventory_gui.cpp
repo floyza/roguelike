@@ -23,6 +23,7 @@ bool Inventory_gui::handle_input(const TCOD_key_t &input) {
     bool &eq=target.inven_item(index).equipped;
     eq = !eq;
   }
+  draw();
   return true;
 }
 
