@@ -17,6 +17,20 @@ class Command {
     virtual std::unique_ptr<Command> clone()=0;
 };
 
+class Lambda_command : public Command {
+  private:
+    std::function<int(void)> func;
+  public:
+    // Uses energy equal to function result
+    Lambda_command(std::function<int(void)> f)
+      : func(f) {}
+    // Uses energy equal to arg
+    Lambda_command(std::function<void(void)> f, int energy)
+      : Lambda_command([f,energy]{ f(); return energy; }) {}
+    int execute() override { return func(); }
+    std::unique_ptr<Command> clone() override { return std::make_unique<Lambda_command>(*this); }
+};
+
 class Null_command : public Command {
   public:
     int execute() override { return 0; }
