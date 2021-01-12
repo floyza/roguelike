@@ -4,9 +4,14 @@
 #include "creature.hpp"
 #include "item.hpp"
 #include "status.hpp"
+#include "input_handler.hpp"
 #include <vector>
 #include <string>
 #include <stack>
+#include <nlohmann/json.hpp>
+#include "json_definitions.hpp"
+
+using json = nlohmann::json;
 
 class Monster;
 class Item;
@@ -71,6 +76,27 @@ class Player : public Creature {
 
     bool is_dead() const { return dead; }
 };
+
+namespace nlohmann {
+  template<>
+  struct adl_serializer<Player> {
+    static Player from_json(const json& j) {
+      char icon = j.at("icon").get<char>();
+      TCODColor color = j.at("color").get<TCODColor>();
+      int max_hp = j.at("max_hp").get<int>();
+      int attack = j.at("attack").get<int>();
+      Player p{icon, color, max_hp, attack};
+      p.push_input_handler(std::make_unique<Player_input_handler>(p));
+      return p;
+    }
+    static void to_json(json& j, const Player &p) {
+      j["icon"] = p.get_icon();
+      j["color"] = p.get_color();
+      j["max_hp"] = p.get_max_hp();
+      j["attack"] = p.get_attack();
+    }
+  };
+}
 
 template<Trigger trigger, typename... Args>
 void Player::call_triggers(Args... args) {

@@ -20,6 +20,9 @@ public:
   void draw() const;
   int get_hp() const;
   int get_attack() const;
+  char get_icon() const { return icon; }
+  TCODColor get_color() const { return color; }
+  int get_max_hp() const { return max_hp; }
   virtual bool do_turn()=0;
   virtual void gain_energy()=0;
   virtual bool get_energy() const=0;
