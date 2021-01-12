@@ -36,7 +36,6 @@ Player_input_handler::Player_input_handler(Player &player)
   commands_.push_back(std::make_unique<Lambda_command>([]{
     // send_msg doesn't work here because we blit the screen after the turn is done
     //game->send_msg(std::string("Lua scripting activated in stdin/stdout, see command line."));
-    std::cout << "Lua scripting activated, type 'QUIT' to quit.\n";
     game->lua_manager->script_cin();
   }, 0));
   buttons_[tcod_key_of_char('`')] = commands_.back().get();

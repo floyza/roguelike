@@ -65,6 +65,7 @@ public:
 
   void load_file(const std::string &file);
   void script(const std::string &input);
+  std::optional<std::string> script_friendly(const std::string &input);
   void script_cin();
 
   sol::protected_function get_func(const std::string &func);

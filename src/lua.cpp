@@ -194,12 +194,27 @@ void Lua_manager::script(const std::string &input) {
   lua_state.script(input);
 }
 
+std::optional<std::string> Lua_manager::script_friendly(const std::string &input) {
+  try {
+    script(input);
+  } catch (sol::error &err) {
+    return err.what();
+  }
+  return {};
+}
+
 void Lua_manager::script_cin() {
+  std::cout << "Lua scripting activated, type 'QUIT' to quit.\n";
+  std::cout << " >> ";
   std::string in;
   while (std::getline(std::cin, in)) {
     if (in == "QUIT")
       break;
-    script(in);
+    auto s = script_friendly(in);
+    if (s) {
+      std::cout << *s << std::endl;
+    }
+    std::cout << " >> ";
   }
 }
 
