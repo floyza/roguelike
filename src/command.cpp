@@ -15,15 +15,21 @@ int Move_command::execute() {
 int Stairs_move_command::execute() {
   switch (dir) {
     case Direction::Up:
-      if (target.pos == game->map().entrance())
-        if (game->move_upstairs())
+      if (target.pos == game->map().entrance()) {
+        if (game->move_upstairs()) {
+          game->send_msg(std::string("You move upstairs."));
           return 100;
+        }
+      }
       break;
     case Direction::Down:
-      if (target.pos == game->map().exit())
-        if (game->move_downstairs())
+      if (target.pos == game->map().exit()) {
+        if (game->move_downstairs()) {
+          game->send_msg(std::string("You move upstairs."));
           return 100;
-      break;
+        }
+        break;
+      }
   }
   return 0;
 }
@@ -54,6 +60,9 @@ int Pickup_command::execute() {
   for (auto it = map.items.begin(); it != map.items.end(); ++it) {
     Item &item = *it;
     if (item.pos == target_.pos) {
+      using namespace std::string_literals;
+      const std::string &name = item.name();
+      game->send_msg("You pick up "s + (is_vowel(name[0]) ? "an " : "a ") + name + ".");
       target_.aquire_item(item);
       map.items.erase(it); // invalidates `item` reference
                            // and iterators

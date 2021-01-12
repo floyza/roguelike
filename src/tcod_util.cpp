@@ -35,6 +35,14 @@ bool percent_chance(double chance) {
   return rand_int(1, denominator) <= numerator;
 }
 
+bool is_vowel(char c) {
+	switch (std::tolower(c)) {
+		case 'a': case 'e': case 'i': case 'o': case 'u':
+			return true;
+	}
+	return false;
+}
+
 struct Wall_tile {
   bool n,s,w,e;
   bool operator==(const Wall_tile &o) const {return n==o.n && s==o.s && e==o.e && w==o.w;}

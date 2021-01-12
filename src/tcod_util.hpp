@@ -14,6 +14,7 @@ int rand_int_log(int min, int max);
 int rand_int_log_bounded(int min, int max, int bmin, int bmax);
 bool percent_chance(double chance);
 int wall_merge(int wall1, int wall2);
+bool is_vowel(char c);
 
 template <typename Iter>
 Iter random_element(Iter begin, Iter end) {
