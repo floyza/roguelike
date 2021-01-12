@@ -57,7 +57,7 @@ end
 
 function overflow_heal(target)
   -- ON_KILL
-  game.you.hp = you.hp - target.hp
+  game.you.hp = game.you.hp - target.hp
 end
 
 function thorns(target)
