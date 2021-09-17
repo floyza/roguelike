@@ -8,6 +8,7 @@
 #include "pos.hpp"
 #include "tcod_util.hpp"
 #include <iostream>
+#include <sol/sol.hpp>
 
 Lua_manager::Lua_manager() {}
 
@@ -82,14 +83,14 @@ void Lua_manager::init() {
       "do_turn", &Monster::do_turn, "die", &Monster::die, "pos", &Monster::pos);
   lua_state.new_usertype<Tile>("Tile", sol::constructors<Tile(bool)>(),
                                "discovered", &Tile::discovered);
-  // TODO: fix this
-  // lua_state.new_usertype<Map>(
-  //     "Map", sol::constructors<Map(int, int, int)>(), "monsters",
-  //     &Map::monsters, "items", &Map::items, "width",
-  //     sol::property(&Map::get_width), "height",
-  //     sol::property(&Map::get_height), "is_walkable", &Map::is_walkable,
-  //     "set_walkable", &Map::set_walkable, "tile", &Map::tile, "in_fov",
-  //     &Map::in_fov);
+  lua_state.new_usertype<Map>(
+      "Map", sol::constructors<Map(int, int, int)>(), "monsters",
+      sol::readonly(
+          &Map::monsters), // TODO: possibly fixable, Monster is not copyable
+      "items", &Map::items, "width", sol::property(&Map::get_width), "height",
+      sol::property(&Map::get_height), "is_walkable", &Map::is_walkable,
+      "set_walkable", &Map::set_walkable, "tile", &Map::tile, "in_fov",
+      &Map::in_fov);
   lua_state.new_usertype<Game>(
       "Game", sol::no_constructor, "you",
       sol::property([](Game &self) { return std::ref(self.you); }),
