@@ -1,43 +1,47 @@
 #include "input_handler.hpp"
-#include "tcod_util.hpp"
 #include "command.hpp"
-#include "player.hpp"
 #include "dir.hpp"
 #include "game.hpp"
+#include "input_handler_command.hpp"
 #include "map.hpp"
 #include "monster.hpp"
-#include "input_handler_command.hpp"
+#include "player.hpp"
+#include "tcod_util.hpp"
 #include <cctype>
+#include <libtcod/console_types.h>
+
+Input_handler::~Input_handler() {}
 
 Move_input_handler::Move_input_handler(Creature &target)
-  : move_up_{target,Dir::n}, move_down_{target,Dir::s}, move_right_{target,Dir::e}, move_left_{target,Dir::w},
-    move_nw_{target,Dir::nw}, move_ne_{target,Dir::ne}, move_sw_{target,Dir::sw}, move_se_{target,Dir::se},
-    null_command_{}
-{
-}
+    : move_up_{target, Dir::n}, move_down_{target, Dir::s}, move_right_{target,
+                                                                        Dir::e},
+      move_left_{target, Dir::w}, move_nw_{target, Dir::nw}, move_ne_{target,
+                                                                      Dir::ne},
+      move_sw_{target, Dir::sw}, move_se_{target, Dir::se}, null_command_{} {}
 
 Stairs_input_handler::Stairs_input_handler(Player &target)
-  : move_upstairs_{target, Stairs_move_command::Direction::Up},
-    move_downstairs_{target, Stairs_move_command::Direction::Down}
-{
-}
+    : move_upstairs_{target, Stairs_move_command::Direction::Up},
+      move_downstairs_{target, Stairs_move_command::Direction::Down} {}
 
 Player_input_handler::Player_input_handler(Player &player)
-  : Move_input_handler{player}, Stairs_input_handler{player}
-{
-  auto callback = [&player]{
-    player.pop_input_handler();
-  };
-  commands_.push_back(std::make_unique<Inventory_input_handler_command>(player, callback));
+    : Move_input_handler{player}, Stairs_input_handler{player} {
+  auto callback = [&player] { player.pop_input_handler(); };
+  commands_.push_back(
+      std::make_unique<Inventory_input_handler_command>(player, callback));
   buttons_[tcod_key_of_char('i')] = commands_.back().get();
-  //commands_.push_back(std::make_unique<Lua_input_handler_command>(player, callback));
+  // commands_.push_back(std::make_unique<Lua_input_handler_command>(player,
+  // callback));
   // The Lua_input_handler does not work right now, due to libtcod not emitting
   // TCODK_TEXT events, so we cannot use it. This will work for now
-  commands_.push_back(std::make_unique<Lambda_command>([]{
-    // send_msg doesn't work here because we blit the screen after the turn is done
-    //game->send_msg(std::string("Lua scripting activated in stdin/stdout, see command line."));
-    game->lua_manager->script_cin();
-  }, 0));
+  commands_.push_back(std::make_unique<Lambda_command>(
+      [] {
+        // send_msg doesn't work here because we blit the screen after the turn
+        // is done
+        // game->send_msg(std::string("Lua scripting activated in stdin/stdout,
+        // see command line."));
+        game->lua_manager->script_cin();
+      },
+      0));
   buttons_[tcod_key_of_char('`')] = commands_.back().get();
   commands_.push_back(std::make_unique<Pickup_command>(player));
   buttons_[tcod_key_of_char('g')] = commands_.back().get();
@@ -49,21 +53,22 @@ Player_input_handler::Player_input_handler(Player &player)
   buttons_[tcod_key_of_char('u')] = &move_ne_;
   buttons_[tcod_key_of_char('b')] = &move_sw_;
   buttons_[tcod_key_of_char('n')] = &move_se_;
-  auto upstairs = tcod_key_of_char(',');
+  TCOD_key_t upstairs = tcod_key_of_char(',');
   upstairs.shift = true;
   buttons_[upstairs] = &move_upstairs_;
-  auto downstairs = tcod_key_of_char('.');
+  TCOD_key_t downstairs = tcod_key_of_char('.');
   downstairs.shift = true;
   buttons_[downstairs] = &move_downstairs_;
 }
 
 std::unique_ptr<Command> Player_input_handler::get_input() {
   TCOD_key_t key;
-  TCODSystem::waitForEvent(TCOD_EVENT_KEY_PRESS,&key,nullptr,true);
+  TCODSystem::waitForEvent(TCOD_EVENT_KEY_PRESS, &key, nullptr, true);
   return handle_key(key);
 }
 
-std::unique_ptr<Command> Player_input_handler::handle_key(const TCOD_key_t &input) {
+std::unique_ptr<Command>
+Player_input_handler::handle_key(const TCOD_key_t &input) {
   auto it = buttons_.find(input);
   if (it != buttons_.end()) {
     return it->second->clone();
@@ -76,30 +81,32 @@ TCOD_key_t tcod_key_of_char(char c) {
   key.vk = TCODK_CHAR;
   key.c = c;
   key.shift = std::isupper(c);
-  key.pressed=true;
-  key.lalt=false;
-  key.lctrl=false;
-  key.ralt=false;
-  key.rctrl=false;
+  key.pressed = true;
+  key.lalt = false;
+  key.lctrl = false;
+  key.ralt = false;
+  key.rctrl = false;
   return key;
 }
 
-Inventory_input_handler::Inventory_input_handler(Player &player, std::function<void()> close_callback)
-  : gui{{5,5}, Game::map_width-10, Game::map_height-10, player, close_callback}
-{
+Inventory_input_handler::Inventory_input_handler(
+    Player &player, std::function<void()> close_callback)
+    : gui{{5, 5},
+          Game::map_width - 10,
+          Game::map_height - 10,
+          player,
+          close_callback} {
   gui.draw();
 }
 
 std::unique_ptr<Command> Inventory_input_handler::get_input() {
   TCOD_key_t key;
-  TCODSystem::waitForEvent(TCOD_EVENT_KEY_PRESS,&key,nullptr,true);
+  TCODSystem::waitForEvent(TCOD_EVENT_KEY_PRESS, &key, nullptr, true);
   return std::make_unique<Inventory_command>(gui, key);
 }
 
 Monster_input_handler::Monster_input_handler(Creature &monster)
-  : Move_input_handler{monster}, monster{monster}, target{*game->you}
-{
-}
+    : Move_input_handler{monster}, monster{monster}, target{*game->you} {}
 
 std::unique_ptr<Command> Monster_input_handler::get_input() {
   if (game->map().in_fov(monster.pos, target.pos)) {
@@ -112,10 +119,13 @@ std::unique_ptr<Command> Monster_input_handler::get_input() {
 Pos Monster_input_handler::step_to_dest() {
   Pos step = target.pos;
   if (dest.x != -1 && dest.y != -1) {
-    TCODMap map(game->map().get_map().getWidth(), game->map().get_map().getHeight());
+    TCODMap map(game->map().get_map().getWidth(),
+                game->map().get_map().getHeight());
     map.copy(&game->map().get_map());
     for (const Monster &other_monster : game->map().monsters) {
-      map.setProperties(other_monster.pos.x, other_monster.pos.y, map.isWalkable(other_monster.pos.x, other_monster.pos.y), false);
+      map.setProperties(
+          other_monster.pos.x, other_monster.pos.y,
+          map.isWalkable(other_monster.pos.x, other_monster.pos.y), false);
     }
     TCODPath path(&map);
     path.compute(monster.pos.x, monster.pos.y, dest.x, dest.y);
@@ -133,17 +143,16 @@ Pos Monster_input_handler::step_to_dest() {
       }
     }
   }
-  return target.pos-step;
+  return target.pos - step;
 }
 
 Lua_input_handler::Lua_input_handler(std::function<void()> close_callback)
-  : gui({5,5}, Game::map_width-10, Game::map_height-10, close_callback)
-{
+    : gui({5, 5}, Game::map_width - 10, Game::map_height - 10, close_callback) {
   gui.draw();
 }
 
 std::unique_ptr<Command> Lua_input_handler::get_input() {
   TCOD_key_t key;
-  TCODSystem::waitForEvent(TCOD_EVENT_KEY_PRESS,&key,nullptr,true);
+  TCODSystem::waitForEvent(TCOD_EVENT_KEY_PRESS, &key, nullptr, true);
   return std::make_unique<Lua_command>(gui, key);
 }

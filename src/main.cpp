@@ -1,9 +1,9 @@
 #include "game.hpp"
+#include "gui.hpp"
 #include "item.hpp"
 #include "map.hpp"
-#include "tcod_util.hpp"
 #include "player.hpp"
-#include "gui.hpp"
+#include "tcod_util.hpp"
 #include <iostream>
 
 int main() {

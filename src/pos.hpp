@@ -22,16 +22,12 @@ struct Pos {
 };
 
 constexpr inline bool operator==(const Pos &p0, const Pos &p1) {
-  return p0.x==p1.x && p0.y==p1.y;
+  return p0.x == p1.x && p0.y == p1.y;
 }
 
-constexpr inline Pos operator+(Pos p0, const Pos &p1) {
-  return p0 += p1;
-}
+constexpr inline Pos operator+(Pos p0, const Pos &p1) { return p0 += p1; }
 
-constexpr inline Pos operator-(Pos p0, const Pos &p1) {
-  return p0 += p1;
-}
+constexpr inline Pos operator-(Pos p0, const Pos &p1) { return p0 += p1; }
 
 inline int distance(Pos p0, Pos p1) {
   using std::abs;

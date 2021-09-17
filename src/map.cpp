@@ -1,81 +1,85 @@
 #include "map.hpp"
-#include "tcod_util.hpp"
-#include "game.hpp"
-#include "player.hpp"
-#include "monster.hpp"
-#include "item.hpp"
-#include "pos.hpp"
 #include "dir.hpp"
+#include "game.hpp"
+#include "item.hpp"
+#include "monster.hpp"
+#include "player.hpp"
+#include "pos.hpp"
+#include "tcod_util.hpp"
 #include <cassert>
 #include <iostream>
 #include <vector>
 
 Pos rand_dir() {
-  switch(rand_int(0,3)) {
-    case 0:
-      return Dir::n;
-    case 1:
-      return Dir::s;
-    case 2:
-      return Dir::w;
-    case 3:
-      return Dir::e;
+  switch (rand_int(0, 3)) {
+  case 0:
+    return Dir::n;
+  case 1:
+    return Dir::s;
+  case 2:
+    return Dir::w;
+  case 3:
+    return Dir::e;
   }
-  throw std::runtime_error { "rand_int returns invalid int" };
+  throw std::runtime_error{"rand_int returns invalid int"};
 }
 
 Map::Map(int w, int h, int depth)
-  : map(w,h), tiles(boost::extents[w][h]), depth(depth)
-{
+    : map(w, h), tiles(boost::extents[w][h]), depth(depth) {
   generate();
 }
 
 Map::~Map() = default;
 
-Map::Map(const Map &other)
-  : map(other.get_width(),other.get_height()), tiles(other.tiles), depth(other.depth), entrance_(other.entrance_), exit_(other.exit_), monsters(other.monsters), items(other.items)
-{
-  map.copy(&other.map);
-}
+// Map::Map(const Map &other)
+//   : map(other.get_width(),other.get_height()), tiles(other.tiles),
+//   depth(other.depth), entrance_(other.entrance_), exit_(other.exit_),
+//   monsters(other.monsters), items(other.items)
+// {
+//   map.copy(&other.map);
+// }
 
-Map &Map::operator=(const Map &other) {
-  tiles = other.tiles;
-  depth = other.depth;
-  map.copy(&other.map);
-  entrance_ = other.entrance_;
-  exit_ = other.exit_;
-  monsters = other.monsters;
-  items = other.items;
-  return *this;
-}
+// Map &Map::operator=(const Map &other) {
+//   tiles = other.tiles;
+//   depth = other.depth;
+//   map.copy(&other.map);
+//   entrance_ = other.entrance_;
+//   exit_ = other.exit_;
+//   monsters = other.monsters;
+//   items = other.items;
+//   return *this;
+// }
 
 void Map::generate() {
-  constexpr double grain_count=5;
-  constexpr double filled_percent=75;
+  constexpr double grain_count = 5;
+  constexpr double filled_percent = 75;
 
-  const int granularity = std::min(std::ceil(get_width()/grain_count), std::ceil(get_height()/grain_count));
+  const int granularity = std::min(std::ceil(get_width() / grain_count),
+                                   std::ceil(get_height() / grain_count));
 
-  int tries=0;
+  int tries = 0;
 
   bool generating = true;
   while (generating) {
     ++tries;
     map.clear();
-    monsters=std::vector<Monster>{};
+    monsters = std::vector<Monster>{};
     gen_rand_walk();
 
-    int total_grids=0;
-    int filled_grids=0;
+    int total_grids = 0;
+    int filled_grids = 0;
 
-    for (int x=0; x<get_width(); x+=granularity) {
-      for (int y=0; y<get_height(); y+=granularity) {
+    for (int x = 0; x < get_width(); x += granularity) {
+      for (int y = 0; y < get_height(); y += granularity) {
         ++total_grids;
-        for (int x_fine=x; x_fine<x+granularity && x_fine<get_width(); ++x_fine) {
-          for (int y_fine=y; y_fine<y+granularity && y_fine<get_height(); ++y_fine) {
+        for (int x_fine = x; x_fine < x + granularity && x_fine < get_width();
+             ++x_fine) {
+          for (int y_fine = y;
+               y_fine < y + granularity && y_fine < get_height(); ++y_fine) {
             if (is_walkable(Pos{x_fine, y_fine})) {
               ++filled_grids;
               // break out of x_fine and y_fine loops
-              x_fine=get_width();
+              x_fine = get_width();
               break;
             }
           }
@@ -83,15 +87,17 @@ void Map::generate() {
       }
     }
 
-    if (total_grids*(filled_percent/100) < filled_grids)
+    if (total_grids * (filled_percent / 100) < filled_grids)
       generating = false;
   }
   std::cerr << "map gen done in " << tries << " try(s)\n";
 }
 void Map::gen_rand_walk() {
   // Map generation done with modified 'drunkard's walk' algorithm
-  // Basic algorithm described here: http://www.roguebasin.com/index.php?title=Random_Walk_Cave_Generation
-  // With some modifications described here: https://forums.roguetemple.com//index.php?topic=4128.0
+  // Basic algorithm described here:
+  // http://www.roguebasin.com/index.php?title=Random_Walk_Cave_Generation With
+  // some modifications described here:
+  // https://forums.roguetemple.com//index.php?topic=4128.0
 
   // tweakable variables:
   constexpr double percentage = 30;
@@ -106,23 +112,22 @@ void Map::gen_rand_walk() {
   constexpr int cave_max = 25;
   constexpr int start_variation = 5;
 
-  
   const int width = get_width();
   const int height = get_height();
-  const int soft_edge_limit = std::min(width,height)*(soft_edge_limit_percent/100);
-  const int req_tiles = (width*height)*(percentage/100);
-  const int max_steps = req_tiles*500;
+  const int soft_edge_limit =
+      std::min(width, height) * (soft_edge_limit_percent / 100);
+  const int req_tiles = (width * height) * (percentage / 100);
+  const int max_steps = req_tiles * 500;
 
-  
   int done_tiles = rand_int(cave_min, cave_max);
   int total_steps = 0;
-  
+
   Pos loc;
-  loc.x = width/2 + rand_int(-start_variation, start_variation);
-  loc.y = height/2 + rand_int(-start_variation, start_variation);
+  loc.x = width / 2 + rand_int(-start_variation, start_variation);
+  loc.y = height / 2 + rand_int(-start_variation, start_variation);
   entrance_ = loc;
-  
-  bool sober = false; // true if we are digging a corridor
+
+  bool sober = false;                       // true if we are digging a corridor
   int steps = rand_int(cave_min, cave_max); // steps until change sober state
   Pos dir = rand_dir();
 
@@ -143,7 +148,8 @@ void Map::gen_rand_walk() {
     if (steps-- == 0) {
       int hall_len = rand_int(hall_min, hall_max);
       if (percent_chance(sober_chance) &&
-          can_sober(loc, dir, hall_len, soft_edge_limit, sober_density_allowed) &&
+          can_sober(loc, dir, hall_len, soft_edge_limit,
+                    sober_density_allowed) &&
           !sober) {
         sober = true;
         steps = hall_len;
@@ -171,19 +177,20 @@ void Map::gen_rand_walk() {
         dir = rand_dir();
       }
       int limit_tier = in_soft_limit(loc, soft_edge_limit);
-      if (rand_int(1,soft_edge_limit*soft_edge_limit) <= limit_tier*limit_tier)
+      if (rand_int(1, soft_edge_limit * soft_edge_limit) <=
+          limit_tier * limit_tier)
         soft_edge_limit_dir(loc, dir, soft_edge_limit);
     }
 
     loc += dir;
     if (loc.x == 0)
       loc.x = 1;
-    else if (loc.x == width-1)
-      loc.x = get_width()-2;
+    else if (loc.x == width - 1)
+      loc.x = get_width() - 2;
     if (loc.y == 0)
       loc.y = 1;
-    else if (loc.y == height-1)
-      loc.y = height-2;
+    else if (loc.y == height - 1)
+      loc.y = height - 2;
 
     if (++total_steps > max_steps) {
       std::cerr << "map generation exceeded max_steps\n";
@@ -195,62 +202,60 @@ void Map::gen_rand_walk() {
 }
 
 bool Map::in_level(const Pos &pos) {
-  return !(pos.x < 0 || pos.x > get_width()-1 || pos.y < 0 || pos.y > get_height()-1);
+  return !(pos.x < 0 || pos.x > get_width() - 1 || pos.y < 0 ||
+           pos.y > get_height() - 1);
 }
 
-bool Map::soft_edge_limit_dir(const Pos &pos, Pos &d, int limit)
-{
+bool Map::soft_edge_limit_dir(const Pos &pos, Pos &d, int limit) {
   bool changed = false;
   if (pos.x < limit) {
     d = Dir::e;
     changed = true;
-  } else if (pos.x > get_width()-1 - limit) {
+  } else if (pos.x > get_width() - 1 - limit) {
     d = Dir::w;
     changed = true;
   } else if (pos.y < limit) {
     d = Dir::s;
     changed = true;
-  } else if (pos.y > get_height()-1 - limit) {
+  } else if (pos.y > get_height() - 1 - limit) {
     d = Dir::n;
     changed = true;
   }
   return changed;
 }
 
-int Map::in_soft_limit(const Pos &pos, int limit)
-{
+int Map::in_soft_limit(const Pos &pos, int limit) {
   using std::max;
-  int depth=0;
+  int depth = 0;
   if (pos.x < limit)
-    depth = max(depth, limit-pos.x);
-  else if (pos.x > get_width()-1 - limit)
-    depth = max(depth, limit-(get_width()-pos.x-1));
+    depth = max(depth, limit - pos.x);
+  else if (pos.x > get_width() - 1 - limit)
+    depth = max(depth, limit - (get_width() - pos.x - 1));
   if (pos.y < limit)
-    depth = max(depth, limit-pos.y);
-  else if (pos.y > get_height()-1 - limit)
-    depth = max(depth, limit-(get_height()-pos.y-1));
+    depth = max(depth, limit - pos.y);
+  else if (pos.y > get_height() - 1 - limit)
+    depth = max(depth, limit - (get_height() - pos.y - 1));
   return depth;
 }
 
-bool Map::can_sober(const Pos &pos, const Pos &dir, int hall_len, int limit, double density_allowed)
-{
+bool Map::can_sober(const Pos &pos, const Pos &dir, int hall_len, int limit,
+                    double density_allowed) {
   if (in_soft_limit(pos, limit))
     return false;
 
   // increase hall_len to make it odd
-  const int rect_size = hall_len + !(hall_len%2);
-  Pos rect = {
-  (pos.x - hall_len / 2) + dir.x * (hall_len / 2),
-  (pos.y - hall_len / 2) + dir.y * (hall_len / 2) };
+  const int rect_size = hall_len + !(hall_len % 2);
+  Pos rect = {(pos.x - hall_len / 2) + dir.x * (hall_len / 2),
+              (pos.y - hall_len / 2) + dir.y * (hall_len / 2)};
 
   // max 25% of tiles can be floor tiles
   const int max_amount = rect_size * rect_size * (density_allowed / 100);
-  int floor_count=0;
+  int floor_count = 0;
 
-  Pos curr=rect;
+  Pos curr = rect;
 
-  for (; curr.x < rect.x+rect_size; ++curr.x) {
-    for (; curr.y < rect.y+rect_size; ++curr.y) {
+  for (; curr.x < rect.x + rect_size; ++curr.x) {
+    for (; curr.y < rect.y + rect_size; ++curr.y) {
       if (!in_level(curr))
         return false;
       if (is_walkable(curr))
@@ -262,16 +267,15 @@ bool Map::can_sober(const Pos &pos, const Pos &dir, int hall_len, int limit, dou
   return true;
 }
 
-void Map::draw()
-{
-  TCODColor wall_seen(0x66,0x66,0x00);
-  TCODColor wall_unseen(0x40,0x40,0x00);
-  TCODColor floor_seen(0xff,0xff,0xff);
-  TCODColor floor_unseen(0x9e,0x9e,0x9e);
+void Map::draw() {
+  TCODColor wall_seen(0x66, 0x66, 0x00);
+  TCODColor wall_unseen(0x40, 0x40, 0x00);
+  TCODColor floor_seen(0xff, 0xff, 0xff);
+  TCODColor floor_unseen(0x9e, 0x9e, 0x9e);
   const int width = get_width(), height = get_height();
   calculate_fov(game->you->pos);
-  for (int x=0; x<width; ++x) {
-    for (int y=0; y<height; ++y) {
+  for (int x = 0; x < width; ++x) {
+    for (int y = 0; y < height; ++y) {
       bool can_see = false;
       bool has_seen = tiles[x][y].discovered;
       if (in_fov(game->you->pos, Pos{x, y}, false)) {
@@ -283,24 +287,28 @@ void Map::draw()
       }
       if (has_seen) {
         if (is_walkable(Pos{x, y})) {
-          TCODConsole::root->setCharForeground(x, y, can_see ? floor_seen : floor_unseen);
-          TCODConsole::root->setChar(x,y,'.');
+          TCODConsole::root->setCharForeground(
+              x, y, can_see ? floor_seen : floor_unseen);
+          TCODConsole::root->setChar(x, y, '.');
         } else {
-          TCODConsole::root->setCharForeground(x, y, can_see ? wall_seen : wall_unseen);
-          TCODConsole::root->setChar(x,y,'#');
+          TCODConsole::root->setCharForeground(
+              x, y, can_see ? wall_seen : wall_unseen);
+          TCODConsole::root->setChar(x, y, '#');
         }
       }
     }
   }
   if (tiles[entrance_.x][entrance_.y].discovered) {
-    TCODConsole::root->setCharForeground(entrance_.x, entrance_.y,
-                                         in_fov(game->you->pos, entrance_, false) ? floor_seen : floor_unseen);
-    TCODConsole::root->setChar(entrance_.x,entrance_.y,'<');
+    TCODConsole::root->setCharForeground(
+        entrance_.x, entrance_.y,
+        in_fov(game->you->pos, entrance_, false) ? floor_seen : floor_unseen);
+    TCODConsole::root->setChar(entrance_.x, entrance_.y, '<');
   }
   if (tiles[exit_.x][exit_.y].discovered) {
-    TCODConsole::root->setCharForeground(exit_.x, exit_.y,
-                                         in_fov(game->you->pos, exit_, false) ? floor_seen : floor_unseen);
-    TCODConsole::root->setChar(exit_.x,exit_.y,'>');
+    TCODConsole::root->setCharForeground(
+        exit_.x, exit_.y,
+        in_fov(game->you->pos, exit_, false) ? floor_seen : floor_unseen);
+    TCODConsole::root->setChar(exit_.x, exit_.y, '>');
   }
   for (const Item &item : items) {
     if (in_fov(game->you->pos, item.pos, false)) {
@@ -329,32 +337,22 @@ void Map::calculate_fov(const Pos &src) {
 bool Map::in_fov(const Pos &pos, const Pos &target, bool recalculate) {
   if (recalculate)
     calculate_fov(pos);
-  return map.isInFov(target.x,target.y);
+  return map.isInFov(target.x, target.y);
 }
 
-int Map::get_width() const {
-  return map.getWidth();
-}
+int Map::get_width() const { return map.getWidth(); }
 
-int Map::get_height() const {
-  return map.getHeight();
-}
+int Map::get_height() const { return map.getHeight(); }
 
-int Map::is_walkable(const Pos &pos) {
-  return map.isWalkable(pos.x, pos.y);
-}
+int Map::is_walkable(const Pos &pos) { return map.isWalkable(pos.x, pos.y); }
 
 void Map::set_walkable(const Pos &pos, bool walkable) {
-  map.setProperties(pos.x,pos.y,walkable,walkable);
+  map.setProperties(pos.x, pos.y, walkable, walkable);
 }
 
-Tile &Map::tile(const Pos &pos) {
-  return tiles[pos.x][pos.y];
-}
+Tile &Map::tile(const Pos &pos) { return tiles[pos.x][pos.y]; }
 
-TCODMap &Map::get_map() {
-  return map;
-}
+TCODMap &Map::get_map() { return map; }
 
 Creature *Map::get_highest_turn_priority() {
   Creature *c = nullptr;

@@ -1,30 +1,34 @@
 #ifndef MONSTER_HPP_DEFINED
 #define MONSTER_HPP_DEFINED
 
-#include <string>
 #include "creature.hpp"
+#include <string>
 
 class Map;
 class Player;
 struct Lua_monster;
 
-class Monster : public Creature
-{
+class Monster : public Creature {
   std::string name_;
   int id_;
-  bool dead_=false;
+  bool dead_ = false;
   void take_damage(int amount, Player &source) override;
   void take_damage(int amount, Monster &source) override;
-  Pos dest = { -1, -1 };
+  Pos dest = {-1, -1};
   Pos step_to_dest();
   int parent_index;
-  int energy=0;
-  int speed=100;
+  int energy = 0;
+  int speed = 100;
+
 public:
   Monster(int id, int parent, const Pos &pos = {0, 0});
   Monster(const std::string &name, int parent, const Pos &pos = {0, 0});
   Monster(const Lua_monster &base, int parent, const Pos &pos = {0, 0});
   ~Monster();
+  Monster(const Monster &) = delete;
+  Monster &operator=(const Monster &) = delete;
+  Monster(Monster &&) = default;
+  Monster &operator=(Monster &&) = default;
 
   int id() const;
   const std::string &name() const;
@@ -44,4 +48,4 @@ public:
   const Map &parent() const;
 };
 
-#endif //MONSTER_HPP_DEFINED
+#endif // MONSTER_HPP_DEFINED

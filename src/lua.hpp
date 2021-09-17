@@ -1,12 +1,12 @@
 #ifndef DEFINED_LUA_HPP
 #define DEFINED_LUA_HPP
 
+#include <libtcod.hpp>
+#include <map>
+#include <memory>
+#include <sol/sol.hpp>
 #include <stdexcept>
 #include <string>
-#include <memory>
-#include <map>
-#include <libtcod/libtcod.hpp>
-#include <sol/sol.hpp>
 
 enum class Trigger;
 
@@ -34,7 +34,7 @@ struct Lua_monster {
   int max_hp;
   int attack;
   int rarity;
- };
+};
 
 class Lua_manager {
   sol::state lua_state;
@@ -46,10 +46,12 @@ class Lua_manager {
   std::multimap<int, Lua_item *> item_rarity_map;
   std::multimap<int, Lua_monster *> monster_rarity_map;
 
-  template<typename T>
-  void mandatory(const std::string &table, int id, const std::string &flag, T &member);
-  template<typename T>
-  void optional(const std::string &table, int id, const std::string &flag, T &member);
+  template <typename T>
+  void mandatory(const std::string &table, int id, const std::string &flag,
+                 T &member);
+  template <typename T>
+  void optional(const std::string &table, int id, const std::string &flag,
+                T &member);
 
   static constexpr const char *item_def_table = "item_definitions";
   static constexpr const char *status_def_table = "status_definitions";
@@ -58,6 +60,7 @@ class Lua_manager {
   Lua_item load_item(int id);
   Lua_status load_status(int id);
   Lua_monster load_monster(int id);
+
 public:
   Lua_manager();
 
@@ -81,19 +84,20 @@ public:
   const Lua_monster &get_rand_mon(int depth) const;
 };
 
-template<typename T>
-void Lua_manager::mandatory(const std::string &table, int id, const std::string &flag, T &member) {
+template <typename T>
+void Lua_manager::mandatory(const std::string &table, int id,
+                            const std::string &flag, T &member) {
   sol::table sol_table = lua_state[table];
   sol::table sol_table2 = sol_table[id];
   member = sol_table2.get<T>(flag);
 }
 
-template<typename T>
-void Lua_manager::optional(const std::string &table, int id, const std::string &flag, T &member) {
+template <typename T>
+void Lua_manager::optional(const std::string &table, int id,
+                           const std::string &flag, T &member) {
   sol::optional<T> val = lua_state[table][id][flag];
   if (val)
     member = *val;
 }
 
-
-#endif //DEFINED_LUA_HPP
+#endif // DEFINED_LUA_HPP
