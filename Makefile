@@ -19,7 +19,7 @@ endif
 
 all: init $(TARGET)
 
-init: obj
+init:
 	mkdir -p obj
 
 $(TARGET): $(OBJS)
